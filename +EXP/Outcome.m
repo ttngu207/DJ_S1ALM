@@ -1,6 +1,6 @@
 %{
 # 
-outcome                     : varchar(8)                    # 
+outcome                     : varchar(32)                    # 
 %}
 
 

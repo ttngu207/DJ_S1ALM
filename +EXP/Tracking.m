@@ -4,8 +4,8 @@
 -> EXP.TrackingDevice
 ---
 tracking_data_path          : varchar(1000)                  # 
-start_time                  : decimal(8,4)                   # (s) from trial start
-duration                  : decimal(8,4)                   # (s)
+start_time = null           : decimal(8,4)                   # (s) from trial start (which should coincide with the beginning of the ephys recordings)
+duration = null             : decimal(8,4)                   # (s)
 
 %}
 

@@ -1,6 +1,6 @@
 function DJ_Import_EXP
 close all; clear all;
-% del(EXP.Session) % for DEBUG
+del(EXP.Session) % for DEBUG
 
 global dir_data
 dir_data = 'Z:\users\Arseny\Projects\SensoryInput\SiProbeRecording\ProcessedData\';
@@ -54,7 +54,7 @@ for iFile = 1:1:numel (allFileNames)
         
         key.session = currentSession;
         %% Insert Session
-        insert(EXP.Session, {currentSubject_id, currentSession, numel(exisitingSession)+1, currentSessionDate, 'ars','ephys'} );
+        insert(EXP.Session, {currentSubject_id, currentSession, currentSessionDate, 'ars','ephys'} );
         
         %% Load Obj
         obj = EXP.getObj (key);
@@ -81,13 +81,13 @@ for iFile = 1:1:numel (allFileNames)
         allVideoFiles = dir(tracking_data_dir); %gets  the names of all files and nested directories in this folder
         allVideoNames = {allVideoFiles(~[allVideoFiles.isdir]).name}; %gets only the names of all files
         
-        total_trials = numel(fetchn(EXP.SessionTrial,'trial_id'));
+        
         
         for iTrials = 1:1:numel(obj.trialIDs)
             
             % EXP.SessionTrial
             data_SessionTrial (iTrials) = struct(...
-                'subject_id',  key.subject_id, 'session', key.session, 'trial', iTrials, 'trial_id', total_trials + iTrials, 'start_time', obj.trialStartTimes(iTrials));
+                'subject_id',  key.subject_id, 'session', key.session, 'trial', iTrials, 'start_time', obj.trialStartTimes(iTrials));
             
             % EXP.BehaviorTrial
             data_BehaviorTrial = Ingest_EXP_BehaviorTrial (obj, key, iTrials, data_BehaviorTrial);
@@ -104,7 +104,7 @@ for iFile = 1:1:numel (allFileNames)
             % Tracking
             
             [data_Tracking] = Ingest_EXP_Tracking (obj, key, iTrials, tracking_data_dir, allVideoNames,  tracking_device, data_Tracking);
-            %iTrials
+            %             iTrials
         end
         
         

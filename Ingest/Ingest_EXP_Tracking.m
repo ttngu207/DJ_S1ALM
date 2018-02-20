@@ -19,7 +19,7 @@ if obj.video_flag ==1
                 xyloObj = VideoReader(tracking_data_path);
             catch
                 warning('Problem with reading the video file, skipping to the next file');
-                info.Duration =0;
+                info.Duration = NaN;
                 catach_flag=1;
             end
             if catach_flag==0
@@ -27,11 +27,11 @@ if obj.video_flag ==1
             end
             
             if info.Duration ==1998
-                start_time = 2;
+                start_time = 2 + 2/400; %the first two frames are dropped
             elseif info.Duration== 2598
-                start_time = 1;
+                start_time = 1 + 2/400; %the first two frames are dropped
             else
-                start_time = 0;
+                start_time = NaN;
             end
             duration = info.Duration/400;
             data_Tracking (end+1) = struct(...
