@@ -67,13 +67,15 @@ for iFile = 1:1:numel (allFileNames)
         
         %initializing
         [data_SessionTrial] = fn_EmptyStruct ('EXP.SessionTrial');
-        [data_BehaviorTrial] = fn_EmptyStruct ('EXP.BehaviorTrial');
         [data_ActionEvent] = fn_EmptyStruct ('EXP.ActionEvent');
         [data_TrialEvent] = fn_EmptyStruct ('EXP.TrialEvent');
+        [data_BehaviorTrial] = fn_EmptyStruct ('EXP.BehaviorTrial');
         [data_S1PhotostimTrial] = fn_EmptyStruct ('EXP.S1PhotostimTrial');
         [data_PhotostimTrial] = fn_EmptyStruct ('EXP.PhotostimTrial');
         [data_PhotostimTrialEvent] = fn_EmptyStruct ('EXP.PhotostimTrialEvent');
         [data_Tracking] = fn_EmptyStruct ('EXP.Tracking');
+        [data_TrialNote] = fn_EmptyStruct ('EXP.TrialNote');
+%         data_BehaviorTrialTest = fn_EmptyStruct ('EXP.BehaviorTrialTest');
         
         % for video tracking
         tracking_device = fetchn(EXP.TrackingDevice, 'tracking_device');
@@ -89,22 +91,35 @@ for iFile = 1:1:numel (allFileNames)
             data_SessionTrial (iTrials) = struct(...
                 'subject_id',  key.subject_id, 'session', key.session, 'trial', iTrials, 'trial_id', total_trials + iTrials, 'start_time', obj.trialStartTimes(iTrials));
             
-            % EXP.BehaviorTrial
-            data_BehaviorTrial = Ingest_EXP_BehaviorTrial (obj, key, iTrials, data_BehaviorTrial);
-            
             % EXP.ActionEvent
-            data_ActionEvent = Ingest_EXP_ActionEvent (obj, key, iTrials, data_ActionEvent);
+            [data_ActionEvent, action_event_time]  = Ingest_EXP_ActionEvent (obj, key, iTrials, data_ActionEvent);
             
             % EXP.TrialEvent
-            data_TrialEvent = Ingest_EXP_TrialEvent (obj, key, iTrials, data_TrialEvent);
+            [data_TrialEvent, early_lick, trial_note_type ]  = Ingest_EXP_TrialEvent (obj, key, iTrials, data_TrialEvent, action_event_time);
+            
+            % EXP.BehaviorTrial
+            data_BehaviorTrial = Ingest_EXP_BehaviorTrial (obj, key, iTrials, data_BehaviorTrial, early_lick);
             
             % Photostim related tables
             [data_S1PhotostimTrial, data_PhotostimTrial, data_PhotostimTrialEvent] = Ingest_EXP_Photo (obj, key, iTrials, data_S1PhotostimTrial,data_PhotostimTrial, data_PhotostimTrialEvent);
             
             % Tracking
-            
             [data_Tracking] = Ingest_EXP_Tracking (obj, key, iTrials, tracking_data_dir, allVideoNames,  tracking_device, data_Tracking);
+            
+            
+            % TrialNote
+            if ~isempty(trial_note_type)
+                data_TrialNote (end+1) = struct(...
+                    'subject_id',  key.subject_id, 'session', key.session, 'trial', iTrials, 'trial_note_type',trial_note_type, 'trial_note','');
+            end
+            
+%             % data_BehaviorTrialTest
+%             data_BehaviorTrialTest (iTrials) = struct(...
+%                 'subject_id',  key.subject_id, 'session', key.session, 'trial', iTrials, 'early_lick_test', early_lick_test);
+            
+            
             %iTrials
+            
         end
         
         
@@ -120,20 +135,9 @@ for iFile = 1:1:numel (allFileNames)
         insert(EXP.PhotostimTrialEvent, data_PhotostimTrialEvent);
         insert(EXP.Tracking, data_Tracking);
         
+%         insert(EXP.BehaviorTrialTest, data_BehaviorTrialTest);
         
         clear obj;
         toc
     end
 end
-%         a= fetchn(EXP.ActionEvent & 'action_event_type="left lick"', 'action_event_time')
-%         b= fetch(EXP.BehaviorTrial,'*')
-%         b = fetch(EXP.Session & key,'session_date');
-
-%     key = fetch(EXP.Session & sprintf('subject_id=%d',currentSubject_id),'session');
-
-%     key = fetch(EXP.Session,'subject_id','session' & 'subject_id=currentSubject_id' &  'session=currentSession' );
-%     key = fetch(EXP.Session,'subject_id','session' & 'subject_id=currentSubject_id' &  'session=currentSession' );
-
-
-% usefull commands: inserti  insertreplace
-% fetch(s1.Session & sprintf('session_date = "%s"',currentSessionDate))

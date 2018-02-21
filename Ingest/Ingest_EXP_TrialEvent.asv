@@ -1,4 +1,4 @@
-function [data_TrialEvent, early_lick, trial_note_type] = Ingest_EXP_TrialEvent (obj, key, iTrials, data_TrialEvent, action_event_time)
+function [data_TrialEvent, early_lick_flag_presample_onwards, early_lick_flag_sample_onwards, trial_note_type] = Ingest_EXP_TrialEvent (obj, key, iTrials, data_TrialEvent, action_event_time)
 
 % For sanity check - unless there is an early licks the timings/durations should be:
 %----------------------------------------------------------------------------------
@@ -33,8 +33,6 @@ end
 
 
 % Detecting early lick
-%---------------------------------------------------------------------------
-
 % early lick: aftter presample onset and before the go cue
 early_lick_flag_presample_onwards = sum(action_event_time >= presample_t & action_event_time <= go_t); %if the flag has other elements than 0 - it means that there was an ealy licka
 
@@ -49,8 +47,7 @@ else
     early_lick ='no early';
 end
 
-% Registering if its a bad trial, based on strange timing of the go cue
-%---------------------------------------------------------------------------
+% Findi
 trial_note_type=[];
 if go_t>=20 %if for some reason the go_t happens very late, we consider it as a bad trial
     trial_note_type='bad';

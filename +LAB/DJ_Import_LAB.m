@@ -3,7 +3,6 @@ close all; clear all;
 
 
 dir_data = 'Z:\users\Arseny\Projects\SensoryInput\SiProbeRecording\ProcessedData\';
-% dir_video = 'Z:\users\Arseny\Projects\SensoryInput\SiProbeRecording\RawData\video\';
 
 DJconnect; %connect to the database using stored user credentials
 
@@ -37,7 +36,6 @@ for iFile = 1:1:numel (allFileNames)
     
 end
 
-% populate(LAB.CompleteGenotype)
+populate(LAB.CompleteGenotype)
 
 
-% usefull commands: inserti  insertreplace

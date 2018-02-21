@@ -1,4 +1,4 @@
-function data_BehaviorTrial = Ingest_EXP_BehaviorTrial (obj, key, iTrials, data_BehaviorTrial)
+function data_BehaviorTrial = Ingest_EXP_BehaviorTrial (obj, key, iTrials, data_BehaviorTrial, early_lick)
 
 task =  's1 stim';
 task_protocol = obj.task;
@@ -23,13 +23,15 @@ for iOutcome = 1:1:length(outcome_types) % loop through outcomes (e.g. Hit, Igno
         break
     end
 end
-
-relevant_outcomes_names = (strfind(lower(obj.trialTypeStr),'LickEarly'));
-if sum(outcomes_vec(~cellfun(@isempty,relevant_outcomes_names))) >0 % if this particular outcome occured - insert it into the table
-    early_lick = 'early';
-else
-    early_lick = 'no early';
-end
-
+           
 data_BehaviorTrial (iTrials) = struct(...
     'subject_id',key.subject_id, 'session',key.session, 'trial',iTrials, 'task',task, 'task_protocol',task_protocol, 'trial_instruction',trial_instruction, 'early_lick',early_lick, 'outcome',outcome);
+
+% Not using
+% relevant_outcomes_names = (strfind((obj.trialTypeStr),'LickEarly'));
+% if sum(outcomes_vec(~cellfun(@isempty,relevant_outcomes_names))) >0 % if this particular outcome occured - insert it into the table
+%     early_lick = 'early';
+% else
+%     early_lick = 'no early';
+% end
+% 

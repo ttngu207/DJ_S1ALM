@@ -1,6 +1,6 @@
 %{
 # 
-early_lick                  : varchar(12)                   # 
+early_lick                  : varchar(32)                   # 
 %}
 
 

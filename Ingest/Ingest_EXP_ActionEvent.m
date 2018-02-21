@@ -1,4 +1,4 @@
-function data_ActionEvent = Ingest_EXP_ActionEvent (obj, key, iTrials, data_ActionEvent)
+function [data_ActionEvent, action_event_time] = Ingest_EXP_ActionEvent (obj, key, iTrials, data_ActionEvent)
 
 action_event_type = [];
 action_event_time =[];
@@ -15,3 +15,4 @@ for iActionEvent=1:1:numel(action_event_time)
     data_ActionEvent (end+1) = struct(...
         'subject_id',  key.subject_id, 'session', key.session, 'trial', iTrials, 'action_event_type',action_event_type(iActionEvent), 'action_event_time',action_event_time(iActionEvent) );
 end
+
