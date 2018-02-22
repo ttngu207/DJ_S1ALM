@@ -10,7 +10,7 @@ c = (EXP.TrialEvent ) * (EXP.BehaviorTrial & 'early_lick="no early"') * (EXP.Beh
 f = c.fetch('*');
 
 
-% usefull commands: inserti  insertreplacef = c.fetch('*');
+% usefull commands: inserti  insertreplace
 
 % fetch(s1.Session & sprintf('session_date = "%s"',currentSessionDate))
 % te = fetch(EXP.TrialEvent, 'ORDER BY trial_event_type' )
@@ -24,3 +24,4 @@ f = c.fetch('*');
 
 % f = c.fetch('*');
 
+% draw(dj.ERD(EXP.Session)+1-1+1-1 +1-1)
