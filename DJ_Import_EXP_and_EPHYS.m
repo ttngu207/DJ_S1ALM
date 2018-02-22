@@ -68,15 +68,16 @@ for iFile = 1:1:numel (allFileNames)
         inserti(EPHYS.Probe, {obj.probeName , obj.probeType, ''}); %ignores duplicates
         
          % EPHYS.ElectrodeGroup
-        insert(EPHYS.ElectrodeGroup, {currentSubject_id, currentSession, 1,obj.probeName  }); %shank 1
-        insert(EPHYS.ElectrodeGroup, {currentSubject_id, currentSession, 2,obj.probeName  }); %shank 2
+        insert(EPHYS.ElectrodeGroup, {currentSubject_id, currentSession, 1,obj.probeName  }); %shank 1 (left)
+        insert(EPHYS.ElectrodeGroup, {currentSubject_id, currentSession, 2,obj.probeName  }); %shank 2 (right)
         
         % EPHYS.ElectrodeGroupPosition
-        dv = obj.depth;
-        ml = obj.position_ML;
+        ml = -(obj.position_ML);
         ap = obj.position_AP;
+        dv = obj.depth;
 
-        insert(EPHYS.ElectrodeGroupPosition, {currentSubject_id, currentSession, 1, 'manipulator','Bregma',   }); %shank 2
+        insert(EPHYS.ElectrodeGroupPosition, {currentSubject_id, currentSession, 1, 'manipulator','Bregma', ml, ap, dv  }); %shank 1
+        insert(EPHYS.ElectrodeGroupPosition, {currentSubject_id, currentSession, 2, 'manipulator','Bregma', ml + 250, ap, dv  }); %shank 1
 
         manipulator
         % EXP.TaskTraining
