@@ -13,9 +13,8 @@ unit_dv_location= null           : decimal(8,3)                  # um from dura;
 %}
 
 
-classdef UnitPosition < dj.Imported
-    methods(Access=protected)
-        function makeTuples(self, key)
-        end
+classdef UnitPosition < dj.Part
+   properties(SetAccess=protected)
+        master= EPHYS.Unit
     end
 end

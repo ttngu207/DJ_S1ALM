@@ -5,9 +5,8 @@
 %}
 
 
-classdef UnitCellType < dj.Imported
-    methods(Access=protected)
-        function makeTuples(self, key)
-        end
+classdef UnitCellType < dj.Part
+    properties(SetAccess=protected)
+        master= EPHYS.Unit
     end
 end

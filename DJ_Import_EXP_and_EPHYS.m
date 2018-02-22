@@ -21,11 +21,13 @@ if isempty(fetch(EXP.Photostim))
     x = linspace(0,pi,100);
     waveform = repmat( sin(x),1,4); %plot([1:1:400],waveform)
     insert(EXP.Photostim, {'LaserGem473', 1, 0.4, waveform} );
-    
+    insert(EXP.PhotostimLocation, {'LaserGem473', 1, 'left', 'vS1', 'Bregma',-3500,-1300,0,NaN,NaN } );
+
     % mini stim
     x = linspace(0,pi,100);
     waveform = sin(x); %plot([1:1:100],waveform)
     insert(EXP.Photostim, {'LaserGem473', 2, 0.1, waveform} );
+    insert(EXP.PhotostimLocation, {'LaserGem473', 2, 'left', 'vS1', 'Bregma',-3500,-1300,0,NaN,NaN } );
 end
 
 %% Insert/Populate Sessions and dependent tables
@@ -76,10 +78,10 @@ for iFile = 1:1:numel (allFileNames)
         ap = obj.position_AP;
         dv = obj.depth;
 
-        insert(EPHYS.ElectrodeGroupPosition, {currentSubject_id, currentSession, 1, 'manipulator','Bregma', ml, ap, dv  }); %shank 1
-        insert(EPHYS.ElectrodeGroupPosition, {currentSubject_id, currentSession, 2, 'manipulator','Bregma', ml + 250, ap, dv  }); %shank 1
+        insert(EPHYS.ElectrodeGroupPosition, {currentSubject_id, currentSession, 1, 'manipulator','Bregma', ml, ap, dv,NaN,NaN  }); %shank 1
+        insert(EPHYS.ElectrodeGroupPosition, {currentSubject_id, currentSession, 2, 'manipulator','Bregma', ml + 250, ap, dv,NaN,NaN  }); %shank 1
 
-        manipulator
+%         manipulator
         % EXP.TaskTraining
         data_TaskTraining = Ingest_EXP_TaskTraining (obj, key);
         
@@ -143,7 +145,7 @@ for iFile = 1:1:numel (allFileNames)
         
         insert(EXP.SessionTrial, data_SessionTrial);
         insert(EXP.BehaviorTrial, data_BehaviorTrial);
-        insert(EXP.TaskTraining, data_TaskTraining);
+        insert(EXP.TaskAndTraining, data_TaskTraining);
         insert(EXP.ActionEvent, data_ActionEvent);
         insert(EXP.TrialEvent, data_TrialEvent);
         insert(EXP.S1PhotostimTrial, data_S1PhotostimTrial);

@@ -7,5 +7,5 @@
 %}
 
 
-classdef TaskTraining < dj.Manual
+classdef TaskAndTraining < dj.Manual
 end

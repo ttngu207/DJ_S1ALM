@@ -42,9 +42,9 @@ early_lick_flag_presample_onwards = sum(action_event_time >= presample_t & actio
 early_lick_flag_sample_onwards = sum(action_event_time >= sample_t & action_event_time <= go_t); %if the flag has other elements than 0 - it means that there was an ealy licka
 
 if early_lick_flag_presample_onwards >0 && early_lick_flag_sample_onwards==0
-    early_lick ='early lick, presample only'; %in the presample only
+    early_lick ='early, presample only'; %in the presample only
 elseif early_lick_flag_sample_onwards >0
-    early_lick ='early lick'; %in the sample or delay
+    early_lick ='early'; %in the sample or delay
 else
     early_lick ='no early';
 end
