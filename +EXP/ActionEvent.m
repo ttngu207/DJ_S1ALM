@@ -6,5 +6,9 @@ action_event_time           : decimal(8,4)                  # (s) from trial sta
 %}
 
 
-classdef ActionEvent < dj.Manual
+classdef ActionEvent < dj.Imported
+     methods(Access=protected)
+        function makeTuples(self, key)
+        end
+    end
 end

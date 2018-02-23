@@ -8,5 +8,9 @@ duration                    : decimal(8,4)                  # (s)
 %}
 
 
-classdef TrialEvent < dj.Manual
+classdef TrialEvent < dj.Imported
+     methods(Access=protected)
+        function makeTuples(self, key)
+        end
+    end
 end

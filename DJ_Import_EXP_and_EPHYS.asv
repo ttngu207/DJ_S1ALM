@@ -11,6 +11,7 @@ DJconnect; %connect to the database using stored user credentials
 temp=fetchn(EXP.Session,'session_id');
 if ~isempty(temp)
     session_id=temp(end);
+    del(EPHYS.ElectrodeGroup & session_id)
     del(EXP.Session & session_id)
 end
 
@@ -21,11 +22,13 @@ if isempty(fetch(EXP.Photostim))
     x = linspace(0,pi,100);
     waveform = repmat( sin(x),1,4); %plot([1:1:400],waveform)
     insert(EXP.Photostim, {'LaserGem473', 1, 0.4, waveform} );
+    insert(EXP.PhotostimLocation, {'LaserGem473', 1, 'left', 'vS1', 'Bregma',-3500,-1300,0,NaN,NaN} );
     
     % mini stim
     x = linspace(0,pi,100);
     waveform = sin(x); %plot([1:1:100],waveform)
     insert(EXP.Photostim, {'LaserGem473', 2, 0.1, waveform} );
+    insert(EXP.PhotostimLocation, {'LaserGem473', 2, 'left', 'vS1', 'Bregma',-3500,-1300,0, NaN, NaN} );
 end
 
 %% Insert/Populate Sessions and dependent tables
@@ -58,6 +61,7 @@ for iFile = 1:1:numel (allFileNames)
         end
         
         key.session = currentSession;
+        
         %% Insert Session
         insert(EXP.Session, {currentSubject_id, currentSession, numel(exisitingSession)+1, currentSessionDate, 'ars','ephys'} );
         
@@ -67,7 +71,7 @@ for iFile = 1:1:numel (allFileNames)
         % EPHYS.Probe
         inserti(EPHYS.Probe, {obj.probeName , obj.probeType, ''}); %ignores duplicates
         
-         % EPHYS.ElectrodeGroup
+        % EPHYS.ElectrodeGroup
         insert(EPHYS.ElectrodeGroup, {currentSubject_id, currentSession, 1,obj.probeName  }); %shank 1 (left)
         insert(EPHYS.ElectrodeGroup, {currentSubject_id, currentSession, 2,obj.probeName  }); %shank 2 (right)
         
@@ -75,17 +79,18 @@ for iFile = 1:1:numel (allFileNames)
         ml = -(obj.position_ML);
         ap = obj.position_AP;
         dv = obj.depth;
-
-        insert(EPHYS.ElectrodeGroupPosition, {currentSubject_id, currentSession, 1, 'manipulator','Bregma', ml, ap, dv  }); %shank 1
-        insert(EPHYS.ElectrodeGroupPosition, {currentSubject_id, currentSession, 2, 'manipulator','Bregma', ml + 250, ap, dv  }); %shank 1
-
-        manipulator
+        
+        insert(EPHYS.ElectrodeGroupPosition, {currentSubject_id, currentSession, 1, 'manipulator','Bregma', ml, ap, dv,NaN,NaN  }); %shank 1
+        insert(EPHYS.ElectrodeGroupPosition, {currentSubject_id, currentSession, 2, 'manipulator','Bregma', ml + 250, ap, dv,NaN,NaN  }); %shank 1
+        
+        % Unit
+        populate(EPHYS.Unit)
+        
         % EXP.TaskTraining
         data_TaskTraining = Ingest_EXP_TaskTraining (obj, key);
         
+        %% Insert Trial-based data
         
-       %% Insert Trial-based data
-
         
         %initializing
         [data_SessionTrial] = fn_EmptyStruct ('EXP.SessionTrial');
@@ -143,15 +148,16 @@ for iFile = 1:1:numel (allFileNames)
         
         insert(EXP.SessionTrial, data_SessionTrial);
         insert(EXP.BehaviorTrial, data_BehaviorTrial);
-        insert(EXP.TaskTraining, data_TaskTraining);
+        insert(EXP.TaskAndTraining, data_TaskTraining);
         insert(EXP.ActionEvent, data_ActionEvent);
         insert(EXP.TrialEvent, data_TrialEvent);
-        insert(EXP.S1PhotostimTrial, data_S1PhotostimTrial);
+        insert(EXP_S.S1PhotostimTrial, data_S1PhotostimTrial);
         insert(EXP.PhotostimTrial, data_PhotostimTrial);
         insert(EXP.PhotostimTrialEvent, data_PhotostimTrialEvent);
         insert(EXP.Tracking, data_Tracking);
-                
+        
         clear obj;
         toc
     end
+    populate(EXP.PassivePhotostimTrial);
 end

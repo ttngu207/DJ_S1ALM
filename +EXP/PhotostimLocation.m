@@ -13,8 +13,5 @@ photostim_ap_angle = null              : decimal(8,3)       # Angle between the 
 %}
 
 
-classdef PhotostimLocation < dj.Part
-    properties(SetAccess=protected)
-        master= EXP.Photostim
-    end
+classdef PhotostimLocation < dj.Manual
 end

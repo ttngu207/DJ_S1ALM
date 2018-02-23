@@ -7,9 +7,9 @@ offset = - 4.2;
 all_stim_onsets = cellfun(@str2num,regexp(trial_type_name,'\d*','Match'));
 if ~isempty(all_stim_onsets) %if there is no stimulation (neither stim nor distractor)
     
-      data_PhotostimTrial (end+1) = struct(...
-            'subject_id',  key.subject_id, 'session', key.session, 'trial', iTrials);
-
+    data_PhotostimTrial (end+1) = struct(...
+        'subject_id',  key.subject_id, 'session', key.session, 'trial', iTrials);
+    
     for iStim = 1:length(all_stim_onsets) % loop through the stimulation onsets
         onset = (all_stim_onsets(iStim))/1000 + offset;
         power = obj.laser_power.stimulus.pow(iTrials);

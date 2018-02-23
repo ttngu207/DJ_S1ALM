@@ -1,7 +1,7 @@
 %{
 # Estimated unit position in the brain
 -> EPHYS.Unit
--> EPHYS.CFAnnotationType
+-> CCF.CFAnnotationType
 ---                         
 -> LAB.Hemisphere            
 -> LAB.BrainArea            

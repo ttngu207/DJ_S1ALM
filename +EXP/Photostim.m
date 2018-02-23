@@ -8,5 +8,9 @@ waveform                               : longblob           # normalized to maxi
 %}
 
 
-classdef Photostim < dj.Manual
+classdef Photostim < dj.Imported
+     methods(Access=protected)
+        function makeTuples(self, key)
+        end
+    end
 end

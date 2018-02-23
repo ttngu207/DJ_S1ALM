@@ -8,8 +8,9 @@ start_time                  : decimal(8,4)                  # (s) % relative to 
 %}
 
 
-classdef SessionTrial < dj.Part
-    properties(SetAccess=protected)
-        master= EXP.Session
+classdef SessionTrial < dj.Imported
+    methods(Access=protected)
+        function makeTuples(self, key)
+        end
     end
 end
