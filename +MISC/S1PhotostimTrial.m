@@ -3,8 +3,8 @@
 -> EXP.SessionTrial
 stim_num                      : tinyint     # resets for every trial
 -----
--> EXP_S1.S1StimType
--> EXP_S1.S1StimPowerType
+-> MISC.S1StimType
+-> MISC.S1StimPowerType
 onset = null             : double      # onset of the stimulation relative to the go-cue (s); None for no-stim trials
 power = null             : double      # laser power (mW)
 duration = null          : double      # total stimulation duration (s)

@@ -7,12 +7,14 @@ dir_video = 'Z:\users\Arseny\Projects\SensoryInput\SiProbeRecording\RawData\vide
 
 DJconnect; %connect to the database using stored user credentials
 
-% del(EXP.Session) % for DEBUG
-temp=fetchn(EXP.Session,'session_id');
-if ~isempty(temp)
-    session_id=temp(end);
-    del(EPHYS.ElectrodeGroup & session_id)
-    del(EXP.Session & session_id)
+% for DEBUG
+EXP.Session
+populate(MISC.SessionID)
+temp_key=fetch(MISC.SessionID);
+if ~isempty(temp_key)
+    temp_key=temp_key(end);
+    del(EPHYS.ElectrodeGroup & temp_key)
+    del(EXP.Session & temp_key)
 end
 
 %% Initialize some tables
@@ -63,7 +65,7 @@ for iFile = 1:1:numel (allFileNames)
         key.session = currentSession;
         
         %% Insert Session
-        insert(EXP.Session, {currentSubject_id, currentSession, numel(exisitingSession)+1, currentSessionDate, 'ars','ephys'} );
+        insert(EXP.Session, {currentSubject_id, currentSession, currentSessionDate, 'ars','ephys'} );
         
         %% Load Obj
         obj = EXP.getObj (key);
@@ -97,7 +99,7 @@ for iFile = 1:1:numel (allFileNames)
         [data_ActionEvent] = fn_EmptyStruct ('EXP.ActionEvent');
         [data_TrialEvent] = fn_EmptyStruct ('EXP.TrialEvent');
         [data_BehaviorTrial] = fn_EmptyStruct ('EXP.BehaviorTrial');
-        [data_S1PhotostimTrial] = fn_EmptyStruct ('EXP_S1.S1PhotostimTrial');
+        [data_S1PhotostimTrial] = fn_EmptyStruct ('MISC.S1PhotostimTrial');
         [data_PhotostimTrial] = fn_EmptyStruct ('EXP.PhotostimTrial');
         [data_PhotostimTrialEvent] = fn_EmptyStruct ('EXP.PhotostimTrialEvent');
         [data_Tracking] = fn_EmptyStruct ('EXP.Tracking');
@@ -151,7 +153,7 @@ for iFile = 1:1:numel (allFileNames)
         insert(EXP.TaskAndTraining, data_TaskTraining);
         insert(EXP.ActionEvent, data_ActionEvent);
         insert(EXP.TrialEvent, data_TrialEvent);
-        insert(EXP_S1.S1PhotostimTrial, data_S1PhotostimTrial);
+        insert(MISC.S1PhotostimTrial, data_S1PhotostimTrial);
         insert(EXP.PhotostimTrial, data_PhotostimTrial);
         insert(EXP.PhotostimTrialEvent, data_PhotostimTrialEvent);
         insert(EXP.Tracking, data_Tracking);
@@ -159,5 +161,5 @@ for iFile = 1:1:numel (allFileNames)
         clear obj;
         toc
     end
-    populate(EXP.PassivePhotostimTrial);
+%     populate(EXP.PassivePhotostimTrial);
 end
