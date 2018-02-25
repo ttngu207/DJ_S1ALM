@@ -1,7 +1,7 @@
 function obj = getSchema
 persistent schemaObject
 if isempty(schemaObject)
-    schemaObject = dj.Schema(dj.conn, 'CCF', 'arseny_ccf');
+    schemaObject = dj.Schema(dj.conn, 'CF', 'arseny_cf');
 end
 obj = schemaObject;
 end

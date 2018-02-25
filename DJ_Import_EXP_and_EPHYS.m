@@ -1,4 +1,4 @@
-function DJ_Import_EXP
+function DJ_Import_EXP_and_EPHYS
 close all; clear all;
 
 global dir_data
@@ -6,6 +6,11 @@ dir_data = 'Z:\users\Arseny\Projects\SensoryInput\SiProbeRecording\ProcessedData
 dir_video = 'Z:\users\Arseny\Projects\SensoryInput\SiProbeRecording\RawData\video\';
 
 DJconnect; %connect to the database using stored user credentials
+%Initialize
+EXP.SessionComment;
+EXP.PassivePhotostimTrial
+EPHYS.LabeledTrack;
+EXP.PhotostimProfile;
 
 % for DEBUG
 EXP.Session
@@ -97,7 +102,7 @@ for iFile = 1:1:numel (allFileNames)
         %initializing
         [data_SessionTrial] = fn_EmptyStruct ('EXP.SessionTrial');
         [data_ActionEvent] = fn_EmptyStruct ('EXP.ActionEvent');
-        [data_TrialEvent] = fn_EmptyStruct ('EXP.TrialEvent');
+        [data_TrialEvent] = fn_EmptyStruct ('EXP.BehaviorTrialEvent');
         [data_BehaviorTrial] = fn_EmptyStruct ('EXP.BehaviorTrial');
         [data_S1PhotostimTrial] = fn_EmptyStruct ('MISC.S1PhotostimTrial');
         [data_PhotostimTrial] = fn_EmptyStruct ('EXP.PhotostimTrial');
@@ -152,7 +157,7 @@ for iFile = 1:1:numel (allFileNames)
         insert(EXP.BehaviorTrial, data_BehaviorTrial);
         insert(EXP.TaskAndTraining, data_TaskTraining);
         insert(EXP.ActionEvent, data_ActionEvent);
-        insert(EXP.TrialEvent, data_TrialEvent);
+        insert(EXP.BehaviorTrialEvent, data_TrialEvent);
         insert(MISC.S1PhotostimTrial, data_S1PhotostimTrial);
         insert(EXP.PhotostimTrial, data_PhotostimTrial);
         insert(EXP.PhotostimTrialEvent, data_PhotostimTrialEvent);

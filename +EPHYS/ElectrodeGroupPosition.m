@@ -1,7 +1,7 @@
 %{
 #
 -> EPHYS.ElectrodeGroup
--> CCF.CFAnnotationType
+-> CF.CFAnnotationType
 ---
 -> LAB.SkullReference
 ml_location= null            : decimal(8,3)                  # um from ref ; right is positive; based on manipulator coordinates/reconstructed track

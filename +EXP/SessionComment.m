@@ -1,8 +1,9 @@
 %{
 # 
--> LAB.Session
+-> EXP.Session
+session_comment :  varchar(767)
 ---
-comment_session :  varchar(4000)
+session_comment_long =null :  varchar(4000)
 
 %}
 
