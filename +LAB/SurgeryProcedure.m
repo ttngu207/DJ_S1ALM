@@ -3,8 +3,6 @@
 -> LAB.Surgery
 procedure_id                : int                           # 
 ---
--> LAB.Hemisphere            
--> LAB.BrainArea     
 -> LAB.SkullReference
 ml_location= null           : decimal(8,3)                  # um from ref right; is positive
 ap_location= null           : decimal(8,3)                  # um from ref anterior; is positive

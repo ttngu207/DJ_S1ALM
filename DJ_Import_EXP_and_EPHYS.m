@@ -6,20 +6,18 @@ dir_data = 'Z:\users\Arseny\Projects\SensoryInput\SiProbeRecording\ProcessedData
 dir_video = 'Z:\users\Arseny\Projects\SensoryInput\SiProbeRecording\RawData\video\';
 
 DJconnect; %connect to the database using stored user credentials
+erd LAB MISC EXP EPHYS CF
 %Initialize
 EXP.SessionComment;
 EXP.PassivePhotostimTrial
 EPHYS.LabeledTrack;
 EXP.PhotostimProfile;
 
-% for DEBUG
-EXP.Session
-populate(MISC.SessionID)
+%% for DEBUG
 temp_key=fetch(MISC.SessionID);
 if ~isempty(temp_key)
     temp_key=temp_key(end);
-    del(EPHYS.ElectrodeGroup & temp_key)
-    del(EXP.Session & temp_key)
+   del(EXP.Session & temp_key)
 end
 
 %% Initialize some tables
@@ -74,24 +72,6 @@ for iFile = 1:1:numel (allFileNames)
         
         %% Load Obj
         obj = EXP.getObj (key);
-        
-        % EPHYS.Probe
-        inserti(EPHYS.Probe, {obj.probeName , obj.probeType, ''}); %ignores duplicates
-        
-        % EPHYS.ElectrodeGroup
-        insert(EPHYS.ElectrodeGroup, {currentSubject_id, currentSession, 1,obj.probeName  }); %shank 1 (left)
-        insert(EPHYS.ElectrodeGroup, {currentSubject_id, currentSession, 2,obj.probeName  }); %shank 2 (right)
-        
-        % EPHYS.ElectrodeGroupPosition
-        ml = -(obj.position_ML);
-        ap = obj.position_AP;
-        dv = obj.depth;
-        
-        insert(EPHYS.ElectrodeGroupPosition, {currentSubject_id, currentSession, 1, 'manipulator','Bregma', ml, ap, dv,NaN,NaN  }); %shank 1
-        insert(EPHYS.ElectrodeGroupPosition, {currentSubject_id, currentSession, 2, 'manipulator','Bregma', ml + 250, ap, dv,NaN,NaN  }); %shank 1
-        
-        % Unit
-        populate(EPHYS.Unit)
         
         % EXP.TaskTraining
         data_TaskTraining = Ingest_EXP_TaskTraining (obj, key);
@@ -163,8 +143,28 @@ for iFile = 1:1:numel (allFileNames)
         insert(EXP.PhotostimTrialEvent, data_PhotostimTrialEvent);
         insert(EXP.Tracking, data_Tracking);
         
+        
+        %% Insert Ephys data
+                % EPHYS.Probe
+        inserti(EPHYS.Probe, {obj.probeName , obj.probeType, ''}); %ignores duplicates
+        
+        % EPHYS.ElectrodeGroup
+        insert(EPHYS.ElectrodeGroup, {currentSubject_id, currentSession, 1,obj.probeName  }); %shank 1 (left)
+        insert(EPHYS.ElectrodeGroup, {currentSubject_id, currentSession, 2,obj.probeName  }); %shank 2 (right)
+        
+        % EPHYS.ElectrodeGroupPosition
+        ml = -(obj.position_ML);
+        ap = obj.position_AP;
+        dv = obj.depth;
+        
+        insert(EPHYS.ElectrodeGroupPosition, {currentSubject_id, currentSession, 1, 'manipulator','Bregma', ml, ap, dv,NaN,NaN  }); %shank 1
+        insert(EPHYS.ElectrodeGroupPosition, {currentSubject_id, currentSession, 2, 'manipulator','Bregma', ml + 250, ap, dv,NaN,NaN  }); %shank 1
+        
+        % Unit
+        populate(EPHYS.Unit)
+        populate(MISC.SessionID);
         clear obj;
         toc
     end
-%     populate(EXP.PassivePhotostimTrial);
+    %     populate(EXP.PassivePhotostimTrial);
 end

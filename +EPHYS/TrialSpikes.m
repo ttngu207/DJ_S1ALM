@@ -7,12 +7,10 @@ spike_times                 : longblob                      #(s) spike times for
 
 
 classdef TrialSpikes < dj.Imported
-    
     methods(Access=protected)
-        
         function makeTuples(self, key)
 %             key =rmfield(key,'trial_id');
-%             obj = s1.getObj(key);
+               obj = getObj(key);
 %             key_child = key;
 %             tuples = [];
 %             % Extracting spikes corresponding to this trial only

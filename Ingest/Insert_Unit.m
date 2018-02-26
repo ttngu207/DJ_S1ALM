@@ -17,3 +17,5 @@ key.waveform = obj.eventSeriesHash.value{iUnits}.waveforms;
 self.insert(key);
 
 makeTuples(EPHYS.UnitPosition, key_child, obj, iUnits)
+makeTuples(EPHYS.UnitTrial, key_child, obj, iUnits)
+

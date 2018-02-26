@@ -3,8 +3,6 @@
 -> EXP.Session
 session_comment :  varchar(767)
 ---
-session_comment_long =null :  varchar(4000)
-
 %}
 
 
