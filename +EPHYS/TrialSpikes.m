@@ -1,36 +1,30 @@
 %{
 #
--> EPHYS.UnitTrial
+-> EPHYS.Unit
+-> EXP.SessionTrial
 ---
 spike_times                 : longblob                      #(s) spike times for each trial (relative to the beginning of the trial)
 %}
 
 
 classdef TrialSpikes < dj.Imported
-    methods(Access=protected)
+ 
+    methods (Access=protected)
         function makeTuples(self, key)
-%             key =rmfield(key,'trial_id');
-               obj = getObj(key);
-%             key_child = key;
-%             tuples = [];
-%             % Extracting spikes corresponding to this trial only
-%             unit_num = fetch1(s1.UnitExtracel & key,'unit_num');
-%             trial_num = fetchn(s1.Trial & key,'trial_num');
-%             trial_id = fetchn(s1.Trial & key,'trial_id');
-% 
-%             spikes = obj.eventSeriesHash.value{unit_num}.eventTimes; %all spikes for this unit
-%             spikeTrials = obj.eventSeriesHash.value{unit_num}.eventTrials; % trial number during which each spike was recorded
-%             
-%             for iTrial = 1:1:numel(trial_num)
-%                 % take only spikes corresponding to this trial
-%                 key_child.spike_times = spikes(spikeTrials == trial_num(iTrial));
-%                 key_child.trial_id = trial_id(iTrial);
-%                 tuples = [tuples; key_child];
+%             unit_trials = obj.eventSeriesHash.value{iUnits}.eventTrials(1):1:obj.eventSeriesHash.value{iUnits}.eventTrials(end);
+%             key=repmat(key,1,numel(unit_trials));
+%             unit_trials_temp = num2cell(unit_trials);
+%             [key(:).trial] = unit_trials_temp{:};
+%             insert(self,key);
+%             counter =1;
+%             for iTrials=unit_trials
+%                 ix = find (obj.eventSeriesHash.value{iUnits}.eventTrials==iTrials);
+%                 presample_t=obj.trialPropertiesHash.value{1}(iTrials);
+%                 spike_times {counter} =  obj.eventSeriesHash.value{iUnits}.eventTimes(ix) + presample_t;
+%                 counter=counter+1;
 %             end
-%             
-%             % insert the key into self
-%             self.insert(tuples)
+%             [key(:).spike_times] = spike_times{:};
+%             insert(EPHYS.TrialSpikes,key);
         end
     end
-    
 end

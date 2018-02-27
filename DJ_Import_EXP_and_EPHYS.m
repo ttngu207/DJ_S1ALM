@@ -12,6 +12,8 @@ EXP.SessionComment;
 EXP.PassivePhotostimTrial
 EPHYS.LabeledTrack;
 EXP.PhotostimProfile;
+EPHYS.UnitCellType;
+EPHYS.UnitComment;
 
 %% for DEBUG
 temp_key=fetch(MISC.SessionID);
@@ -145,7 +147,7 @@ for iFile = 1:1:numel (allFileNames)
         
         
         %% Insert Ephys data
-                % EPHYS.Probe
+        % EPHYS.Probe
         inserti(EPHYS.Probe, {obj.probeName , obj.probeType, ''}); %ignores duplicates
         
         % EPHYS.ElectrodeGroup
