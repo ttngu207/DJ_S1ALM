@@ -27,3 +27,20 @@ field = [f.subject_id];
 % f = c.fetch('*');
 
 % draw(dj.ERD(EXP.Session)+1-1+1-1 +1-1)
+
+
+%Defining a public method fill
+classdef TestTrialSpikes < dj.Imported
+    methods (Access=protected)
+        function makeTuples(self, key)
+        end
+    end
+     methods (Access=public)
+        function fill(self, key)
+            a=1
+        end
+    end
+end
+
+%calling the method fill
+fill(EPHYS.TestTrialSpikes,1)

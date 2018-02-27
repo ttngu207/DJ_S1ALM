@@ -16,16 +16,15 @@ go_t = obj.trialPropertiesHash.value{3}(iTrials);
 chirp1_t = obj.trialPropertiesHash.value{4}(iTrials);
 chirp2_t = obj.trialPropertiesHash.value{5}(iTrials);
 sample_t = obj.trialPropertiesHash.value{8}(iTrials);
-ephys_t = obj.trialPropertiesHash.value{9}(iTrials);
 
 presample_dur = chirp1_t - presample_t;
 sample_dur = chirp2_t-sample_t;
 delay_dur = go_t - delay_t;
 
 
-trial_event_type ={'ephys rec. trigger'; 'presample'; 'sample-start chirp'; 'sample'; 'sample-end chirp'; 'delay'; 'go'};
-trial_event_time = [ephys_t; presample_t; chirp1_t; sample_t; chirp2_t; delay_t; go_t];
-duration = [0; presample_dur; chirp_dur; sample_dur; chirp_dur; delay_dur; go_dur];
+trial_event_type ={'presample'; 'sample-start chirp'; 'sample'; 'sample-end chirp'; 'delay'; 'go'};
+trial_event_time = [presample_t; chirp1_t; sample_t; chirp2_t; delay_t; go_t];
+duration = [presample_dur; chirp_dur; sample_dur; chirp_dur; delay_dur; go_dur];
 
 for iTrialEvent=1:1:numel(trial_event_time)
     data_TrialEvent (end+1) = struct(...

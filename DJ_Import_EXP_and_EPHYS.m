@@ -76,7 +76,7 @@ for iFile = 1:1:numel (allFileNames)
         obj = EXP.getObj (key);
         
         % EXP.TaskTraining
-        data_TaskTraining = Ingest_EXP_TaskTraining (obj, key);
+        [data_SessionTask, data_SessionTraining] = Ingest_EXP_TaskTraining (obj, key);
         
         %% Insert Trial-based data
         
@@ -137,7 +137,8 @@ for iFile = 1:1:numel (allFileNames)
         
         insert(EXP.SessionTrial, data_SessionTrial);
         insert(EXP.BehaviorTrial, data_BehaviorTrial);
-        insert(EXP.TaskAndTraining, data_TaskTraining);
+        insert(EXP.SessionTask, data_SessionTask);
+        insert(EXP.SessionTraining, data_SessionTraining);
         insert(EXP.ActionEvent, data_ActionEvent);
         insert(EXP.BehaviorTrialEvent, data_TrialEvent);
         insert(MISC.S1PhotostimTrial, data_S1PhotostimTrial);
