@@ -5,8 +5,9 @@ unit  : smallint
 ---
 -> EPHYS.UnitQualityType
 unit_channel    = null      : float     # channel on the probe for each the unit has the largest amplitude (verify that its based on amplitude or other feature)
-waveform_ms                 : blob      # unit average waveform, in ms
+waveform                    : blob      # unit average waveform, in samples
 spk_width_ms                : float     # unit average spike width, in ms
+sampling_fq                 :float      # Hz
 %}
 
 

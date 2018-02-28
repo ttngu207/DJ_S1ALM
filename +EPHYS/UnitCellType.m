@@ -13,7 +13,7 @@ classdef UnitCellType < dj.Imported
             
             spk_width_ms = fetchn(EPHYS.Unit & key , 'spk_width_ms');
             
-            if isempty(fetchn(EPHYS.UnitComment & key , 'unit_comment'))
+            if isempty(fetchn(MISC.UnitWaveformComment & key , 'unit_comment'))
                 if spk_width_ms >=0.6
                     cell_type = 'Putative pyramidal';
                 elseif spk_width_ms < 0.45

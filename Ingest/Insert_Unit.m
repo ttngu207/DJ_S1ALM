@@ -17,16 +17,17 @@ key.unit_channel = unit_channel;
 
 
 waveform = -1*mean(obj.eventSeriesHash.value{iUnits}.waveforms, 1);
-[~,spk_width,wave_ms] =  fn_spike_width(waveform);
+[wav,spk_width,~] =  fn_spike_width(waveform);
 
-key.waveform_ms = wave_ms;
+key.waveform = wav;
 key.spk_width_ms = spk_width;
+key.sampling_fq = 25000;
 self.insert(key);
 
 if numel(waveform)==123
     key_comments=key_child;
-    key_comments.unit_comment ='waveform old filter format';
-    insert(EPHYS.UnitComment,key_comments);
+    key_comments.unit_waveform_comment ='waveform old filter format';
+    insert(MISC.UnitWaveformComment,key_comments);
 end
 
 %Inserting UnitPosition

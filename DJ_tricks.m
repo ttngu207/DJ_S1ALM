@@ -9,7 +9,7 @@ te_gc = struct2cell(fetch(EXP.TrialEvent & 'trial_event_type="go"','*'));
 c = (EXP.BehaviorTrialEvent ) * (EXP.BehaviorTrial & 'early_lick="no early"')  * (EXP.ActionEvent)   ;
 f = c.fetch('*');
 field = [f.subject_id];
-
+field = {f.subject_id};
 % field = cell2mat({f.subject_id});
 
 % usefull commands: inserti  insertreplace
