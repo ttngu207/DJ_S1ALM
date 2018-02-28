@@ -11,7 +11,7 @@ classdef CellType < dj.Lookup
         contents = {
             'Putative pyramidal' ''
             'FS' 'fast spiking'
-            'not classified' 'intermediate spike-width that falls between spike-width thresholds for FS or Putative pyramidal cells'
+            'not classified' 'cells with intermediate spike-width that fell between spike-width thresholds FS and Pyramidal thresholds'
             }
     end
 end

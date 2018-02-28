@@ -14,8 +14,20 @@ elseif quality ==2
 end
 
 key.unit_channel = unit_channel;
-key.waveform = obj.eventSeriesHash.value{iUnits}.waveforms;
+
+
+waveform = -1*mean(obj.eventSeriesHash.value{iUnits}.waveforms, 1);
+[~,spk_width,wave_ms] =  fn_spike_width(waveform);
+
+key.waveform_ms = wave_ms;
+key.spk_width_ms = spk_width;
 self.insert(key);
+
+if numel(waveform)==123
+    key_comments=key_child;
+    key_comments.unit_comment ='waveform old filter format';
+    insert(EPHYS.UnitComment,key_comments);
+end
 
 %Inserting UnitPosition
 makeTuples(EPHYS.UnitPosition, key_child, obj, iUnits);
@@ -30,8 +42,10 @@ unit_trials_temp = num2cell(unit_trials);
 counter =1;
 for iTrials=unit_trials
     ix = find (obj.eventSeriesHash.value{iUnits}.eventTrials==iTrials);
-    presample_t=obj.trialPropertiesHash.value{1}(iTrials);
-    spike_times {counter} =  obj.eventSeriesHash.value{iUnits}.eventTimes(ix) + presample_t;
+    wave_t = obj.trialPropertiesHash.value{1}(iTrials);
+    ephys_t = wave_t - obj.presampleStartTimes_relative_to_trial(iTrials);
+    presample_t = obj.presampleStartTimes_relative_to_trial(iTrials);
+    spike_times {counter} =  obj.eventSeriesHash.value{iUnits}.eventTimes(ix) + presample_t +ephys_t;
     counter=counter+1;
 end
 [key_child(:).spike_times] = spike_times{:};

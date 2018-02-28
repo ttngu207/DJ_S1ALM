@@ -14,13 +14,14 @@ EPHYS.LabeledTrack;
 EXP.PhotostimProfile;
 EPHYS.UnitCellType;
 EPHYS.UnitComment;
+EPHYS.UnitSpikes;
 
 %% for DEBUG
-temp_key=fetch(MISC.SessionID);
-if ~isempty(temp_key)
-    temp_key=temp_key(end);
-   del(EXP.Session & temp_key)
-end
+% del_key=fetch(MISC.SessionID);
+% if ~isempty(del_key)
+%     del_key=del_key(end);
+%     del(EXP.Session & del_key)
+% end
 
 %% Initialize some tables
 
@@ -56,13 +57,16 @@ for iFile = 1:1:numel (allFileNames)
     
     key.subject_id = currentSubject_id;  key.session_date = currentSessionDate;
     
+    key_test.subject_id = currentSubject_id;  key_test.session_date = currentSessionDate;
     % Insert a session (and all the dependent tables) only if the animalXsession combination doesn't exist
-    if isempty( fetch(EXP.Session & key))
+    if isempty( fetch(EXP.Session & key_test))
         
         currentFileName
         
         if  sum(currentSubject_id == exisitingSubject_id)>0 % test if to restart the session numbering
-            currentSession = numel(fetchn(EXP.Session & sprintf('subject_id = %d',key.subject_id),'session')) + 1;
+            temp_key.subject_id = key.subject_id;
+            s_n = fetchn(EXP.Session & temp_key,'session');
+            currentSession = s_n(end) + 1;
         else
             currentSession =1;
         end
@@ -71,6 +75,7 @@ for iFile = 1:1:numel (allFileNames)
         
         %% Insert Session
         insert(EXP.Session, {currentSubject_id, currentSession, currentSessionDate, 'ars','ephys'} );
+        populate(MISC.SessionID);
         
         %% Load Obj
         obj = EXP.getObj (key);
@@ -110,7 +115,7 @@ for iFile = 1:1:numel (allFileNames)
             [data_ActionEvent, action_event_time]  = Ingest_EXP_ActionEvent (obj, key, iTrials, data_ActionEvent);
             
             % EXP.TrialEvent
-            [data_TrialEvent, early_lick, trial_note_type ]  = Ingest_EXP_TrialEvent (obj, key, iTrials, data_TrialEvent, action_event_time);
+            [data_TrialEvent, early_lick, trial_note_type ]  = Ingest_EXP_TrialEvent (obj, key, iTrials, data_TrialEvent, action_event_time, currentFileName);
             
             % EXP.BehaviorTrial
             data_BehaviorTrial = Ingest_EXP_BehaviorTrial (obj, key, iTrials, data_BehaviorTrial, early_lick);
@@ -146,26 +151,27 @@ for iFile = 1:1:numel (allFileNames)
         insert(EXP.PhotostimTrialEvent, data_PhotostimTrialEvent);
         insert(EXP.Tracking, data_Tracking);
         
-        
-        %% Insert Ephys data
-        % EPHYS.Probe
-        inserti(EPHYS.Probe, {obj.probeName , obj.probeType, ''}); %ignores duplicates
-        
-        % EPHYS.ElectrodeGroup
-        insert(EPHYS.ElectrodeGroup, {currentSubject_id, currentSession, 1,obj.probeName  }); %shank 1 (left)
-        insert(EPHYS.ElectrodeGroup, {currentSubject_id, currentSession, 2,obj.probeName  }); %shank 2 (right)
-        
-        % EPHYS.ElectrodeGroupPosition
-        ml = -(obj.position_ML);
-        ap = obj.position_AP;
-        dv = obj.depth;
-        
-        insert(EPHYS.ElectrodeGroupPosition, {currentSubject_id, currentSession, 1, 'manipulator','Bregma', ml, ap, dv,NaN,NaN  }); %shank 1
-        insert(EPHYS.ElectrodeGroupPosition, {currentSubject_id, currentSession, 2, 'manipulator','Bregma', ml + 250, ap, dv,NaN,NaN  }); %shank 1
-        
-        % Unit
-        populate(EPHYS.Unit)
-        populate(MISC.SessionID);
+        if strcmp(currentFileName(1:4),'data') %insert neuro data unless it's a behavior-only object
+            
+            %% Insert Ephys data
+            % EPHYS.Probe
+            inserti(EPHYS.Probe, {obj.probeName , obj.probeType, ''}); %ignores duplicates
+            
+            % EPHYS.ElectrodeGroup
+            insert(EPHYS.ElectrodeGroup, {currentSubject_id, currentSession, 1,obj.probeName  }); %shank 1 (left)
+            insert(EPHYS.ElectrodeGroup, {currentSubject_id, currentSession, 2,obj.probeName  }); %shank 2 (right)
+            
+            % EPHYS.ElectrodeGroupPosition
+            ml = -(obj.position_ML);
+            ap = obj.position_AP;
+            dv = obj.depth;
+            
+            insert(EPHYS.ElectrodeGroupPosition, {currentSubject_id, currentSession, 1, 'manipulator','Bregma', ml, ap, dv,NaN,NaN  }); %shank 1
+            insert(EPHYS.ElectrodeGroupPosition, {currentSubject_id, currentSession, 2, 'manipulator','Bregma', ml + 250, ap, dv,NaN,NaN  }); %shank 1
+            
+            % Unit
+            populate(EPHYS.Unit)
+        end
         clear obj;
         toc
     end

@@ -15,7 +15,15 @@ end
 if ~strcmp(key, 'clear')
     hash = strjoin(cellfun(@(k) sprintf('%g', key.(k)), pkey, 'uni', false), '-');
     if ~store.isKey(hash)
-        s = load([dir_data 'data_structure_anm' num2str(fetch1(EXP.Session & key, 'subject_id')) '_' fetch1(EXP.Session & key, 'session_date') '.mat']);
+        
+        file_name1 =['data_structure_anm' num2str(fetch1(EXP.Session & key, 'subject_id')) '_' fetch1(EXP.Session & key, 'session_date') '.mat'];
+        file_name2 =['behv_structure_anm' num2str(fetch1(EXP.Session & key, 'subject_id')) '_' fetch1(EXP.Session & key, 'session_date') '.mat'];
+        
+        if exist([dir_data file_name1], 'file') == 2
+            s = load([dir_data file_name1]);
+        elseif exist([dir_data file_name2], 'file') == 2
+            s = load([dir_data file_name2]);
+        end
         store(hash) = s.obj;
     end
     obj = store(hash);

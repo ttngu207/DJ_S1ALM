@@ -4,8 +4,9 @@
 unit  : smallint
 ---
 -> EPHYS.UnitQualityType
-waveform : blob    # unit average waveform, each point corresponds to a sample. (what are the amplitude units?)  To convert into time use the sampling_frequency.
-unit_channel    = null      : float                      # channel on the probe for each the unit has the largest amplitude (verify that its based on amplitude or other feature)
+unit_channel    = null      : float     # channel on the probe for each the unit has the largest amplitude (verify that its based on amplitude or other feature)
+waveform_ms                 : blob      # unit average waveform, in ms
+spk_width_ms                : float     # unit average spike width, in ms
 %}
 
 
