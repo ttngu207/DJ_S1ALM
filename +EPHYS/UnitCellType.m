@@ -13,25 +13,25 @@ classdef UnitCellType < dj.Imported
             
             spk_width_ms = fetchn(EPHYS.Unit & key , 'spk_width_ms');
             
-            if isempty(fetchn(MISC.UnitWaveformComment & key , 'unit_comment'))
+            if isempty(fetchn(MISC.UnitWaveformComment & key , 'unit_waveform_comment'))
                 if spk_width_ms >=0.6
-                    cell_type = 'Putative pyramidal';
+                    key.cell_type = 'Pyr';
                 elseif spk_width_ms < 0.45
-                    cell_type = 'FS';
+                    key.cell_type = 'FS';
                 else
-                    cell_type = 'not classified';
+                    key.cell_type = 'not classified';
                 end
                 
             else
                 if spk_width_ms >=0.59
-                    cell_type = 'Putative pyramidal';
+                    key.cell_type = 'Pyr';
                 elseif spk_width_ms < 0.4
-                    cell_type = 'FS';
+                    key.cell_type = 'FS';
                 else
-                    cell_type = 'not classified';
+                    key.cell_type = 'not classified';
                 end
             end
-            
+            insert(self,key);
         end
     end
 end

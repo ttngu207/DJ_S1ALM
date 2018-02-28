@@ -175,5 +175,6 @@ for iFile = 1:1:numel (allFileNames)
         clear obj;
         toc
     end
+    populate(EPHYS.UnitCellType);
     %     populate(EXP.PassivePhotostimTrial);
 end
