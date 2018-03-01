@@ -17,11 +17,11 @@ EPHYS.UnitComment;
 EPHYS.UnitSpikes;
 
 %% for DEBUG
-% del_key=fetch(MISC.SessionID);
-% if ~isempty(del_key)
-%     del_key=del_key(end);
-%     del(EXP.Session & del_key)
-% end
+del_key=fetch(MISC.SessionID);
+if ~isempty(del_key)
+    del_key=del_key(end);
+    del(EXP.Session & del_key)
+end
 
 %% Initialize some tables
 
@@ -94,6 +94,7 @@ for iFile = 1:1:numel (allFileNames)
         [data_S1PhotostimTrial] = fn_EmptyStruct ('MISC.S1PhotostimTrial');
         [data_PhotostimTrial] = fn_EmptyStruct ('EXP.PhotostimTrial');
         [data_PhotostimTrialEvent] = fn_EmptyStruct ('EXP.PhotostimTrialEvent');
+        [data_S1TrialTypeName] = fn_EmptyStruct ('MISC.S1TrialTypeName');
         [data_Tracking] = fn_EmptyStruct ('EXP.Tracking');
         [data_TrialNote] = fn_EmptyStruct ('EXP.TrialNote');
         
@@ -121,7 +122,7 @@ for iFile = 1:1:numel (allFileNames)
             data_BehaviorTrial = Ingest_EXP_BehaviorTrial (obj, key, iTrials, data_BehaviorTrial, early_lick);
             
             % Photostim related tables
-            [data_S1PhotostimTrial, data_PhotostimTrial, data_PhotostimTrialEvent] = Ingest_EXP_Photo (obj, key, iTrials, data_S1PhotostimTrial,data_PhotostimTrial, data_PhotostimTrialEvent);
+            [data_S1PhotostimTrial, data_PhotostimTrial, data_PhotostimTrialEvent, data_S1TrialTypeName] = Ingest_EXP_Photo (obj, key, iTrials, data_S1PhotostimTrial, data_PhotostimTrial, data_PhotostimTrialEvent, data_S1TrialTypeName);
             
             % Tracking
             [data_Tracking] = Ingest_EXP_Tracking (obj, key, iTrials, tracking_data_dir, allVideoNames,  tracking_device, data_Tracking);
@@ -149,6 +150,8 @@ for iFile = 1:1:numel (allFileNames)
         insert(MISC.S1PhotostimTrial, data_S1PhotostimTrial);
         insert(EXP.PhotostimTrial, data_PhotostimTrial);
         insert(EXP.PhotostimTrialEvent, data_PhotostimTrialEvent);
+        insert(MISC.S1TrialTypeName, data_S1TrialTypeName);
+
         insert(EXP.Tracking, data_Tracking);
         
         if strcmp(currentFileName(1:4),'data') %insert neuro data unless it's a behavior-only object

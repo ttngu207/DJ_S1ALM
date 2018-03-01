@@ -1,4 +1,4 @@
-function [data_S1PhotostimTrial, data_PhotostimTrial, data_PhotostimTrialEvent, data_S1TrialTypeName] = Ingest_EXP_Photo (obj, key, iTrials, data_S1PhotostimTrial,data_PhotostimTrial, data_PhotostimTrialEvent, data_S1TrialTypeName)
+function [data_S1PhotostimTrial, data_PhotostimTrial, data_PhotostimTrialEvent, data_S1TrialTypeName] = Ingest_EXP_Photo (obj, key, iTrials, data_S1PhotostimTrial,data_PhotostimTrial, data_PhotostimTrialEvent)
 
 stimEpochFlags = cell2mat(obj.trialPropertiesHash.stimEpochFlags);
 trial_type_name = obj.trialPropertiesHash.stimEpochNames {stimEpochFlags (iTrials,:)};
@@ -61,8 +61,3 @@ else %it's a no-stim trial
     data_S1PhotostimTrial (end+1) = struct(...
         'subject_id',  key.subject_id, 'session', key.session, 'trial', iTrials, 'stim_num',1, 'stim_type','nostim', 'stim_power_type','none', 'onset', NaN, 'power',NaN, 'duration',NaN, 'trial_type_name',trial_type_name);
 end
-
-data_S1TrialTypeName (end+1) = struct(...
-    'subject_id',  key.subject_id, 'session', key.session, 'trial', iTrials, 'trial_type_name',trial_type_name);
-
-

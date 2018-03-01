@@ -8,6 +8,7 @@ stim_num                      : tinyint     # resets for every trial
 onset = null             : double      # onset of the stimulation relative to the go-cue (s); None for no-stim trials
 power = null             : double      # laser power (mW)
 duration = null          : double      # total stimulation duration (s)
+trial_type_name          : varchar(100)      # trial-type name in Solo/Bpod 
 
 %}
 
