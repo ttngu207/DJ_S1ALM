@@ -12,7 +12,7 @@ classdef UnitSpikes < dj.Part
         master= EPHYS.Unit
     end
     methods(Access=protected)
-        function make(self, key)
+        function makeTuples(self, key)
         end
     end
 end

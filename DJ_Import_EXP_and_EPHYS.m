@@ -6,7 +6,7 @@ dir_data = 'Z:\users\Arseny\Projects\SensoryInput\SiProbeRecording\ProcessedData
 dir_video = 'Z:\users\Arseny\Projects\SensoryInput\SiProbeRecording\RawData\video\';
 
 DJconnect; %connect to the database using stored user credentials
-erd LAB MISC EXP EPHYS CF
+erd LAB MISC EXP EPHYS CF ANL
 %Initialize
 EXP.SessionComment;
 EXP.PassivePhotostimTrial
@@ -173,11 +173,13 @@ for iFile = 1:1:numel (allFileNames)
             insert(EPHYS.ElectrodeGroupPosition, {currentSubject_id, currentSession, 2, 'manipulator','Bregma', ml + 250, ap, dv,NaN,NaN  }); %shank 1
             
             % Unit
-            populate(EPHYS.Unit)
+            populate(EPHYS.Unit);
+            populate(EPHYS.UnitCellType);
+
         end
+
         clear obj;
         toc
     end
-    populate(EPHYS.UnitCellType);
-    %     populate(EXP.PassivePhotostimTrial);
 end
+%  populate(EXP.PassivePhotostimTrial);
