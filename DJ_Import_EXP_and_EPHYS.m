@@ -17,11 +17,11 @@ EPHYS.UnitComment;
 EPHYS.UnitSpikes;
 
 %% for DEBUG
-del_key=fetch(MISC.SessionID);
-if ~isempty(del_key)
-    del_key=del_key(end);
-    del(EXP.Session & del_key)
-end
+% del_key=fetch(MISC.SessionID);
+% if ~isempty(del_key)
+%     del_key=del_key(end);
+%     del(EXP.Session & del_key)
+% end
 
 %% Initialize some tables
 
@@ -177,7 +177,7 @@ for iFile = 1:1:numel (allFileNames)
             populate(EPHYS.UnitCellType);
 
         end
-
+        populate(ANL.SessionBehavPerformance);
         clear obj;
         toc
     end

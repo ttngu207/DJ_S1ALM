@@ -3,6 +3,7 @@
 -> EXP.Session
 trial_type_name                           : varchar(200)      # trial-type name
 ---
+trial_type_name2                          : varchar(200)      # trial-type name
 original_trial_type_name                  : varchar(200)      # original trial-type name from Solo/Bpod
 trial_type_num                            : smallint
 -> EXP.TrialInstruction
@@ -63,12 +64,10 @@ classdef SessionBehavPerformance < dj.Computed
             k_overview.trials_all = tr_all;
             k_overview.sliding_window_for_ignore = ign_wind;
             
-            insert(ANL.SessionBehavOverview,k_overview);
             
             %% Populating ANL.SessionBehavPerformance
             trial_type_names = unique([fetchn(MISC.S1TrialTypeName & k, 'trial_type_name')]);
-            original_trial_type_name    = unique([fetchn(MISC.S1TrialTypeName & k, 'original_trial_type_name')]);
-
+      
             RT_hit =cell(numel(trial_type_names),1);
             RT_miss =cell(numel(trial_type_names),1);
             
@@ -87,6 +86,11 @@ classdef SessionBehavPerformance < dj.Computed
                 end
                 
                 k.trial_type_name = trial_type_names{ityp};
+                trial_type_names2 (ityp) = unique([fetchn(MISC.S1TrialTypeName & k, 'trial_type_name2')]);
+                original_trial_type_name (ityp)    = unique([fetchn(MISC.S1TrialTypeName & k, 'original_trial_type_name')]);
+
+                
+                
                 b = (EXP.BehaviorTrial * MISC.S1TrialTypeName) & k ;
                 
                 hit (ityp,1) = numel(   setdiff(fetchn(b & 'outcome="hit"' & 'early_lick="no early"','trial'), tr_quit) );
@@ -135,6 +139,7 @@ classdef SessionBehavPerformance < dj.Computed
                 
                 
                 key.trial_type_name = trial_type_names{ityp};
+                key.trial_type_name2 = trial_type_names2{ityp};
                 key.original_trial_type_name = original_trial_type_name{ityp};
                 key.trial_type_num = ityp;
                 key.trial_instruction = trial_instruction;
@@ -150,9 +155,13 @@ classdef SessionBehavPerformance < dj.Computed
                 key.mean_reaction_time_miss            = RT_miss_mean (ityp);
                 key.stem_reaction_time_miss         = RT_miss_stem (ityp);
                 
+                %Populating ANL.SessionBehavPerformance
                 insert(self,key);
-                
+
+
             end
+            %Populating ANL.SessionBehavOverview
+            insert(ANL.SessionBehavOverview,k_overview);
             toc
         end
     end
