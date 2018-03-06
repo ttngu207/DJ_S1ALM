@@ -6,9 +6,8 @@ task_protocol       : tinyint                   # task ptotcol
 task_protocol_description           : varchar(4000)                 # 
 %}
 
-classdef TaskProtocol < dj.Part
-    properties(SetAccess=protected)
-        master= EXP.Task
+classdef TaskProtocol < dj.Lookup
+    properties
          contents = {
             's1 stim' 2 'mini-distractors'
             's1 stim' 3 'full distractors, with 2 distractors (at different times) on some of the left trials'

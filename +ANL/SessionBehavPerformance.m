@@ -87,9 +87,12 @@ classdef SessionBehavPerformance < dj.Computed
                 
                 k.trial_type_name = trial_type_names{ityp};
                 trial_type_names2 (ityp) = unique([fetchn(MISC.S1TrialTypeName & k, 'trial_type_name2')]);
-                original_trial_type_name (ityp)    = unique([fetchn(MISC.S1TrialTypeName & k, 'original_trial_type_name')]);
+                oiginname = unique([fetchn(MISC.S1TrialTypeName & k, 'original_trial_type_name')]);
+                if numel(oiginname)>=2
+                    warning('Multiple original_trial_type_name for trial_type_names2: %s',trial_type_names2 {ityp})
+                end
+                original_trial_type_name (ityp)    = oiginname(1);
 
-                
                 
                 b = (EXP.BehaviorTrial * MISC.S1TrialTypeName) & k ;
                 
