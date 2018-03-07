@@ -5,15 +5,21 @@ trial_type_name                           : varchar(200)      # trial-type name
 ---
 trial_type_name2                          : varchar(200)      # trial-type name
 original_trial_type_name                  : varchar(200)      # original trial-type name from Solo/Bpod
-trial_type_num                            : smallint
+trial_type_num                            : smallint          # trial-type number within a session
 -> EXP.TrialInstruction
-percent_hit = null                        : double
-percent_hit_response_trials = null        : double
-percent_ignore = null                     : double
-percent_early  = null                     : double
-total_ignore_trials_after_quitting        : int
-total_no_early_lick_trials                : int
-total_no_quit_trials                      : int
+
+prcnt_hit = null                          : double            # prcnt of hit trials (out of all trials, exluding trials for which the animal stopped performing quit)
+prcnt_ignore = null                       : double            # prcnt of ignore trials (out of all trials, exluding trials for which the animal stopped performing quit)
+prcnt_early  = null                       : double            # prcnt of early-lick trials (out of all trials, exluding trials for which the animal stopped performing quit)
+total_behaving                            : int               # total number of trials, exluding trials for which the animal stopped performing quit)
+prcnt_hit_outof_noignore = null           : double            # prcnt of hit trials (out of NoIgnore trials, exluding trials for which the animal stopped performing quit)
+total_noignore                            : int               # total number of NoIgnore trials, exluding trials for which the animal stopped performing quit)
+prcnt_hit_outof_noearly = null            : double            # prcnt of hit trials (out of all NoEarly lick trials, exluding trials for which the animal stopped performing quit)
+total_noearly                             : int               # total number of NoEarly lick trials, exluding trials for which the animal stopped performing quit)
+prcnt_hit_outof_noignore_noearly = null   : double            # prcnt of hit trials (out of all NoEarly lick and NoIgnore trials, exluding trials for which the animal stopped performing quit)
+total_noignore_noearly                    : int               # total number of NoIgnore and NoEarly lick  trials, exluding trials for which the animal stopped performing quit)
+total_ignore_noearly_after_quitting       : int               # total number of Ignore, out of NoEarly lick trials AFTER the animal stopped performing quit)
+
 mean_reaction_time_hit = null             : double
 stem_reaction_time_hit = null             : double
 mean_reaction_time_miss  = null           : double
@@ -70,7 +76,7 @@ classdef SessionBehavPerformance < dj.Computed
             
             RT_hit =cell(numel(trial_type_names),1);
             RT_miss =cell(numel(trial_type_names),1);
-            go_trials = fetchn(EXP.BehaviorTrialEvent & k & 'trial_event_type="go"', 'trial_event_time')
+            go_trials = fetchn(EXP.BehaviorTrialEvent & k & 'trial_event_type="go"', 'trial_event_time');
             for  ityp = 1:1:numel(trial_type_names)
                 
                 if  trial_type_names{ityp}(1)=='r'
@@ -99,25 +105,29 @@ classdef SessionBehavPerformance < dj.Computed
                 
                 
                 b = (EXP.BehaviorTrial * MISC.S1TrialTypeName) & k ;
-                hit (ityp,1) = numel(   setdiff(fetchn(b & 'outcome="hit"' & 'early_lick="no early"','trial'), tr_quit) );
-                miss (ityp,1) = numel(   setdiff(fetchn(b & 'outcome="miss"' & 'early_lick="no early"','trial'), tr_quit) );
-                ignore (ityp,1) = numel(   setdiff(fetchn(b & 'outcome="ignore"' & 'early_lick="no early"','trial'), tr_quit) );
-                early (ityp,1) = numel(   setdiff(fetchn(b & 'early_lick!="no early"','trial'), tr_quit) );
-                total_ignore_quit (ityp,1) = numel(   setdiff(fetchn(b & 'outcome="ignore"' & 'early_lick!="no early"','trial'), tr_quit) );
-                total_no_early (ityp,1) = numel(  setdiff(fetchn(b &  'early_lick="no early"','trial'), tr_quit) );
-                total_no_quit (ityp,1) = numel(  setdiff(fetchn(b,'trial'), tr_quit') );
+                hit{ityp} = (   setdiff(fetchn(b & 'outcome="hit"','trial'), tr_quit) );
+                ignore{ityp} = (   setdiff(fetchn(b & 'outcome="ignore"','trial'), tr_quit) );
+                early{ityp} = (   setdiff(fetchn(b & 'early_lick!="no early"','trial'), tr_quit) );
+                total_behaving (ityp,1) = numel(  setdiff(fetchn(b,'trial'), tr_quit) );
+                total_noearly (ityp,1) = numel(  setdiff(fetchn(b &  'early_lick="no early"','trial'), tr_quit) );
+                total_noignore (ityp,1) = numel(  setdiff(fetchn(b &  'outcome!="ignore"','trial'), tr_quit) );
+                total_noignore_noearly (ityp,1) = numel(  setdiff(fetchn(b &  'outcome!="ignore"' & 'early_lick="no early"','trial'), tr_quit) );
+                total_ignore_noearly_after_quitting (ityp,1) = numel(   setdiff(fetchn(b & 'outcome="ignore"' & 'early_lick!="no early"','trial'), tr_quit) );
                 
                 ba = (EXP.BehaviorTrial * EXP.ActionEvent * MISC.S1TrialTypeName) & k;
                 
+                
+                [trials,lick_t]=fetchn(ba & 'outcome="hit"' & 'early_lick="no early"','trial','action_event_time')
+                
                 %reaction time hit
-                trials=[];
-                trials = setdiff(fetchn(b & 'outcome="hit"' & 'early_lick="no early"','trial'), tr_quit);
+                u_trials=[];
+                u_trials = setdiff(unique(tr_l), tr_quit);
                 kt=k;
-                for it=1:1:numel(trials)
-                    kt.trial=trials(it);
+                for it=1:1:numel(u_trials)
+                    kt.trial=u_trials(it);
                     kt.action_event_type=hit_lick_direction;
                     lick_t = fetchn(ba & kt, 'action_event_time');
-                    go = go_trials(trials(it));
+                    go = go_trials(u_trials(it));
                     [ix] =find(lick_t>go,1);
                     if ~isempty(ix)
                         RT_hit{ityp}(it) = lick_t(ix) - go;
@@ -129,13 +139,13 @@ classdef SessionBehavPerformance < dj.Computed
                 RT_hit_stem (ityp) = std(RT_hit{ityp})./sqrt(numel(RT_hit{ityp}));
                 
                 %reaction time miss
-                trials=[];
-                trials = setdiff(fetchn(b & 'outcome="miss"' & 'early_lick="no early"' ,'trial'), tr_quit);
-                for it=1:1:numel(trials)
-                    kt.trial=trials(it);
+                u_trials=[];
+                u_trials = setdiff(fetchn(b & 'outcome="miss"' & 'early_lick="no early"' ,'trial'), tr_quit);
+                for it=1:1:numel(u_trials)
+                    kt.trial=u_trials(it);
                     kt.action_event_type=miss_lick_direction;
                     lick_t = fetchn(ba & kt', 'action_event_time');
-                    go = go_trials(trials(it));
+                    go = go_trials(u_trials(it));
                     [ix] =find(lick_t>go,1);
                     if ~isempty(ix)
                         RT_miss{ityp}(it) = lick_t(ix) - go;
@@ -146,28 +156,35 @@ classdef SessionBehavPerformance < dj.Computed
                 RT_miss_mean (ityp) = mean(RT_miss{ityp});
                 RT_miss_stem (ityp) = mean(RT_miss{ityp})./sqrt(numel(RT_miss{ityp}));
                 
-                percent_hit (ityp) = 100*hit(ityp) / sum([hit(ityp),miss(ityp),ignore(ityp)]); %exluding early licks
-                percent_hit_response (ityp) = 100*hit(ityp) / sum([hit(ityp),miss(ityp)]); %exluding early licks or no response
-                percent_ignore (ityp) = 100*ignore(ityp) / sum([hit(ityp),miss(ityp),ignore(ityp)]);
-                percent_early  (ityp)= 100*early(ityp) / total_no_quit(ityp);
                 
+                
+                prcnt_hit (ityp) = 100*numel(hit{ityp}) / total_behaving(ityp);
+                prcnt_ignore (ityp) = 100*numel(ignore{ityp}) / total_behaving(ityp);
+                prcnt_early  (ityp)= 100*numel(early{ityp}) / total_behaving(ityp);
+                prcnt_hit_outof_noignore (ityp) = 100*numel(setdiff(hit{ityp},ignore{ityp}))/ total_noignore (ityp);
+                prcnt_hit_outof_noearly (ityp) = 100*numel(setdiff(hit{ityp},early{ityp}))/ total_noearly(ityp);
+                prcnt_hit_outof_noignore_noearly (ityp) = 100*numel(setdiff(hit{ityp},union(early{ityp},ignore{ityp})))/ total_noignore_noearly (ityp);
                 
                 key.trial_type_name = trial_type_names{ityp};
                 key.trial_type_name2 = trial_type_names2{ityp};
                 key.original_trial_type_name = original_trial_type_name{ityp};
                 key.trial_type_num = ityp;
                 key.trial_instruction = trial_instruction;
-                key.percent_hit = percent_hit (ityp);
-                key.percent_hit_response_trials = percent_hit_response (ityp);
-                key.percent_ignore = percent_ignore (ityp);
-                key.percent_early = percent_early  (ityp);
-                key.total_ignore_trials_after_quitting = total_ignore_quit (ityp);
-                key.total_no_early_lick_trials = total_no_early (ityp);
-                key.total_no_quit_trials = total_no_quit (ityp);
-                key. mean_reaction_time_hit         = RT_hit_mean (ityp);
+                key.prcnt_hit = prcnt_hit (ityp);
+                key.prcnt_ignore = prcnt_ignore (ityp);
+                key.prcnt_early = prcnt_early  (ityp);
+                key.total_behaving = total_behaving  (ityp);
+                key.prcnt_hit_outof_noignore = prcnt_hit_outof_noignore  (ityp);
+                key.total_noignore  = total_noignore  (ityp);
+                key.prcnt_hit_outof_noearly = prcnt_hit_outof_noearly  (ityp);
+                key.total_noearly  = total_noearly  (ityp);
+                key.prcnt_hit_outof_noignore_noearly = prcnt_hit_outof_noignore_noearly  (ityp);
+                key.total_noignore_noearly  = total_noignore_noearly  (ityp);
+                key.total_ignore_noearly_after_quitting  = total_ignore_noearly_after_quitting  (ityp);
+                key.mean_reaction_time_hit  = RT_hit_mean (ityp);
                 key.stem_reaction_time_hit  = RT_hit_stem (ityp);
-                key.mean_reaction_time_miss            = RT_miss_mean (ityp);
-                key.stem_reaction_time_miss         = RT_miss_stem (ityp);
+                key.mean_reaction_time_miss = RT_miss_mean (ityp);
+                key.stem_reaction_time_miss = RT_miss_stem (ityp);
                 
                 %Populating ANL.SessionBehavPerformance
                 insert(self,key);
