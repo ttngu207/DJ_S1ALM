@@ -1,4 +1,4 @@
-function data_BehaviorTrial = Ingest_EXP_BehaviorTrial (obj, key, iTrials, data_BehaviorTrial, early_lick)
+function data_BehaviorTrial = Ingest_EXP_BehaviorTrial (obj, key, iTrials, data_BehaviorTrial, early_lick, outcome_types)
 
 task =  's1 stim';
 task_protocol = obj.task;
@@ -10,7 +10,6 @@ else
     trial_instruction = 'right';
 end
 
-outcome_types = fetchn(EXP.Outcome,'outcome');
 outcome_types_obj = {'Hit','NoLick','Err'};
 
 for iOutcome = 1:1:length(outcome_types) % loop through outcomes (e.g. Hit, Ignore, Miss)

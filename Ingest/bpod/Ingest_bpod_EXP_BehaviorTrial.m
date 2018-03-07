@@ -1,37 +1,36 @@
-function data_BehaviorTrial = Ingest_bpod_EXP_BehaviorTrial (obj, key, iTrials, data_BehaviorTrial, early_lick)
+function data_BehaviorTrial = Ingest_bpod_EXP_BehaviorTrial (obj, key, iTrials, data_BehaviorTrial, early_lick, go_t, action_event_time, outcome_types)
 
 task =  's1 stim';
 task_protocol = obj.task;
-stimEpochFlags = cell2mat(obj.trialPropertiesHash.stimEpochFlags);
-trial_instruction = obj.trialPropertiesHash.stimEpochNames {stimEpochFlags (iTrials,:)};
-if contains(trial_instruction,'l_s')
+if obj.task ==3
+    l=[5,6,7,8];
+    r=[1,2,3,4];
+end
+
+if obj.task ==4
+    l=[5,6,7,8];
+    r=[1,2,3,4];
+end
+
+if sum(obj.TrialTypes(iTrials) == l)>0
     trial_instruction = 'left';
-else
+else sum(obj.TrialTypes(iTrials) == r)>0;
     trial_instruction = 'right';
 end
 
-outcome_types = fetchn(EXP.Outcome,'outcome');
-outcome_types_obj = {'Hit','NoLick','Err'};
 
 for iOutcome = 1:1:length(outcome_types) % loop through outcomes (e.g. Hit, Ignore, Miss)
-    % the original data contains instruction and outcomes mixed (i.e. HitR) but we want outcomes only, regardless of the instruction
-    % (e.g. if we look for a Hit - the relevant_outcomes would be HitR or HitL)
-    relevant_outcomes_names = (strfind(obj.trialTypeStr,outcome_types_obj{iOutcome}));
-    outcomes_vec = obj.trialTypeMat(:,iTrials); % a boolean vector with instruction-outcomes for this trial
-    if sum(outcomes_vec(~cellfun(@isempty,relevant_outcomes_names))) >0 % if this particular outcome occured - insert it into the table
-        outcome = outcome_types{iOutcome};
-        break
+    if sum(action_event_time>go_t)>0
+        if ~isnan(obj.RawEvents.Trial{iTrials}.States.Reward(1))
+            outcome = 'hit';
+        else
+            outcome = 'miss';
+        end
+    else
+        outcome = 'ignore';
     end
 end
-           
+
 data_BehaviorTrial (iTrials) = struct(...
     'subject_id',key.subject_id, 'session',key.session, 'trial',iTrials, 'task',task, 'task_protocol',task_protocol, 'trial_instruction',trial_instruction, 'early_lick',early_lick, 'outcome',outcome);
 
-% Not using
-% relevant_outcomes_names = (strfind((obj.trialTypeStr),'LickEarly'));
-% if sum(outcomes_vec(~cellfun(@isempty,relevant_outcomes_names))) >0 % if this particular outcome occured - insert it into the table
-%     early_lick = 'early';
-% else
-%     early_lick = 'no early';
-% end
-% 

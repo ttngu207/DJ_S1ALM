@@ -2,8 +2,36 @@ function [data_S1PhotostimTrial, data_PhotostimTrial, data_PhotostimTrialEvent, 
 trial_type_name=[];
 trial_type_name2=[];
 
-stimEpochFlags = cell2mat(obj.trialPropertiesHash.stimEpochFlags);
-original_trial_type_name = obj.trialPropertiesHash.stimEpochNames {stimEpochFlags (iTrials,:)};
+if obj.task ==3
+    l=[5,6,7,8];
+    r=[1,2,3,4];
+    original_trial_type_name{1}='r_400_1700';
+    original_trial_type_name{end+ 1}='r_1700';
+    original_trial_type_name{end+ 1}='r_1700_2600';
+    original_trial_type_name{end+ 1}='r_1700_3400';
+    original_trial_type_name{end+ 1}='l';
+    original_trial_type_name{end+ 1}='l_400_2600';
+    original_trial_type_name{end+ 1}='l_400_3400';
+    original_trial_type_name{end+ 1}='l_2600_3400';
+end
+
+if obj.task ==4
+    l=[5,6,7,8];
+    r=[1,2,3,4];
+    
+    original_trial_type_name{1}='r_400_1700';
+    original_trial_type_name{end+ 1}='r_1700';
+    original_trial_type_name{end+ 1}='r_1700_2600';
+    original_trial_type_name{end+ 1}='r_1700_3400';
+    original_trial_type_name{end+ 1}='l_400';
+    original_trial_type_name{end+ 1}='l';
+    original_trial_type_name{end+ 1}='l_2600';
+    original_trial_type_name{end+ 1}='l_3400';
+    
+       
+end
+
+original_trial_type_name = original_trial_type_name{obj.TrialTypes(iTrials)};
 
 all_stim_onsets = cellfun(@str2num,regexp(original_trial_type_name,'\d*','Match'));
 if ~isempty(all_stim_onsets) %if there is no stimulation (neither stim nor distractor)
@@ -13,32 +41,23 @@ if ~isempty(all_stim_onsets) %if there is no stimulation (neither stim nor distr
     
     for iStim = 1:length(all_stim_onsets) % loop through the stimulation onsets
         onset = (all_stim_onsets(iStim))/1000;
-        stim_pulse_num = obj.laser_power.stimulus.num_pulses(iTrials);
-        pulse_dur = obj.laser_power.stimulus.pulse_dur_in_ms(iTrials);
+        stim_pulse_num = obj.TrialSettings(iTrials).GUI.StimLength *10 ;
+        pulse_dur = 0.1;
         duration =stim_pulse_num*pulse_dur;
         
-        if contains(original_trial_type_name,'Stim1700') && onset==1.7 %if stimulus (i.e. full stimulus occurs during sample period)
+        if contains(original_trial_type_name,'r_1700') && onset==1.7 %if stimulus (i.e. full stimulus occurs during sample period)
             stim_type = 'stim';
-            power = obj.laser_power.stimulus.pow(iTrials);
-            if contains(original_trial_type_name,'Stim1700intermed')
-                stim_power_type = 'FullX0.5';
-            elseif contains(original_trial_type_name,'Stim1700double')
-                stim_power_type = 'FullX2';
-            else % if it's a regular stimulus
-                stim_power_type = 'Full';
-            end
+            power = obj.TrialSettings(iTrials).GUI.StimPower;
+            stim_power_type = 'Full';
         else % if it's a distractor
             stim_type = 'distractor';
-            power = obj.laser_power.distractor.pow(iTrials);
-            if power == mode(obj.laser_power.stimulus.pow) || obj.task==3 ||  obj.task==4 || obj.task==6 %if distractor power equals to the typical stimulus power
+            power = obj.TrialSettings(iTrials).GUI.StimPower * obj.TrialSettings(iTrials).GUI.DistractorPercentage/100;
+            if power == mode(obj.TrialSettings(iTrials).GUI.StimPower) %if distractor power equals to the typical stimulus power
                 stim_power_type = 'Full';
-                power = obj.laser_power.stimulus.pow(iTrials);
-            elseif contains(original_trial_type_name,'intermed')
-                stim_power_type = 'Mini(FullX0.5)';
-            elseif contains(original_trial_type_name,'strong')
-                stim_power_type = 'Mini(FullX0.75)';
-            else % if it's a regular mini distractor
-                stim_power_type = 'Mini';
+            elseif power ==0
+                continue;
+            elseif power< obj.TrialSettings(iTrials).GUI.StimPower
+                stim_power_type = 'FullPartial';
             end
         end
         
@@ -46,12 +65,16 @@ if ~isempty(all_stim_onsets) %if there is no stimulation (neither stim nor distr
         % Renaming the trial type
         if onset ==0.4
             onset_name = 'preS';
+            onset_relative_to_trial_start = obj.RawEvents.Trial{iTrials}.States.PreSample2(1);
         elseif onset ==1.7
             onset_name = 'S';
+                        onset_relative_to_trial_start = obj.RawEvents.Trial{iTrials}.States.Sample3(1);
         elseif onset ==2.6
             onset_name = 'earlyD';
+                        onset_relative_to_trial_start = obj.RawEvents.Trial{iTrials}.States.Delay2(1);
         elseif onset ==3.4
             onset_name = 'lateD';
+                        onset_relative_to_trial_start = obj.RawEvents.Trial{iTrials}.States.Delay4(1);
         end
         
         if onset==1.7 && strcmp(stim_power_type, 'Full')
@@ -67,9 +90,8 @@ if ~isempty(all_stim_onsets) %if there is no stimulation (neither stim nor distr
             'subject_id',  key.subject_id, 'session', key.session, 'trial', iTrials, 'stim_num',iStim, 'stim_type',stim_type, 'stim_power_type',stim_power_type, 'onset',onset, 'power',power, 'duration',duration);
         
         % data_PhotostimTrialEvent
-        photostim_device = 'LaserGem473';
-        wave_t = obj.trialPropertiesHash.value{1}(iTrials);
-        photostim_event_time = onset + wave_t ; %relative to trial onset
+        photostim_device = 'LED470';
+        photostim_event_time = onset_relative_to_trial_start; %relative to trial onset
         
         if stim_pulse_num ==1
             photo_stim = 2;
@@ -89,12 +111,6 @@ end
 %prefixing and suffixing trial_type_name
 trial_type_name =[original_trial_type_name(1) trial_type_name];
 trial_type_name2 =[original_trial_type_name(1) trial_type_name2];
-
-if contains(original_trial_type_name,'NoCue')
-    trial_type_name =[trial_type_name '_NoAudCue'];
-    trial_type_name2 =[trial_type_name2 '_NoAudCue'];
-end
-
 
 data_S1TrialTypeName (end+1) = struct(...
     'subject_id',  key.subject_id, 'session', key.session, 'trial', iTrials, 'trial_type_name',trial_type_name, 'trial_type_name2', trial_type_name2, 'original_trial_type_name',original_trial_type_name);

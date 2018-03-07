@@ -26,17 +26,22 @@ end
 %% Initialize some tables
 
 if isempty(fetch(EXP.Photostim))
-    % full stim
-    x = linspace(0,pi,100);
-    waveform = repmat( sin(x),1,4); %plot([1:1:400],waveform)
-    insert(EXP.Photostim, {'LaserGem473', 1, 0.4, waveform} );
-    insert(EXP.PhotostimLocation, {'LaserGem473', 1, 'left', 'vS1', 'Bregma',-3500,-1300,0,NaN,NaN} );
-    
     % mini stim
     x = linspace(0,pi,100);
     waveform = sin(x); %plot([1:1:100],waveform)
     insert(EXP.Photostim, {'LaserGem473', 2, 0.1, waveform} );
     insert(EXP.PhotostimLocation, {'LaserGem473', 2, 'left', 'vS1', 'Bregma',-3500,-1300,0, NaN, NaN} );
+    insert(EXP.Photostim, {'LED470', 2, 0.1, waveform} );
+    insert(EXP.PhotostimLocation, {'LED470', 2, 'left', 'vS1', 'Bregma',-3500,-1300,0, NaN, NaN} );
+
+    
+    % full stim
+    x = linspace(0,pi,100);
+    waveform = repmat( sin(x),1,4); %plot([1:1:400],waveform)
+    insert(EXP.Photostim, {'LaserGem473', 1, 0.4, waveform} );
+    insert(EXP.PhotostimLocation, {'LaserGem473', 1, 'left', 'vS1', 'Bregma',-3500,-1300,0,NaN,NaN} );
+    insert(EXP.Photostim, {'LED470', 1, 0.4, waveform} );
+    insert(EXP.PhotostimLocation, {'LED470', 1, 'left', 'vS1', 'Bregma',-3500,-1300,0,NaN,NaN} );
 end
 
 %% Insert/Populate Sessions and dependent tables
@@ -105,7 +110,8 @@ for iFile = 1:1:numel (allFileNames)
         allVideoNames = {allVideoFiles(~[allVideoFiles.isdir]).name}; %gets only the names of all files
         
         total_trials = numel(fetchn(EXP.SessionTrial,'trial_id'));
-        
+        outcome_types = fetchn(EXP.Outcome,'outcome');
+
         for iTrials = 1:1:numel(obj.trialIDs)
             
             % EXP.SessionTrial
@@ -119,7 +125,7 @@ for iFile = 1:1:numel (allFileNames)
             [data_TrialEvent, early_lick, trial_note_type ]  = Ingest_EXP_TrialEvent (obj, key, iTrials, data_TrialEvent, action_event_time, currentFileName);
             
             % EXP.BehaviorTrial
-            data_BehaviorTrial = Ingest_EXP_BehaviorTrial (obj, key, iTrials, data_BehaviorTrial, early_lick);
+            data_BehaviorTrial = Ingest_EXP_BehaviorTrial (obj, key, iTrials, data_BehaviorTrial, early_lick, outcome_types);
             
             % Photostim related tables
             [data_S1PhotostimTrial, data_PhotostimTrial, data_PhotostimTrialEvent, data_S1TrialTypeName] = Ingest_EXP_Photo (obj, key, iTrials, data_S1PhotostimTrial, data_PhotostimTrial, data_PhotostimTrialEvent, data_S1TrialTypeName);

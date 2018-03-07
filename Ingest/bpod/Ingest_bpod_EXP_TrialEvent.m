@@ -1,8 +1,8 @@
-function [data_TrialEvent, early_lick, trial_note_type] = Ingest_bpod_EXP_TrialEvent (obj, key, iTrials, data_TrialEvent, action_event_time, currentFileName)
+function [data_TrialEvent, early_lick, trial_note_type, go_t] = Ingest_bpod_EXP_TrialEvent (obj, key, iTrials, data_TrialEvent, action_event_time, currentFileName)
 
 % For sanity check - unless there is an early licks the timings/durations should be:
 %----------------------------------------------------------------------------------
-chirp_dur = 0.015;
+chirp_dur = 0.01;
 % sample_dur = 0.7;
 % delay_dur = 2;
 go_dur = 0.01;
@@ -10,27 +10,21 @@ go_dur = 0.01;
 % chirp2_t = go_t - delay_dur - chirp_dur;
 % delay_t = go_t - delay_dur;
 
-wave_t = obj.trialPropertiesHash.value{1}(iTrials);
-delay_t = obj.trialPropertiesHash.value{2}(iTrials);
-go_t = obj.trialPropertiesHash.value{3}(iTrials);
-chirp1_t = obj.trialPropertiesHash.value{4}(iTrials);
-chirp2_t = obj.trialPropertiesHash.value{5}(iTrials);
-sample_t = obj.trialPropertiesHash.value{8}(iTrials);
+wave_t = obj.RawEvents.Trial{iTrials}.States.TrigTrialStart(1);
+delay_t = obj.RawEvents.Trial{iTrials}.States.Delay1(1);
+go_t = obj.RawEvents.Trial{iTrials}.States.ResponseCue(1);   
+chirp1_t = obj.RawEvents.Trial{iTrials}.States.Sample1(1);
+chirp2_t = obj.RawEvents.Trial{iTrials}.States.Sample4(1);
+sample_t = obj.RawEvents.Trial{iTrials}.States.Sample2(1);
 
 sample_dur = chirp2_t-sample_t;
 delay_dur = go_t - delay_t;
 
-if strcmp(currentFileName(1:4),'data') %insert ephys trigger unless it's a behavior-only object
-    ephys_t = wave_t - obj.presampleStartTimes_relative_to_trial(iTrials);
-    
-    trial_event_type ={'trigger ephys rec.'; 'send scheduled wave'; 'sample-start chirp'; 'sample'; 'sample-end chirp'; 'delay'; 'go'};
-    trial_event_time = [ephys_t; wave_t; chirp1_t; sample_t; chirp2_t; delay_t; go_t];
-    duration = [0; 0; chirp_dur; sample_dur; chirp_dur; delay_dur; go_dur];
-else
-    trial_event_type ={'send scheduled wave'; 'sample-start chirp'; 'sample'; 'sample-end chirp'; 'delay'; 'go'};
-    trial_event_time = [wave_t; chirp1_t; sample_t; chirp2_t; delay_t; go_t];
-    duration = [ 0; chirp_dur; sample_dur; chirp_dur; delay_dur; go_dur];
-end
+
+trial_event_type ={'send scheduled wave'; 'sample-start chirp'; 'sample'; 'sample-end chirp'; 'delay'; 'go'};
+trial_event_time = [wave_t; chirp1_t; sample_t; chirp2_t; delay_t; go_t];
+duration = [ 0; chirp_dur; sample_dur; chirp_dur; delay_dur; go_dur];
+
  
 for iTrialEvent=1:1:numel(trial_event_time)
     data_TrialEvent (end+1) = struct(...

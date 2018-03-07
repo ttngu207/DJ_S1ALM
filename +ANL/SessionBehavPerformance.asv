@@ -70,7 +70,7 @@ classdef SessionBehavPerformance < dj.Computed
             
             RT_hit =cell(numel(trial_type_names),1);
             RT_miss =cell(numel(trial_type_names),1);
-            go_trials = fetchn(EXP.BehaviorTrialEvent & k & 'trial_event_type="go"', 'trial_event_time');
+            go_trials = fetchn(EXP.BehaviorTrialEvent & k & 'trial_event_type="go"', 'trial_event_time')
             for  ityp = 1:1:numel(trial_type_names)
                 
                 if  trial_type_names{ityp}(1)=='r'

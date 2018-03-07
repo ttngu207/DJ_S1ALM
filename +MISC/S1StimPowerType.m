@@ -12,6 +12,7 @@ classdef S1StimPowerType < dj.Lookup
             'Full'   ''
             'FullX2' ''
             'FullX0.5' ''
+            'FullPartial' ''
             'Mini' ''
             'Mini(FullX0.5)' ''
             'Mini(FullX0.75)' ''
