@@ -183,9 +183,12 @@ for iFile = 1:1:numel (allFileNames)
             populate(EPHYS.UnitCellType);
 
         end
+        populate(ANL.TrialTypes);
+        populate(ANL.SessionBehavOverview);
         populate(ANL.SessionBehavPerformance);
         clear obj;
         toc
     end
 end
+populate(ANL.TrialTypes);
 %  populate(EXP.PassivePhotostimTrial);

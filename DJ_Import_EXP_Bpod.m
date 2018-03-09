@@ -162,9 +162,13 @@ for iFile = 1:1:numel (allFileNames)
         insert(EXP.PhotostimTrialEvent, data_PhotostimTrialEvent);
         insert(MISC.S1TrialTypeName, data_S1TrialTypeName);
 
+        populate(ANL.TrialTypes);
+        populate(ANL.SessionBehavOverview);
         populate(ANL.SessionBehavPerformance);
+        
         toc
     end
 end
+
 % behv_session();
 %  populate(EXP.PassivePhotostimTrial);
