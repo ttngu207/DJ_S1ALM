@@ -137,7 +137,7 @@ for iFile = 1:1:numel (allFileNames)
             data_BehaviorTrial = Ingest_bpod_EXP_BehaviorTrial (obj, key, iTrials, data_BehaviorTrial, early_lick, go_t, action_event_time,outcome_types);
             
             % Photostim related tables
-            [data_S1PhotostimTrial, data_PhotostimTrial, data_PhotostimTrialEvent, data_S1TrialTypeName] = Ingest_bpod_EXP_Photo (obj, key, iTrials, data_S1PhotostimTrial, data_PhotostimTrial, data_PhotostimTrialEvent, data_S1TrialTypeName);
+            [data_S1PhotostimTrial, data_PhotostimTrial, data_PhotostimTrialEvent, data_S1TrialTypeName] = Ingest_bpod_EXP_Photo (obj, key, iTrials, data_S1PhotostimTrial, data_PhotostimTrial, data_PhotostimTrialEvent, data_S1TrialTypeName, 's1 stim');
             
             % TrialNote
             if ~isempty(trial_note_type)
@@ -149,7 +149,7 @@ for iFile = 1:1:numel (allFileNames)
             
         end
         
-        
+        Ingest_ANL_TrialTypes ('s1 stim', data_S1TrialTypeName)
         
         
         insert(EXP.SessionTrial, data_SessionTrial);
@@ -162,7 +162,6 @@ for iFile = 1:1:numel (allFileNames)
         insert(EXP.PhotostimTrialEvent, data_PhotostimTrialEvent);
         insert(MISC.S1TrialTypeName, data_S1TrialTypeName);
 
-        populate(ANL.TrialTypes);
         populate(ANL.SessionBehavOverview);
         populate(ANL.SessionBehavPerformance);
         

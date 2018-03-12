@@ -29,16 +29,18 @@ stem_reaction_time_miss  = null           : double
 
 
 classdef SessionBehavPerformance < dj.Computed
+    properties
+        keySource = EXP.Session
+    end
     methods(Access=protected)
         function makeTuples(self, key)
             tic
             R_trials=[];
             L_trials=[];
-            task=key.task;
-            key=rmfield(key,{'task','trial_type_name'});
             k = key;
             
             %% Populating ANL.SessionBehavPerformance
+            task = fetch1(EXP.SessionTask & key,'task');
             trials_quit = fetch1(ANL.SessionBehavOverview & key,'trials_quit');
             
             trial_type_names = unique([fetchn((MISC.S1TrialTypeName) & key, 'trial_type_name')]);
@@ -72,7 +74,6 @@ classdef SessionBehavPerformance < dj.Computed
                 trial_type_names2 (ityp) =trnames2(1);
                 original_trial_type_name (ityp)    = oiginname(1);
                 
-                
                 b = (EXP.BehaviorTrial * MISC.S1TrialTypeName) & key ;
                 hit{ityp} = (   setdiff(fetchn(b & 'outcome="hit"','trial'), trials_quit) );
                 ignore{ityp} = (   setdiff(fetchn(b & 'outcome="ignore"','trial'), trials_quit) );
@@ -83,7 +84,7 @@ classdef SessionBehavPerformance < dj.Computed
                 total_noignore_noearly (ityp,1) = numel(  setdiff(fetchn(b &  'outcome!="ignore"' & 'early_lick="no early"','trial'), trials_quit) );
                 total_ignore_noearly_after_quitting (ityp,1) = numel(   setdiff(fetchn(b & 'outcome="ignore"' & 'early_lick!="no early"','trial'), trials_quit) );
                 
-                ba = (EXP.BehaviorTrial * EXP.ActionEvent * MISC.S1TrialTypeName) & key;
+                ba = (EXP.BehaviorTrial * EXP.ActionEvent* MISC.S1TrialTypeName) & key;
                 
                 %reaction time hit
                 [trials,licks_trials]=fetchn(ba & 'outcome="hit"' & 'early_lick="no early"','trial','action_event_time');
@@ -152,10 +153,6 @@ classdef SessionBehavPerformance < dj.Computed
                 k(ityp).stem_reaction_time_hit = RT_hit_stem (ityp);
                 k(ityp).mean_reaction_time_miss  = RT_miss_mean (ityp);
                 k(ityp).stem_reaction_time_miss  = RT_miss_stem (ityp);
-                
-
-                
-                
             end
             %Populating ANL.SessionBehavPerformance
             insert(self,k);

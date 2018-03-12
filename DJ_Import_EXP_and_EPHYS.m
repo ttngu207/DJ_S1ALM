@@ -128,7 +128,7 @@ for iFile = 1:1:numel (allFileNames)
             data_BehaviorTrial = Ingest_EXP_BehaviorTrial (obj, key, iTrials, data_BehaviorTrial, early_lick, outcome_types);
             
             % Photostim related tables
-            [data_S1PhotostimTrial, data_PhotostimTrial, data_PhotostimTrialEvent, data_S1TrialTypeName] = Ingest_EXP_Photo (obj, key, iTrials, data_S1PhotostimTrial, data_PhotostimTrial, data_PhotostimTrialEvent, data_S1TrialTypeName);
+            [data_S1PhotostimTrial, data_PhotostimTrial, data_PhotostimTrialEvent, data_S1TrialTypeName] = Ingest_EXP_Photo (obj, key, iTrials, data_S1PhotostimTrial, data_PhotostimTrial, data_PhotostimTrialEvent, data_S1TrialTypeName, 's1 stim');
             
 %             % Tracking
 %             [data_Tracking] = Ingest_EXP_Tracking (obj, key, iTrials, tracking_data_dir, allVideoNames,  tracking_device, data_Tracking);
@@ -144,7 +144,7 @@ for iFile = 1:1:numel (allFileNames)
             
         end
         
-        
+        Ingest_ANL_TrialTypes ('s1 stim', data_S1TrialTypeName);
         
         
         insert(EXP.SessionTrial, data_SessionTrial);
@@ -183,7 +183,6 @@ for iFile = 1:1:numel (allFileNames)
             populate(EPHYS.UnitCellType);
 
         end
-        populate(ANL.TrialTypes);
         populate(ANL.SessionBehavOverview);
         populate(ANL.SessionBehavPerformance);
         clear obj;

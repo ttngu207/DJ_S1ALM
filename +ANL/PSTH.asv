@@ -58,29 +58,9 @@ classdef PSTH < dj.Computed
             
             
             
-             %% Populate ANL.PSTHTrial
-            counter=0;
-            for iu =1:1:nunits
-                for  itr =unit_trials{iu}
-                    counter=counter+1;
-                    k_PSTHTrial(counter).subject_id=key.subject_id;
-                    k_PSTHTrial(counter).session=key.session;
-                    k_PSTHTrial(counter).electrode_group = electrode_group(iu);
-                    k_PSTHTrial(counter).unit = iu;
-                    k_PSTHTrial(counter).task = task;
-                    
-                    k_PSTHTrial(counter).trial_type_name=trial_names{itr};
-                    k_PSTHTrial(counter).trial = itr;
-                    psth_trial = squeeze (psth_all(iu, itr, :))';
-                    k_PSTHTrial(counter).psth_trial=psth_trial+no_recording_times_mask;
-                end
-            end
-            insert(ANL.PSTHTrial,k_PSTHTrial);
-            
-            
-            %% Populate  ANL.PSTHAverage and ANL.PSTHAdaptiveAverage
-            % Adaptive average - If a trial contains a photostim stimulations, the time epochs before the first stimulation are averaged together with corresponding no-photostim epochs from other trials
-           rel = (MISC.S1TrialTypeName * ANL.TrialTypes * EXP.BehaviorTrial) & key;
+            %% Populate  ANL.PSTHAdaptiveAverage
+            % If a trial contains a photostim stimulations, the time epochs before the first stimulation are averaged together with corresponding no-photostim epochs from other trials
+            rel = (MISC.S1TrialTypeName * ANL.TrialTypes * EXP.BehaviorTrial) & key;
            [trialStim_epochs_mat, trialTypeStim_epochs_mat, stim_epochs, trial_type_names]  = fn_adaptive_trial_avg_stim_mat(rel);
             
             counter=0;
@@ -92,7 +72,6 @@ classdef PSTH < dj.Computed
                     trials_condition  = [fetchn(rel & key_condition, 'trial','ORDER BY trial')];
                     trials_condition_type  = [fetchn(rel & key_condition & key_name, 'trial','ORDER BY trial')];
                     for iu =1:1:nunits
-                        
                         unit_trials_conditon_type  = intersect(unit_trials{iu},trials_condition_type);  
                         psth_u = squeeze (psth_all(iu, :, :));
                         if numel(unit_trials_conditon_type)>0
@@ -118,16 +97,66 @@ classdef PSTH < dj.Computed
                         k_PSTHAverage(counter).electrode_group = electrode_group(iu);
                         k_PSTHAverage(counter).unit = iu;
                         k_PSTHAverage(counter).task = task;
-                        k_PSTHAverage(counter).trial_type_name=key_name.trial_type_name;
+                        k_PSTHAverage(counter).trial_type_name=key_condition.trial_type_name;
                         k_PSTHAverage(counter).outcome=key_condition.outcome;
-                        k_PSTHAverage(counter).num_trials_averaged =numel(unit_trials_conditon_type);
+                        k_PSTHAverage(counter).num_trials_averaged = numel(intersect(unit_trials{iu},trials_to_average));
                         k_PSTHAverage(counter).psth_avg=psth_avg+no_recording_times_mask;
+
                         
                     end
                 end
             end
             insert(ANL.PSTHAverage,k_PSTHAverage);
             insert(ANL.PSTHAdaptiveAverage,k_PSTHAdaptiveAverage);
+            
+            
+            %% Populate ANL.PSTHTrial
+            counter=0;
+            for iu =1:1:nunits
+                for  itr =unit_trials{iu}
+                    counter=counter+1;
+                    k_PSTHTrial(counter).subject_id=key.subject_id;
+                    k_PSTHTrial(counter).session=key.session;
+                    k_PSTHTrial(counter).electrode_group = electrode_group(iu);
+                    k_PSTHTrial(counter).unit = iu;
+                    k_PSTHTrial(counter).task = task;
+                    
+                    k_PSTHTrial(counter).trial_type_name=trial_names{itr};
+                    k_PSTHTrial(counter).trial = itr;
+                    psth_trial = squeeze (psth_all(iu, itr, :))';
+                    k_PSTHTrial(counter).psth_trial=psth_trial+no_recording_times_mask;
+                end
+            end
+            insert(ANL.PSTHTrial,k_PSTHTrial);
+            
+            
+            
+            %% Populate  ANL.PSTHAverage
+            rel = (MISC.S1TrialTypeName * EXP.BehaviorTrial & key);
+            
+            counter=0;
+            for  ityp = 1:1:numel(trial_type_names)
+                for out_type =1:1:numel(outcome)
+                    key_condition.trial_type_name = trial_type_names{ityp};
+                    key_condition.outcome = outcome{out_type};
+                    key_condition.early_lick = 'no early';
+                    trials_to_average  = [fetchn(rel & key_condition, 'trial','ORDER BY trial')];
+                    for iu =1:1:nunits
+                        counter=counter+1;
+                        k_PSTHAverage(counter).subject_id=key.subject_id;
+                        k_PSTHAverage(counter).session=key.session;
+                        k_PSTHAverage(counter).electrode_group = electrode_group(iu);
+                        k_PSTHAverage(counter).unit = iu;
+                        k_PSTHAverage(counter).task = task;
+                        k_PSTHAverage(counter).trial_type_name=key_condition.trial_type_name;
+                        k_PSTHAverage(counter).outcome=key_condition.outcome;
+                        k_PSTHAverage(counter).num_trials_averaged = numel(intersect(unit_trials{iu},trials_to_average));
+                        psth_avg = mean(squeeze (psth_all(iu, trials_to_average, :)),1);
+                        k_PSTHAverage(counter).psth_avg=psth_avg+no_recording_times_mask;
+                    end
+                end
+            end
+            insert(ANL.PSTHAverage,k_PSTHAverage);
             
             toc
             

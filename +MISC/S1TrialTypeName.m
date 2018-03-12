@@ -1,8 +1,8 @@
 %{
 -> EXP.SessionTrial
+-> ANL.TrialTypes
 -----
-trial_type_name                   : varchar(200)      # renamed
-trial_type_name2                  : varchar(200)      # numeric
+trial_type_name2                  : varchar(200)      # descriptive trial type name
 original_trial_type_name          : varchar(200)      # original trial-type name from Solo/Bpod
 
 %}
