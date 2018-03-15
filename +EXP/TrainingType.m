@@ -9,8 +9,8 @@ description                        : varchar(2000)                   #descriptio
 
 classdef TrainingType < dj.Lookup
     properties
-        contents = {'no_training' ''
-            'regular' ''
-            'regular + distractor' 'mice were first trained on the regular S1 photostimulation task  without distractors, then the training continued in the presence of distractors'}
+        contents = {'regular' ''
+            'regular + distractor' 'mice were first trained on the regular S1 photostimulation task  without distractors, then the training continued in the presence of distractors'
+            'regular or regular + distractor' 'includes both training options'}
     end
 end

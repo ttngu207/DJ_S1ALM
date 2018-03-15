@@ -189,5 +189,10 @@ for iFile = 1:1:numel (allFileNames)
         toc
     end
 end
-populate(ANL.TrialTypes);
+populate(ANL.TrialTypesStimTimes);
+populate(ANL.PSTH);
+populate(ANL.PSTHMtrix);
+populate(ANL.SessionPosition);
+populate(ANL.CDrotation);
+populate(ANL.CDrotationAverage);
 %  populate(EXP.PassivePhotostimTrial);

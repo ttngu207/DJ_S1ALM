@@ -168,6 +168,7 @@ for iFile = 1:1:numel (allFileNames)
         toc
     end
 end
+populate(ANL.TrialTypesStimTimes);
 
 % behv_session();
 %  populate(EXP.PassivePhotostimTrial);

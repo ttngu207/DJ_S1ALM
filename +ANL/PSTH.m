@@ -17,18 +17,18 @@ classdef PSTH < dj.Computed
             dt=fetch1(ANL.Parameters & 'parameter_name="psth_time_bin"','parameter_value');
             t_edges = [-6.5:dt:4];
             psth_t_vector = t_edges(1:end-1)+dt/2;
-            go_times =fetchn(EXP.BehaviorTrialEvent & key & 'trial_event_type="go"','trial_event_time');
+            go_times =fetchn(EXP.BehaviorTrialEvent & key & 'trial_event_type="go"','trial_event_time','ORDER BY trial');
             ntrials =numel(go_times)';
             nunits = numel([fetchn(EPHYS.Unit & key,'unit')]);
             electrode_group = [fetchn(EPHYS.Unit & key,'electrode_group')];
             task = fetch1(EXP.SessionTask & key,'task');
-            trial_names = [fetchn((MISC.S1TrialTypeName) & key, 'trial_type_name')];
+            trial_names = [fetchn((MISC.S1TrialTypeName) & key, 'trial_type_name','ORDER BY trial')];
             outcome = fetchn(EXP.Outcome,'outcome');
             
             %% Compute PSTH and populate ANL.PSTH
             sp_first=[];
             sp_last=[];
-            psth_all = zeros(nunits, ntrials, numel(psth_t_vector))+NaN;
+            psth_t_u_tr = zeros(numel(psth_t_vector), nunits, ntrials)+NaN;
             for iu=1:1:nunits
                 
                 k_PSTH(iu).subject_id=key.subject_id;
@@ -46,10 +46,8 @@ classdef PSTH < dj.Computed
                         sp_first = [sp_first spike_times(1)];
                         sp_last = [sp_last spike_times(end)];
                     end
-                    psth_all(iu, itr, :) = histcounts(spike_times, t_edges)/dt;
+                    psth_t_u_tr(:, iu, itr) = histcounts(spike_times, t_edges)/dt;
                 end
-                
-                %iu
             end
             no_recording_times_mask=zeros(1,numel(psth_t_vector));
             no_recording_times_mask ((psth_t_vector<min(sp_first) |  psth_t_vector>max(sp_last)))=NaN;
@@ -58,7 +56,7 @@ classdef PSTH < dj.Computed
             
             
             
-             %% Populate ANL.PSTHTrial
+           %% Populate ANL.PSTHTrial
             counter=0;
             for iu =1:1:nunits
                 for  itr =unit_trials{iu}
@@ -71,7 +69,7 @@ classdef PSTH < dj.Computed
                     
                     k_PSTHTrial(counter).trial_type_name=trial_names{itr};
                     k_PSTHTrial(counter).trial = itr;
-                    psth_trial = squeeze (psth_all(iu, itr, :))';
+                    psth_trial = squeeze (psth_t_u_tr(:, iu, itr))';
                     k_PSTHTrial(counter).psth_trial=psth_trial+no_recording_times_mask;
                 end
             end
@@ -80,7 +78,7 @@ classdef PSTH < dj.Computed
             
             %% Populate  ANL.PSTHAverage and ANL.PSTHAdaptiveAverage
             % Adaptive average - If a trial contains a photostim stimulations, the time epochs before the first stimulation are averaged together with corresponding no-photostim epochs from other trials
-           rel = (MISC.S1TrialTypeName * ANL.TrialTypes * EXP.BehaviorTrial) & key;
+           rel = (MISC.S1TrialTypeName * ANL.TrialTypesStimTimes * EXP.BehaviorTrial) & key;
            [trialStim_epochs_mat, trialTypeStim_epochs_mat, stim_epochs, trial_type_names]  = fn_adaptive_trial_avg_stim_mat(rel);
             
             counter=0;
@@ -94,13 +92,13 @@ classdef PSTH < dj.Computed
                     for iu =1:1:nunits
                         
                         unit_trials_conditon_type  = intersect(unit_trials{iu},trials_condition_type);  
-                        psth_u = squeeze (psth_all(iu, :, :));
+                        psth_u = squeeze (psth_t_u_tr(:, iu, :));
                         if numel(unit_trials_conditon_type)>0
                            [psth_adaptive_avg] = fn_adaptive_trial_avg (trialStim_epochs_mat, trialTypeStim_epochs_mat(ityp,:), stim_epochs, psth_u, trials_condition, psth_t_vector);
                         else
                             psth_adaptive_avg = psth_t_vector+NaN;
                         end
-                        psth_avg = mean(squeeze (psth_all(iu, trials_condition_type, :)),1);
+                        psth_avg = mean(squeeze (psth_t_u_tr(:, iu, trials_condition_type)),2)';
                         
                         counter=counter+1;
                         k_PSTHAdaptiveAverage(counter).subject_id=key.subject_id;

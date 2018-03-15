@@ -44,3 +44,6 @@ end
 
 %calling the method fill
 fill(EPHYS.TestTrialSpikes,1)
+
+   %             rel1=ANL.TrialTypes; rel1=rel1.proj('stim_onsetss');
+            %             rel2= EXP.BehaviorTrial; rel2=rel2.proj('task->temp_task','*');
