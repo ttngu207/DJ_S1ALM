@@ -1,7 +1,7 @@
 %{
 #
 -> ANL.PSTH
--> ANL.TrialTypes
+-> EXP.TrialNameType
 -> EXP.SessionTrial
 ---
 psth_trial                      : longblob    # PSTH of a signle trial, aligned to go cue time

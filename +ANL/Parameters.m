@@ -1,9 +1,9 @@
 %{
 #
-parameter_name           :  varchar(200)
+parameter_name                     :  varchar(200)
 ---
-parameter_value  = null  : blob
-description= null        :  varchar(4000)
+parameter_value  = null            : blob
+parameter_description= null        :  varchar(4000)
 %}
 
 classdef Parameters < dj.Lookup
@@ -18,7 +18,6 @@ classdef Parameters < dj.Lookup
             'trialfraction_for_modeweights' 0.5 'use only this fraction of the trial to compute modes'
             'shuffle_num_for_modeweights' 100 ''
             'mode_mat_sliding_wind' 0.1 'slinding window duration (in seconds) used to compute the Coding Direction along the trial time'
-
             }
     end
 end

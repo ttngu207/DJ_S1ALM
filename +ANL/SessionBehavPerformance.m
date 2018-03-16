@@ -1,10 +1,8 @@
 %{
 #
 -> EXP.Session
--> ANL.TrialTypes
+-> EXP.TrialNameType
 ---
-trial_type_name2                          : varchar(200)      # trial-type name
-original_trial_type_name                  : varchar(200)      # original trial-type name from Solo/Bpod
 trial_type_num                            : smallint          # trial-type number within a session
 -> EXP.TrialInstruction
 
@@ -43,11 +41,11 @@ classdef SessionBehavPerformance < dj.Computed
             task = fetch1(EXP.SessionTask & key,'task');
             trials_quit = fetch1(ANL.SessionBehavOverview & key,'trials_quit');
             
-            trial_type_names = unique([fetchn((MISC.S1TrialTypeName) & key, 'trial_type_name')]);
+            trial_type_names = unique([fetchn((EXP.TrialName) & key, 'trial_type_name')]);
             
             RT_hit =cell(numel(trial_type_names),1);
             RT_miss =cell(numel(trial_type_names),1);
-            go_trials = fetchn(EXP.BehaviorTrialEvent & key & 'trial_event_type="go"', 'trial_event_time');
+            go_trials = fetchn(EXP.BehaviorTrialEvent & key & 'trial_event_type="go"', 'trial_event_time','ORDER BY trial');
             for  ityp = 1:1:numel(trial_type_names)
                 
                 if  trial_type_names{ityp}(1)=='r'
@@ -63,18 +61,18 @@ classdef SessionBehavPerformance < dj.Computed
                 end
                 
                 key.trial_type_name = trial_type_names{ityp};
-                trnames2  = unique([fetchn(MISC.S1TrialTypeName & key, 'trial_type_name2')]);
-                if numel(trnames2)>=2
-                    warning('Multiple trial_type_name2 for trial_type_name: %s',trial_type_names {ityp})
-                end
-                oiginname = unique([fetchn(MISC.S1TrialTypeName & key, 'original_trial_type_name')]);
-                if numel(oiginname)>=2
-                    warning('Multiple original_trial_type_name for trial_type_name: %s',trial_type_names {ityp})
-                end
-                trial_type_names2 (ityp) =trnames2(1);
-                original_trial_type_name (ityp)    = oiginname(1);
+%                 trnames2  = unique([fetchn(MISC.S1TrialTypeName & key, 'trial_type_name2')]);
+%                 if numel(trnames2)>=2
+%                     warning('Multiple trial_type_name2 for trial_type_name: %s',trial_type_names {ityp})
+%                 end
+%                 oiginname = unique([fetchn(MISC.S1TrialTypeName & key, 'original_trial_type_name')]);
+%                 if numel(oiginname)>=2
+%                     warning('Multiple original_trial_type_name for trial_type_name: %s',trial_type_names {ityp})
+%                 end
+%                 trial_type_names2 (ityp) =trnames2(1);
+%                 original_trial_type_name (ityp)    = oiginname(1);
                 
-                b = (EXP.BehaviorTrial * MISC.S1TrialTypeName) & key ;
+                b = (EXP.BehaviorTrial * EXP.TrialName) & key ;
                 hit{ityp} = (   setdiff(fetchn(b & 'outcome="hit"','trial'), trials_quit) );
                 ignore{ityp} = (   setdiff(fetchn(b & 'outcome="ignore"','trial'), trials_quit) );
                 early{ityp} = (   setdiff(fetchn(b & 'early_lick!="no early"','trial'), trials_quit) );
@@ -84,7 +82,7 @@ classdef SessionBehavPerformance < dj.Computed
                 total_noignore_noearly (ityp,1) = numel(  setdiff(fetchn(b &  'outcome!="ignore"' & 'early_lick="no early"','trial'), trials_quit) );
                 total_ignore_noearly_after_quitting (ityp,1) = numel(   setdiff(fetchn(b & 'outcome="ignore"' & 'early_lick!="no early"','trial'), trials_quit) );
                 
-                ba = (EXP.BehaviorTrial * EXP.ActionEvent* MISC.S1TrialTypeName) & key;
+                ba = (EXP.BehaviorTrial * EXP.ActionEvent* EXP.TrialName) & key;
                 
                 %reaction time hit
                 [trials,licks_trials]=fetchn(ba & 'outcome="hit"' & 'early_lick="no early"','trial','action_event_time');
@@ -134,8 +132,6 @@ classdef SessionBehavPerformance < dj.Computed
                 k(ityp).session = key.session;
                 k(ityp).task = task;
                 k(ityp).trial_type_name = trial_type_names{ityp};
-                k(ityp).trial_type_name2 = trial_type_names2{ityp};
-                k(ityp).original_trial_type_name = original_trial_type_name{ityp};
                 k(ityp).trial_type_num = ityp;
                 k(ityp).trial_instruction = trial_instruction;
                 k(ityp).prcnt_hit= prcnt_hit (ityp);

@@ -2,7 +2,7 @@
 # 
 cell_type   :  varchar(100)
 ---
-description :  varchar(4000)
+cell_type_description :  varchar(4000)
 %}
 
 

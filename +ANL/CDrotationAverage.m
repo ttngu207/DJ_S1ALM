@@ -20,7 +20,7 @@ classdef CDrotationAverage < dj.Computed
         function makeTuples(self, key)
             primary_key = key;
             
-            rel = (EXP.Session & EPHYS.TrialSpikes ) * MISC.SessionID * EXP.SessionTraining * ANL.SessionPosition * (ANL.CDrotation);
+            rel = (EXP.Session & EPHYS.TrialSpikes ) * EXP.SessionID * EXP.SessionTraining * ANL.SessionPosition * (ANL.CDrotation);
             
             % 'regular + distractor'
             %--------------------------------------------------------------------------

@@ -1,5 +1,6 @@
 function DJ_Import_EXP_Bpod
-close all; clear all;
+close all;
+DJconnect; %connect to the database using stored user credentials
 
 global dir_data
 dir_data = 'Z:\users\Arseny\Projects\SensoryInput\SiProbeRecording\RawData\bpod_behavior\';
@@ -16,7 +17,7 @@ EPHYS.UnitComment;
 EPHYS.UnitSpikes;
 
 %% for DEBUG
-del_key=fetch(MISC.SessionID);
+del_key=fetch(EXP.SessionID,'ORDER BY session_uid');
 if ~isempty(del_key)
     del_key=del_key(end);
     del(EXP.Session & del_key)
@@ -32,7 +33,7 @@ if isempty(fetch(EXP.Photostim))
     insert(EXP.PhotostimLocation, {'LaserGem473', 2, 'left', 'vS1', 'Bregma',-3500,-1300,0, NaN, NaN} );
     insert(EXP.Photostim, {'LED470', 2, 0.1, waveform} );
     insert(EXP.PhotostimLocation, {'LED470', 2, 'left', 'vS1', 'Bregma',-3500,-1300,0, NaN, NaN} );
-
+    
     
     % full stim
     x = linspace(0,pi,100);
@@ -54,7 +55,7 @@ for iFile = 1:1:numel (allFileNames)
     currentSubject_id = str2num(currentFileName(10:15));
     currentSessionDate = currentFileName(17:26);
     currentSessionDate = char(datetime(currentFileName(17:26),'Format','yyyy-MM-dd','InputFormat','MMMMd_yyyy'));
-
+    
     % Get the  name/date of sessions that are already in the DJ database
     exisitingSubject_id = fetchn(EXP.Session,'subject_id');
     exisitingSession = fetchn(EXP.Session,'session');
@@ -89,7 +90,7 @@ for iFile = 1:1:numel (allFileNames)
         
         %% Insert Session
         insert(EXP.Session, {currentSubject_id, currentSession, currentSessionDate, 'ars','ephys'} );
-        populate(MISC.SessionID);
+        populate(EXP.SessionID);
         
         key_task.subject_id = key.subject_id;
         key_task.session = key.session;
@@ -103,7 +104,7 @@ for iFile = 1:1:numel (allFileNames)
         insert(EXP.SessionTraining, key_training);
         
         obj.task = key_task.task_protocol';
-
+        
         %% Insert Trial-based data
         
         %initializing
@@ -116,28 +117,29 @@ for iFile = 1:1:numel (allFileNames)
         [data_PhotostimTrialEvent] = fn_EmptyStruct ('EXP.PhotostimTrialEvent');
         [data_S1TrialTypeName] = fn_EmptyStruct ('MISC.S1TrialTypeName');
         [data_TrialNote] = fn_EmptyStruct ('EXP.TrialNote');
+        [data_TrialName] = fn_EmptyStruct ('EXP.TrialName');
         
         outcome_types = fetchn(EXP.Outcome,'outcome');
-    
-        total_trials = numel(fetchn(EXP.SessionTrial,'trial_id'));
+        
+        total_trials = numel(fetchn(EXP.SessionTrial,'trial_uid'));
         
         for iTrials = 1:1:obj.nTrials
             
             % EXP.SessionTrial
             data_SessionTrial (iTrials) = struct(...
-                'subject_id',  key.subject_id, 'session', key.session, 'trial', iTrials, 'trial_id', total_trials + iTrials, 'start_time', obj.TrialStartTimestamp(iTrials) - obj.TrialStartTimestamp(1));
+                'subject_id',  key.subject_id, 'session', key.session, 'trial', iTrials, 'trial_uid', total_trials + iTrials, 'start_time', obj.TrialStartTimestamp(iTrials) - obj.TrialStartTimestamp(1));
             
             % EXP.ActionEvent
             [data_ActionEvent, action_event_time]  = Ingest_bpod_EXP_ActionEvent (obj, key, iTrials, data_ActionEvent);
             
             % EXP.TrialEvent
-             [data_TrialEvent, early_lick, trial_note_type, go_t] = Ingest_bpod_EXP_TrialEvent (obj, key, iTrials, data_TrialEvent, action_event_time, currentFileName);
+            [data_TrialEvent, early_lick, trial_note_type, go_t] = Ingest_bpod_EXP_TrialEvent (obj, key, iTrials, data_TrialEvent, action_event_time, currentFileName);
             
             % EXP.BehaviorTrial
             data_BehaviorTrial = Ingest_bpod_EXP_BehaviorTrial (obj, key, iTrials, data_BehaviorTrial, early_lick, go_t, action_event_time,outcome_types);
             
             % Photostim related tables
-            [data_S1PhotostimTrial, data_PhotostimTrial, data_PhotostimTrialEvent, data_S1TrialTypeName] = Ingest_bpod_EXP_Photo (obj, key, iTrials, data_S1PhotostimTrial, data_PhotostimTrial, data_PhotostimTrialEvent, data_S1TrialTypeName, 's1 stim');
+            [data_S1PhotostimTrial, data_PhotostimTrial, data_PhotostimTrialEvent, data_S1TrialTypeName, data_TrialName]= Ingest_bpod_EXP_Photo(obj, key, iTrials, data_S1PhotostimTrial, data_PhotostimTrial, data_PhotostimTrialEvent, data_S1TrialTypeName,data_TrialName, 's1 stim');
             
             % TrialNote
             if ~isempty(trial_note_type)
@@ -149,26 +151,26 @@ for iFile = 1:1:numel (allFileNames)
             
         end
         
-        Ingest_ANL_TrialTypes ('s1 stim', data_S1TrialTypeName)
+        Ingest_EXP_TrialNameType ('s1 stim', data_TrialName)
         
-        
+        insert(EXP.TrialName, data_TrialName);
         insert(EXP.SessionTrial, data_SessionTrial);
         insert(EXP.BehaviorTrial, data_BehaviorTrial);
-
         insert(EXP.ActionEvent, data_ActionEvent);
         insert(EXP.BehaviorTrialEvent, data_TrialEvent);
         insert(MISC.S1PhotostimTrial, data_S1PhotostimTrial);
         insert(EXP.PhotostimTrial, data_PhotostimTrial);
         insert(EXP.PhotostimTrialEvent, data_PhotostimTrialEvent);
         insert(MISC.S1TrialTypeName, data_S1TrialTypeName);
-
-        populate(ANL.SessionBehavOverview);
-        populate(ANL.SessionBehavPerformance);
+        
+        
         
         toc
     end
 end
-populate(ANL.TrialTypesStimTimes);
+populate(ANL.TrialNameTypeStimTime);
 
-% behv_session();
+populate(ANL.SessionBehavOverview);
+populate(ANL.SessionBehavPerformance);
+behv_session();
 %  populate(EXP.PassivePhotostimTrial);

@@ -1,8 +1,8 @@
 %{
 # 
-cf_annotation_type           : varchar(200)                 # coordinate frame annotation type 
+cf_annotation_type                   : varchar(200)                 # coordinate frame annotation type 
 ---
-description                  : varchar(4000) #
+cf_annotation_type_description       : varchar(4000) #
 %}
 
 

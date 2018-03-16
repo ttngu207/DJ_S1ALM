@@ -29,7 +29,7 @@ classdef ASMode < dj.Computed
             mintrials_for_modeweights=fetch1(ANL.Parameters & 'parameter_name="mintrials_for_modeweights"','parameter_value');
             shuffle_num_for_modeweights=fetch1(ANL.Parameters & 'parameter_name="shuffle_num_for_modeweights"','parameter_value');
             trialfraction_for_modeweights=fetch1(ANL.Parameters & 'parameter_name="trialfraction_for_modeweights"','parameter_value');
-            rel = (MISC.S1TrialTypeName * ANL.TrialTypesStimTimes * EXP.BehaviorTrial) & key & 'early_lick="no early"' & 'outcome="hit"';
+            rel = (MISC.S1TrialTypeName * ANL.TrialNameTypeStimTime * EXP.BehaviorTrial) & key & 'early_lick="no early"' & 'outcome="hit"';
             
             % Stimulus
             num = 1;

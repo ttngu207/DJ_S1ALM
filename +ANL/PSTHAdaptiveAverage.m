@@ -1,7 +1,7 @@
 %{
 #
 -> ANL.PSTH
--> ANL.TrialTypes
+-> EXP.TrialNameType
 -> EXP.Outcome
 ---
 num_trials_averaged             : longblob    # number of trials averaged per condition, for this unit. Because this is an adaptive average, the total number of trials refers to trials that were included for the entire trial-duration. 

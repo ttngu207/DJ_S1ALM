@@ -3,6 +3,9 @@ function key = Insert_Unit (self, key, iUnits, unit_channel)
 % Inserting Unit
 key.unit = iUnits;
 key_child = key;
+rel=EPHYS.Unit;
+key.unit_uid  =rel.count;
+
 obj = EXP.getObj(key);
 quality = obj.eventSeriesHash.value{iUnits}.quality;
 if quality ==0
@@ -18,7 +21,6 @@ key.unit_channel = unit_channel;
 
 waveform = -1*mean(obj.eventSeriesHash.value{iUnits}.waveforms, 1);
 [wav,spk_width,~] =  fn_spike_width(waveform);
-
 key.waveform = wav;
 key.spk_width_ms = spk_width;
 key.sampling_fq = 25000;

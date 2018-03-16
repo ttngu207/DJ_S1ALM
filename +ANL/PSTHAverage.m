@@ -1,10 +1,10 @@
 %{
 #
 -> ANL.PSTH
--> ANL.TrialTypes
+-> EXP.TrialNameType
 -> EXP.Outcome
 ---
-num_trials_averaged             : longblob    # number of trials averaged per condition, for this unit
+num_trials_averaged             : int    # number of trials averaged per condition, for this unit
 psth_avg                        : longblob    # trial-type averaged PSTH aligned to go cue time
 %}
 

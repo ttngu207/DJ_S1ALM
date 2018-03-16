@@ -1,4 +1,4 @@
-function [data_S1PhotostimTrial, data_PhotostimTrial, data_PhotostimTrialEvent, data_S1TrialTypeName] = Ingest_EXP_Photo (obj, key, iTrials, data_S1PhotostimTrial,data_PhotostimTrial, data_PhotostimTrialEvent, data_S1TrialTypeName, task)
+function [data_S1PhotostimTrial, data_PhotostimTrial, data_PhotostimTrialEvent, data_S1TrialTypeName, data_TrialName] = Ingest_EXP_Photo (obj, key, iTrials, data_S1PhotostimTrial,data_PhotostimTrial, data_PhotostimTrialEvent, data_S1TrialTypeName,data_TrialName, task)
 trial_type_name=[];
 trial_type_name2=[];
 
@@ -98,4 +98,7 @@ end
 
 data_S1TrialTypeName (end+1) = struct(...
     'subject_id',  key.subject_id, 'session', key.session, 'trial', iTrials, 'task',task, 'trial_type_name',trial_type_name, 'trial_type_name2', trial_type_name2, 'original_trial_type_name',original_trial_type_name);
+
+data_TrialName (end+1) = struct(...
+    'subject_id',  key.subject_id, 'session', key.session, 'trial', iTrials, 'task',task, 'trial_type_name',trial_type_name);
 

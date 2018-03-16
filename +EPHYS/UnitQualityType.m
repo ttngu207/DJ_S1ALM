@@ -2,7 +2,7 @@
 # 
 unit_quality   :  varchar(100)
 ---
-description :  varchar(4000)
+unit_quality_description :  varchar(4000)
 %}
 
 

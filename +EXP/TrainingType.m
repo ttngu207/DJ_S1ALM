@@ -2,7 +2,7 @@
 # Mouse training
 training_type                      : varchar(100)                   # mouse training
 ---
-description                        : varchar(2000)                   #description
+training_type_description          : varchar(2000)                  #
 
 %}
 

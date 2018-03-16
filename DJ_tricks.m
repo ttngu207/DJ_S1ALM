@@ -35,7 +35,7 @@ classdef TestTrialSpikes < dj.Imported
         function makeTuples(self, key)
         end
     end
-     methods (Access=public)
+    methods (Access=public)
         function fill(self, key)
             a=1
         end
@@ -45,5 +45,12 @@ end
 %calling the method fill
 fill(EPHYS.TestTrialSpikes,1)
 
-   %             rel1=ANL.TrialTypes; rel1=rel1.proj('stim_onsetss');
-            %             rel2= EXP.BehaviorTrial; rel2=rel2.proj('task->temp_task','*');
+%             rel1=ANL.TrialTypes; rel1=rel1.proj('stim_onsetss');
+%             rel2= EXP.BehaviorTrial; rel2=rel2.proj('task->temp_task','*');
+
+
+% drop an entire schema
+% dropQuick(package_name.getSchema)
+
+% This redefines `description` with a new name.
+% alterAttribute(EXP.TrainingType, 'desription', 'training_description   : varchar(1000)   # detailed description of the training protocol')

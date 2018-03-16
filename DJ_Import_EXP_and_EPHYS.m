@@ -1,11 +1,12 @@
 function DJ_Import_EXP_and_EPHYS
-close all; clear all;
+close all;
+DJconnect; %connect to the database using stored user credentials
+
 
 global dir_data
 dir_data = 'Z:\users\Arseny\Projects\SensoryInput\SiProbeRecording\ProcessedData\';
 dir_video = 'Z:\users\Arseny\Projects\SensoryInput\SiProbeRecording\RawData\video\';
 
-DJconnect; %connect to the database using stored user credentials
 erd LAB MISC EXP EPHYS CF ANL
 %Initialize
 EXP.SessionComment;
@@ -17,7 +18,7 @@ EPHYS.UnitComment;
 EPHYS.UnitSpikes;
 
 %% for DEBUG
-del_key=fetch(MISC.SessionID);
+del_key=fetch(EXP.SessionID,'ORDER BY session_uid');
 if ~isempty(del_key)
     del_key=del_key(end);
     del(EXP.Session & del_key)
@@ -33,7 +34,7 @@ if isempty(fetch(EXP.Photostim))
     insert(EXP.PhotostimLocation, {'LaserGem473', 2, 'left', 'vS1', 'Bregma',-3500,-1300,0, NaN, NaN} );
     insert(EXP.Photostim, {'LED470', 2, 0.1, waveform} );
     insert(EXP.PhotostimLocation, {'LED470', 2, 'left', 'vS1', 'Bregma',-3500,-1300,0, NaN, NaN} );
-
+    
     
     % full stim
     x = linspace(0,pi,100);
@@ -80,7 +81,7 @@ for iFile = 1:1:numel (allFileNames)
         
         %% Insert Session
         insert(EXP.Session, {currentSubject_id, currentSession, currentSessionDate, 'ars','ephys'} );
-        populate(MISC.SessionID);
+        populate(EXP.SessionID);
         
         %% Load Obj
         obj = EXP.getObj (key);
@@ -102,6 +103,7 @@ for iFile = 1:1:numel (allFileNames)
         [data_S1TrialTypeName] = fn_EmptyStruct ('MISC.S1TrialTypeName');
         [data_Tracking] = fn_EmptyStruct ('EXP.Tracking');
         [data_TrialNote] = fn_EmptyStruct ('EXP.TrialNote');
+        [data_TrialName] = fn_EmptyStruct ('EXP.TrialName');
         
         % for video tracking
         tracking_device = fetchn(EXP.TrackingDevice, 'tracking_device');
@@ -109,14 +111,14 @@ for iFile = 1:1:numel (allFileNames)
         allVideoFiles = dir(tracking_data_dir); %gets  the names of all files and nested directories in this folder
         allVideoNames = {allVideoFiles(~[allVideoFiles.isdir]).name}; %gets only the names of all files
         
-        total_trials = numel(fetchn(EXP.SessionTrial,'trial_id'));
+        total_trials = numel(fetchn(EXP.SessionTrial,'trial_uid'));
         outcome_types = fetchn(EXP.Outcome,'outcome');
-
+        
         for iTrials = 1:1:numel(obj.trialIDs)
             
             % EXP.SessionTrial
             data_SessionTrial (iTrials) = struct(...
-                'subject_id',  key.subject_id, 'session', key.session, 'trial', iTrials, 'trial_id', total_trials + iTrials, 'start_time', obj.trialStartTimes(iTrials));
+                'subject_id',  key.subject_id, 'session', key.session, 'trial', iTrials, 'trial_uid', total_trials + iTrials, 'start_time', obj.trialStartTimes(iTrials));
             
             % EXP.ActionEvent
             [data_ActionEvent, action_event_time]  = Ingest_EXP_ActionEvent (obj, key, iTrials, data_ActionEvent);
@@ -128,10 +130,10 @@ for iFile = 1:1:numel (allFileNames)
             data_BehaviorTrial = Ingest_EXP_BehaviorTrial (obj, key, iTrials, data_BehaviorTrial, early_lick, outcome_types);
             
             % Photostim related tables
-            [data_S1PhotostimTrial, data_PhotostimTrial, data_PhotostimTrialEvent, data_S1TrialTypeName] = Ingest_EXP_Photo (obj, key, iTrials, data_S1PhotostimTrial, data_PhotostimTrial, data_PhotostimTrialEvent, data_S1TrialTypeName, 's1 stim');
+            [data_S1PhotostimTrial, data_PhotostimTrial, data_PhotostimTrialEvent, data_S1TrialTypeName, data_TrialName] = Ingest_EXP_Photo (obj, key, iTrials, data_S1PhotostimTrial, data_PhotostimTrial, data_PhotostimTrialEvent, data_S1TrialTypeName, data_TrialName, 's1 stim');
             
-%             % Tracking
-%             [data_Tracking] = Ingest_EXP_Tracking (obj, key, iTrials, tracking_data_dir, allVideoNames,  tracking_device, data_Tracking);
+            %             % Tracking
+            %             [data_Tracking] = Ingest_EXP_Tracking (obj, key, iTrials, tracking_data_dir, allVideoNames,  tracking_device, data_Tracking);
             
             
             % TrialNote
@@ -144,9 +146,9 @@ for iFile = 1:1:numel (allFileNames)
             
         end
         
-        Ingest_ANL_TrialTypes ('s1 stim', data_S1TrialTypeName);
+        Ingest_EXP_TrialNameType ('s1 stim', data_TrialName);
         
-        
+        insert(EXP.TrialName, data_TrialName);
         insert(EXP.SessionTrial, data_SessionTrial);
         insert(EXP.BehaviorTrial, data_BehaviorTrial);
         insert(EXP.SessionTask, data_SessionTask);
@@ -157,8 +159,8 @@ for iFile = 1:1:numel (allFileNames)
         insert(EXP.PhotostimTrial, data_PhotostimTrial);
         insert(EXP.PhotostimTrialEvent, data_PhotostimTrialEvent);
         insert(MISC.S1TrialTypeName, data_S1TrialTypeName);
-
-%         insert(EXP.Tracking, data_Tracking);
+        
+        %         insert(EXP.Tracking, data_Tracking);
         
         if strcmp(currentFileName(1:4),'data') %insert neuro data unless it's a behavior-only object
             
@@ -181,7 +183,7 @@ for iFile = 1:1:numel (allFileNames)
             % Unit
             populate(EPHYS.Unit);
             populate(EPHYS.UnitCellType);
-
+            
         end
         populate(ANL.SessionBehavOverview);
         populate(ANL.SessionBehavPerformance);
@@ -189,9 +191,9 @@ for iFile = 1:1:numel (allFileNames)
         toc
     end
 end
-populate(ANL.TrialTypesStimTimes);
+populate(ANL.TrialNameTypeStimTime);
 populate(ANL.PSTH);
-populate(ANL.PSTHMtrix);
+populate(ANL.PSTHMatrix);
 populate(ANL.SessionPosition);
 populate(ANL.CDrotation);
 populate(ANL.CDrotationAverage);

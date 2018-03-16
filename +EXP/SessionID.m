@@ -3,8 +3,6 @@
 -> EXP.Session
 ---
 session_uid                 : int          # unique across sessions/animals
-
-unique index (session_uid)
 %}
 
 

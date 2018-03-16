@@ -1,6 +1,6 @@
 %{
 #
--> ANL.TrialTypes
+-> EXP.TrialNameType
 ---
 stimtm_presample = 1000               : double            # presample photostim onset time for this trial-type (in seconds, relative to go-cue), 1000 means that there was no stimulus
 stimtm_sample = 1000                  : double            # sample photostim onset time for this trial-type (in seconds, relative to go-cue), 1000 means that there was no stimulus
@@ -11,7 +11,7 @@ stimtm_latedelay = 1000               : double            # latedelay photostim 
 %}
 
 
-classdef TrialTypesStimTimes < dj.Computed
+classdef TrialNameTypeStimTime < dj.Computed
     methods(Access=protected)
         
         function makeTuples(self, key)

@@ -78,7 +78,7 @@ classdef PSTH < dj.Computed
             
             %% Populate  ANL.PSTHAverage and ANL.PSTHAdaptiveAverage
             % Adaptive average - If a trial contains a photostim stimulations, the time epochs before the first stimulation are averaged together with corresponding no-photostim epochs from other trials
-           rel = (MISC.S1TrialTypeName * ANL.TrialTypesStimTimes * EXP.BehaviorTrial) & key;
+           rel = (MISC.S1TrialTypeName * ANL.TrialNameTypeStimTime * EXP.BehaviorTrial) & key;
            [trialStim_epochs_mat, trialTypeStim_epochs_mat, stim_epochs, trial_type_names]  = fn_adaptive_trial_avg_stim_mat(rel);
             
             counter=0;
