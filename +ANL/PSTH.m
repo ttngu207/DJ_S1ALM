@@ -110,7 +110,8 @@ classdef PSTH < dj.Computed
                         k_PSTHAdaptiveAverage(counter).outcome=key_condition.outcome;
                         k_PSTHAdaptiveAverage(counter).num_trials_averaged = numel(unit_trials_conditon_type);
                         k_PSTHAdaptiveAverage(counter).psth_adaptive_avg=psth_adaptive_avg+no_recording_times_mask;
-                        
+                        k_PSTHAdaptiveAverage(counter).psth_adaptive_avg_id=counter;
+
                         k_PSTHAverage(counter).subject_id=key.subject_id;
                         k_PSTHAverage(counter).session=key.session;
                         k_PSTHAverage(counter).electrode_group = electrode_group(iu);
@@ -120,7 +121,8 @@ classdef PSTH < dj.Computed
                         k_PSTHAverage(counter).outcome=key_condition.outcome;
                         k_PSTHAverage(counter).num_trials_averaged =numel(unit_trials_conditon_type);
                         k_PSTHAverage(counter).psth_avg=psth_avg+no_recording_times_mask;
-                        
+                        k_PSTHAverage(counter).psth_avg_id=counter;
+
                     end
                 end
             end

@@ -4,7 +4,7 @@ function key = Insert_Unit (self, key, iUnits, unit_channel)
 key.unit = iUnits;
 key_child = key;
 rel=EPHYS.Unit;
-key.unit_uid  =rel.count;
+key.unit_uid  =rel.count+1;
 
 obj = EXP.getObj(key);
 quality = obj.eventSeriesHash.value{iUnits}.quality;

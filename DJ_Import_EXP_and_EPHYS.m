@@ -185,16 +185,8 @@ for iFile = 1:1:numel (allFileNames)
             populate(EPHYS.UnitCellType);
             
         end
-        populate(ANL.SessionBehavOverview);
-        populate(ANL.SessionBehavPerformance);
         clear obj;
         toc
     end
 end
-populate(ANL.TrialNameTypeStimTime);
-populate(ANL.PSTH);
-populate(ANL.PSTHMatrix);
-populate(ANL.SessionPosition);
-populate(ANL.CDrotation);
-populate(ANL.CDrotationAverage);
-%  populate(EXP.PassivePhotostimTrial);
+DJ_populate_schemas();

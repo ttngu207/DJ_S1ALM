@@ -1,8 +1,8 @@
 %{
 # 
-brain_area   :  varchar(32)
+brain_area="ALM"            : varchar(32)                   # 
 ---
-description= null   :  varchar(4000)
+brain_area_description=null : varchar(1000)                 # 
 %}
 
 

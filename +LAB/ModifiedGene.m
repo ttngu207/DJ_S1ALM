@@ -1,8 +1,8 @@
 %{
 # 
-gene_modification           : varchar(60)                   # 
+gene_modification                         : varchar(60)                   # 
 ---
-description                 : varchar(256)                  # 
+gene_modification_description             : varchar(1000)                # 
 %}
 
 
