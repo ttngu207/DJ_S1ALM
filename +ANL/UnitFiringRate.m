@@ -1,7 +1,7 @@
 %{
 # Sorted unit
 -> EPHYS.Unit
-smoothing_time_peak_fr                      : int       # smoothing time window (seconds) used to compute the peak firing rates
+smoothing_time_peak_fr                      : double       # smoothing time window (seconds) used to compute the peak firing rates
 ---
 unit_total_spikes                           : int       # total number of spikes emitted by the unit during the session
 mean_fr                                     : double    # mean firing rate (Hz) of the unit for the entire trial duration
