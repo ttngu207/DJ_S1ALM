@@ -78,7 +78,7 @@ classdef PSTH < dj.Computed
             
             %% Populate  ANL.PSTHAverage and ANL.PSTHAdaptiveAverage
             % Adaptive average - If a trial contains a photostim stimulations, the time epochs before the first stimulation are averaged together with corresponding no-photostim epochs from other trials
-           rel = (MISC.S1TrialTypeName * ANL.TrialNameTypeStimTime * EXP.BehaviorTrial) & key;
+           rel = (MISC.S1TrialTypeName * ANL.TrialTypeStimTime * EXP.BehaviorTrial) & key;
            [trialStim_epochs_mat, trialTypeStim_epochs_mat, stim_epochs, trial_type_names]  = fn_adaptive_trial_avg_stim_mat(rel);
             
             counter=0;
@@ -98,7 +98,7 @@ classdef PSTH < dj.Computed
                         else
                             psth_adaptive_avg = psth_t_vector+NaN;
                         end
-                        psth_avg = mean(squeeze (psth_t_u_tr(:, iu, trials_condition_type)),2)';
+                        psth_avg = mean(squeeze (psth_t_u_tr(:, iu, unit_trials_conditon_type)),2)';
                         
                         counter=counter+1;
                         k_PSTHAdaptiveAverage(counter).subject_id=key.subject_id;
@@ -109,8 +109,8 @@ classdef PSTH < dj.Computed
                         k_PSTHAdaptiveAverage(counter).trial_type_name=key_name.trial_type_name;
                         k_PSTHAdaptiveAverage(counter).outcome=key_condition.outcome;
                         k_PSTHAdaptiveAverage(counter).num_trials_averaged = numel(unit_trials_conditon_type);
-                        k_PSTHAdaptiveAverage(counter).psth_adaptive_avg=psth_adaptive_avg+no_recording_times_mask;
-                        k_PSTHAdaptiveAverage(counter).psth_adaptive_avg_id=counter;
+                        k_PSTHAdaptiveAverage(counter).psth_avg=psth_adaptive_avg + no_recording_times_mask;
+                        k_PSTHAdaptiveAverage(counter).psth_avg_id=counter;
 
                         k_PSTHAverage(counter).subject_id=key.subject_id;
                         k_PSTHAverage(counter).session=key.session;

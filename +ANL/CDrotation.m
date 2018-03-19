@@ -29,7 +29,7 @@ classdef CDrotation < dj.Computed
             trialfraction_for_modeweights=1;
             mode_mat_sliding_wind=fetch1(ANL.Parameters & 'parameter_name="mode_mat_sliding_wind"','parameter_value');
             
-            rel = (MISC.S1TrialTypeName * ANL.TrialNameTypeStimTime * EXP.BehaviorTrial) & key & 'early_lick="no early"' & 'outcome="hit"';
+            rel = (MISC.S1TrialTypeName * ANL.TrialTypeStimTime * EXP.BehaviorTrial) & key & 'early_lick="no early"' & 'outcome="hit"';
             
             
             time_vector = psth_t_vector(psth_t_vector>=-4.6 &  psth_t_vector< 1.6 );

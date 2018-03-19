@@ -21,8 +21,11 @@ classdef Parameters < dj.Lookup
             't_go' 0 'time of the go cue, relative to go cue'
             't_chirp1' -3 ' time (seconds) of the first chirp (beginning of sample period), relative to go cue'
             't_chirp2' -2.15 'time (seconds) of the second chirp (end of sample period), relative to go cue'
-            't_sample' -2.5 'time (seconds) of the onset of the sample stimulus, relative to go cue'
-            'smooth_time' 0.1 'smoothing time window (seconds)'
+            't_presample_stim' -3.8 'time (seconds) of the onset of the sample photostimulus, relative to go cue'
+            't_sample_stim' -2.5 'time (seconds) of the onset of the presample photostimulus, relative to go cue'
+            't_earlydelay_stim' -1.6 'time (seconds) of the onset of the early-delay photostimulus, relative to go cue'
+            't_latedelay_stim' -0.8 'time (seconds) of the onset of the late-delay photostimulus, relative to go cue'
+            'smooth_time_cell_psth' 0.2 'smoothing time window (seconds)'
             'mintrials_for_psth' 5 'uses only units that have more than this number of trials in each-trial type/condition'
 
             }

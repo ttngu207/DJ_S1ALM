@@ -53,4 +53,4 @@ fill(EPHYS.TestTrialSpikes,1)
 % dropQuick(package_name.getSchema)
 
 % This redefines `description` with a new name.
-% alterAttribute(EXP.TrainingType, 'desription', 'training_description   : varchar(1000)   # detailed description of the training protocol')
+% alterAttribute(EXP.TrainingType, 'description', 'training_description   : varchar(1000)   # detailed description of the training protocol')
