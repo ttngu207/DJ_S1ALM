@@ -26,10 +26,10 @@ classdef ASMode < dj.Computed
             psth_t_u_tr = fetch1(ANL.PSTHMatrix & key, 'psth_t_u_tr');
             n_units = size(psth_t_u_tr,2);
             psth_t_vector=fetch1(ANL.Parameters & 'parameter_name="psth_t_vector"','parameter_value');
-            mintrials_for_modeweights=fetch1(ANL.Parameters & 'parameter_name="mintrials_for_modeweights"','parameter_value');
+            mintrials_modeweights=fetch1(ANL.Parameters & 'parameter_name="mintrials_modeweights"','parameter_value');
             shuffle_num_for_modeweights=fetch1(ANL.Parameters & 'parameter_name="shuffle_num_for_modeweights"','parameter_value');
             trialfraction_for_modeweights=fetch1(ANL.Parameters & 'parameter_name="trialfraction_for_modeweights"','parameter_value');
-            rel = (MISC.S1TrialTypeName * ANL.TrialTypeStimTime * EXP.BehaviorTrial) & key & 'early_lick="no early"' & 'outcome="hit"';
+            rel = (MISC.S1TrialTypeName * ANL.TrialTypeStimTime * EXP.BehaviorTrial) & key & 'early_lick="no early"' & 'outcome="hit"' & & ANL.TrialBehaving;
             
             % Stimulus
             num = 1;
@@ -37,7 +37,7 @@ classdef ASMode < dj.Computed
             mode_description{num} = 'Selectivity during sample period - i.e. response to stimulus';
             trials1{num} = [fetchn( rel  & 'stimtm_presample="1000"' &  'stimtm_sample="-2.5"', 'trial', 'ORDER BY trial')];  tint1{num} = [-2.5 -2.1];
             trials2{num} = [fetchn( rel  & 'stimtm_presample="1000"' &  'stimtm_sample="1000"', 'trial', 'ORDER BY trial')];  tint2{num} = [-2.5 -2.1];
-            weights{num} = shuffleASModeWeights(psth_t_u_tr,n_units, trials1{num}, trials2{num}, tint1{num}, tint2{num}, psth_t_vector, mintrials_for_modeweights, shuffle_num_for_modeweights, trialfraction_for_modeweights);
+            weights{num} = shuffleASModeWeights(psth_t_u_tr,n_units, trials1{num}, trials2{num}, tint1{num}, tint2{num}, psth_t_vector, mintrials_modeweights, shuffle_num_for_modeweights, trialfraction_for_modeweights);
             ingestASMode (weights{num}, tint1{num}, tint2{num},  key, electrode_group, n_units, label{num}, num , mode_description{num});
             
             % EarlyDelay
@@ -46,7 +46,7 @@ classdef ASMode < dj.Computed
             mode_description{num} = 'Selectivity during early delay';
             trials1{num} = [fetchn( rel  & 'stimtm_presample="1000"' &  'stimtm_sample="-2.5"', 'trial', 'ORDER BY trial')];  tint1{num} = [-2 -1.6] ;
             trials2{num} = [fetchn( rel  & 'stimtm_presample="1000"' &  'stimtm_sample="1000"', 'trial', 'ORDER BY trial')];  tint2{num} = [-2 -1.6] ;
-            weights{num} = shuffleASModeWeights(psth_t_u_tr,n_units, trials1{num}, trials2{num}, tint1{num}, tint2{num}, psth_t_vector, mintrials_for_modeweights, shuffle_num_for_modeweights, trialfraction_for_modeweights);
+            weights{num} = shuffleASModeWeights(psth_t_u_tr,n_units, trials1{num}, trials2{num}, tint1{num}, tint2{num}, psth_t_vector, mintrials_modeweights, shuffle_num_for_modeweights, trialfraction_for_modeweights);
             ingestASMode (weights{num}, tint1{num}, tint2{num},  key, electrode_group, n_units, label{num}, num , mode_description{num});
             
             % LateDelay
@@ -55,7 +55,7 @@ classdef ASMode < dj.Computed
             mode_description{num} = 'Selectivity during late delay';
             trials1{num} = [fetchn( rel  & 'stimtm_presample="1000"' &  'stimtm_sample="-2.5"' & 'stimtm_earlydelay="1000"' & 'stimtm_latedelay="1000"', 'trial', 'ORDER BY trial')];  tint1{num} = [-0.4 0] ;
             trials2{num} = [fetchn( rel  & 'stimtm_presample="1000"' &  'stimtm_sample="1000"' & 'stimtm_earlydelay="1000"' & 'stimtm_latedelay="1000"', 'trial', 'ORDER BY trial')];  tint2{num} = [-0.4 0] ;
-            weights{num} = shuffleASModeWeights(psth_t_u_tr,n_units, trials1{num}, trials2{num}, tint1{num}, tint2{num}, psth_t_vector, mintrials_for_modeweights, shuffle_num_for_modeweights, trialfraction_for_modeweights);
+            weights{num} = shuffleASModeWeights(psth_t_u_tr,n_units, trials1{num}, trials2{num}, tint1{num}, tint2{num}, psth_t_vector, mintrials_modeweights, shuffle_num_for_modeweights, trialfraction_for_modeweights);
             ingestASMode (weights{num}, tint1{num}, tint2{num},  key, electrode_group, n_units, label{num}, num , mode_description{num});
             
             % Ramping
@@ -64,7 +64,7 @@ classdef ASMode < dj.Computed
             mode_description{num} = 'Non-specific ramping during delay';
             trials1{num} = [fetchn( rel  & 'stimtm_presample="1000"' & 'stimtm_earlydelay="1000"', 'trial', 'ORDER BY trial')];  tint1{num} = [-2 -1] ;
             trials2{num} = [fetchn( rel  & 'stimtm_presample="1000"' & 'stimtm_earlydelay="1000"' & 'stimtm_latedelay="1000"', 'trial', 'ORDER BY trial')];  tint2{num} = [-1 0] ;
-            weights{num} = shuffleASModeWeights(psth_t_u_tr,n_units, trials1{num}, trials2{num}, tint1{num}, tint2{num}, psth_t_vector, mintrials_for_modeweights, shuffle_num_for_modeweights, trialfraction_for_modeweights);
+            weights{num} = shuffleASModeWeights(psth_t_u_tr,n_units, trials1{num}, trials2{num}, tint1{num}, tint2{num}, psth_t_vector, mintrials_modeweights, shuffle_num_for_modeweights, trialfraction_for_modeweights);
             ingestASMode (weights{num}, tint1{num}, tint2{num},  key, electrode_group, n_units, label{num}, num , mode_description{num});
             
             %% Orthogonolize  X directions to Y direction 

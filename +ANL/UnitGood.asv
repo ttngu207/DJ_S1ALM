@@ -1,30 +1,13 @@
 %{
-# Sorted unit
+# List of good units, based on number of trials and firing rate
+
 -> EPHYS.Unit
-smoothing_time_peak_fr                      : double       # smoothing time window (seconds) used to compute the peak firing rates
 ---
-unit_total_spikes                           : int       # total number of spikes emitted by the unit during the session
-mean_fr                                     : double    # mean firing rate (Hz) of the unit for the entire trial duration
-mean_fr_sample_delay                        : double    # mean firing rate (Hz) of the unit during sample and delay periods
-mean_fr_response                            : double    # mean firing rate (Hz) of the unit during the response period
-
-peak_fr                                     : double    # peak firing rate (Hz) of the unit for the entire trial duration, psth averaged for each trial-type and the highest peak is chosen from the averaged psths
-peak_fr_sample_delay                        : double    # mean firing rate (Hz) of the unit during sample and delay periods, psth averaged for each trial-type and the highest peak is chosen from the averaged psths
-peak_fr_response                            : double    # mean firing rate (Hz) of the unit during the response period, psth averaged for each trial-type and the highest peak is chosen from the averaged psths
-peak_fr_basic_trials                        : double    # peak firing rate (Hz) of the unit for the entire trial duration, psth averaged for  basic left/right trialy types (without addionatal photostims) and the highest peak is chosen from the averaged psths
-peak_fr_sample_delay_basic_trials           : double    # mean firing rate (Hz) of the unit during sample and delay periods, psth averaged for  basic left/right trialy types (without addionatal photostims) and the highest peak is chosen from the averaged psths
-peak_fr_response_basic_trials               : double    # mean firing rate (Hz) of the unit during the response period, psth averaged for  basic left/right trialy types (without addionatal photostims) and the highest peak is chosen from the averaged psths
-
-adaptive_peak_fr                            : double    # peak firing rate (Hz) of the unit for the entire trial duration, adaptive psth averaged for each trial-type and the highest peak is chosen from the averaged psths
-adaptive_peak_fr_sample_delay               : double    # mean firing rate (Hz) of the unit during sample and delay periods, adaptive psth averaged for each trial-type and the highest peak is chosen from the averaged psths
-adaptive_peak_fr_response                   : double    # mean firing rate (Hz) of the unit during the response period, adaptive psth averaged for each trial-type and the highest peak is chosen from the averaged psths
-adaptive_peak_fr_basic_trials               : double    # peak firing rate (Hz) of the unit for the entire trial duration, adaptive psth averaged for  basic left/right trialy types (without addionatal photostims) and the highest peak is chosen from the averaged psths
-adaptive_peak_fr_sample_delay_basic_trials  : double    # mean firing rate (Hz) of the unit during sample and delay periods, adaptive psth averaged for  basic left/right trialy types (without addionatal photostims) and the highest peak is chosen from the averaged psths
-adaptive_peak_fr_response_basic_trials      : double    # mean firing rate (Hz) of the unit during the response period, adaptive psth averaged for  basic left/right trialy types (without addionatal photostims) and the highest peak is chosen from the averaged psths
+eak_fr_response_basic_trials      : double    # mean firing rate (Hz) of the unit during the response period, adaptive psth averaged for  basic left/right trialy types (without addionatal photostims) and the highest peak is chosen from the averaged psths
 
 %}
 
-classdef UnitFiringRate < dj.Computed
+classdef UnitGood < dj.Computed
     properties
         keySource=EXP.Session & EPHYS.Unit;
     end
@@ -35,14 +18,7 @@ classdef UnitFiringRate < dj.Computed
             Param = struct2table(fetch (ANL.Parameters,'*'));
             mintrials_psth_typeoutcome= Param.parameter_value{(strcmp('mintrials_psth_typeoutcome',Param.parameter_name))};
             t_go = Param.parameter_value{(strcmp('t_go',Param.parameter_name))};
-            t_chirp1 = Param.parameter_value{(strcmp('t_chirp1',Param.parameter_name))};
-            trial_start = -4.2;
-            trial_end = 3;
-            psth_time_bin = Param.parameter_value{(strcmp('psth_time_bin',Param.parameter_name))};
-            smooth_time = Param.parameter_value{(strcmp('smooth_time_cell_psth',Param.parameter_name))};
-            smooth_bins=ceil(smooth_time/psth_time_bin);
-            U = struct2table(fetch(EPHYS.Unit & key,'*'));
-            
+                       
             % fetch and compute total number of spikes and mean FR
             rel1 = (ANL.TrialSpikesGoAligned) & key; %taking only trials that a had a go cue (i.e. some early lick trials won't be included)
             S=struct2table(fetch(rel1,'*'));

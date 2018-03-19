@@ -1,5 +1,6 @@
 %{
-# Trials in whhich the animal was engaged in the task (behaving). Can include occassional ignore (no-lick triaks), but exlcudes epochs in which the animal was mostly no licking
+# Trials in which the animal was engaged in the task (behaving). Can include occassional ignore (no-lick triaks), but exlcudes epochs in which the animal was mostly no licking
+
 -> EXP.SessionTrial
 ---
 %}

@@ -1,30 +1,13 @@
 %{
-# Sorted unit
+# List of good units, based on number of trials and firing rate
+
 -> EPHYS.Unit
-smoothing_time_peak_fr                      : double       # smoothing time window (seconds) used to compute the peak firing rates
 ---
-unit_total_spikes                           : int       # total number of spikes emitted by the unit during the session
-mean_fr                                     : double    # mean firing rate (Hz) of the unit for the entire trial duration
-mean_fr_sample_delay                        : double    # mean firing rate (Hz) of the unit during sample and delay periods
-mean_fr_response                            : double    # mean firing rate (Hz) of the unit during the response period
-
-peak_fr                                     : double    # peak firing rate (Hz) of the unit for the entire trial duration, psth averaged for each trial-type and the highest peak is chosen from the averaged psths
-peak_fr_sample_delay                        : double    # mean firing rate (Hz) of the unit during sample and delay periods, psth averaged for each trial-type and the highest peak is chosen from the averaged psths
-peak_fr_response                            : double    # mean firing rate (Hz) of the unit during the response period, psth averaged for each trial-type and the highest peak is chosen from the averaged psths
-peak_fr_basic_trials                        : double    # peak firing rate (Hz) of the unit for the entire trial duration, psth averaged for  basic left/right trialy types (without addionatal photostims) and the highest peak is chosen from the averaged psths
-peak_fr_sample_delay_basic_trials           : double    # mean firing rate (Hz) of the unit during sample and delay periods, psth averaged for  basic left/right trialy types (without addionatal photostims) and the highest peak is chosen from the averaged psths
-peak_fr_response_basic_trials               : double    # mean firing rate (Hz) of the unit during the response period, psth averaged for  basic left/right trialy types (without addionatal photostims) and the highest peak is chosen from the averaged psths
-
-adaptive_peak_fr                            : double    # peak firing rate (Hz) of the unit for the entire trial duration, adaptive psth averaged for each trial-type and the highest peak is chosen from the averaged psths
-adaptive_peak_fr_sample_delay               : double    # mean firing rate (Hz) of the unit during sample and delay periods, adaptive psth averaged for each trial-type and the highest peak is chosen from the averaged psths
-adaptive_peak_fr_response                   : double    # mean firing rate (Hz) of the unit during the response period, adaptive psth averaged for each trial-type and the highest peak is chosen from the averaged psths
-adaptive_peak_fr_basic_trials               : double    # peak firing rate (Hz) of the unit for the entire trial duration, adaptive psth averaged for  basic left/right trialy types (without addionatal photostims) and the highest peak is chosen from the averaged psths
-adaptive_peak_fr_sample_delay_basic_trials  : double    # mean firing rate (Hz) of the unit during sample and delay periods, adaptive psth averaged for  basic left/right trialy types (without addionatal photostims) and the highest peak is chosen from the averaged psths
-adaptive_peak_fr_response_basic_trials      : double    # mean firing rate (Hz) of the unit during the response period, adaptive psth averaged for  basic left/right trialy types (without addionatal photostims) and the highest peak is chosen from the averaged psths
+eak_fr_response_basic_trials      : double    # mean firing rate (Hz) of the unit during the response period, adaptive psth averaged for  basic left/right trialy types (without addionatal photostims) and the highest peak is chosen from the averaged psths
 
 %}
 
-classdef UnitFiringRate < dj.Computed
+classdef UnitGood < dj.Computed
     properties
         keySource=EXP.Session & EPHYS.Unit;
     end
