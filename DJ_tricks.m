@@ -54,3 +54,12 @@ fill(EPHYS.TestTrialSpikes,1)
 
 % This redefines `description` with a new name.
 % alterAttribute(EXP.TrainingType, 'description', 'training_description   : varchar(1000)   # detailed description of the training protocol')
+
+
+%keySource = (EXP.Session  & EPHYS.Unit) * (EPHYS.CellType & 'cell_type="Pyr" or cell_type="FS" or cell_type="all"') * EPHYS.UnitQualityType * EXP.Outcome;
+%rel & 'task_protocol=2 or task_protocol=3'
+% Or 
+%rel & 'task_protocol in (2,3)'
+
+% delete with restriction
+% del(A & relB) where `relB` is a a restricted subset of table `B`

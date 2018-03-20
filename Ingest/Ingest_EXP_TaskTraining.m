@@ -4,7 +4,7 @@ task =  's1 stim';
 task_protocol = obj.task;
 
 if strcmp(obj.training_type,'full_distractor')
-    training_type = 'regular + distractor';
+    training_type = 'distractor';
 elseif strcmp(obj.training_type,'basic_task')
     training_type = 'regular';
 end

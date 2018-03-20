@@ -23,3 +23,7 @@ populate(ANL.CDrotationAverage);
 ANL.UnitFiringRate;
 ANL.UnitISI;
 ANL.TrialSpikesGoAligned;
+
+ANL.IncludeUnit;
+
+ProjTrialAverage;

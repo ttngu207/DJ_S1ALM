@@ -100,7 +100,7 @@ for iFile = 1:1:numel (allFileNames)
         
         key_training.subject_id = key.subject_id;
         key_training.session = key.session;
-        key_training.training_type = 'regular + distractor';
+        key_training.training_type = 'distractor';
         insert(EXP.SessionTraining, key_training);
         
         obj.task = key_task.task_protocol';

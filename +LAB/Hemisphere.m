@@ -9,6 +9,7 @@ classdef Hemisphere < dj.Lookup
         contents = {
             'left'
             'right'
+            'both'
             }
     end
 end

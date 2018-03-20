@@ -22,10 +22,10 @@ classdef CDrotationAverage < dj.Computed
             
             rel = (EXP.Session & EPHYS.TrialSpikes ) * EXP.SessionID * EXP.SessionTraining * ANL.SessionPosition * (ANL.CDrotation);
             
-            % 'regular + distractor'
+            % 'distractor'
             %--------------------------------------------------------------------------
             key = primary_key;
-            key.training_type ='regular + distractor';
+            key.training_type ='distractor';
             k= key;
             sess_uids = unique([fetchn(rel & key ,'session_uid', 'ORDER BY session_uid' )],'stable');
             key.mode_mat_timebin_vector = fetch1 (rel & 'mode_mat_corr_id=1', 'mode_mat_timebin_vector', 'LIMIT 1');
@@ -89,7 +89,7 @@ classdef CDrotationAverage < dj.Computed
             sess_uids = unique([fetchn(rel & key ,'session_uid', 'ORDER BY session_uid' )],'stable');
             key.mode_mat_timebin_vector = fetch1 (rel & 'mode_mat_corr_id=1', 'mode_mat_timebin_vector', 'LIMIT 1');
             key.mode_mat_sliding_wind = fetch1 (rel & 'mode_mat_corr_id=1', 'mode_mat_sliding_wind', 'LIMIT 1');
-            key.training_type ='regular or regular + distractor';
+            key.training_type ='all';
 
             r1_s = zeros(numel(sess_uids), numel(key.mode_mat_timebin_vector), numel(key.mode_mat_timebin_vector));
             r2_s = zeros(numel(sess_uids), numel(key.mode_mat_timebin_vector), numel(key.mode_mat_timebin_vector));

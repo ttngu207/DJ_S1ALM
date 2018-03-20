@@ -4,7 +4,7 @@
 -> EXP.TrialNameType
 -> EXP.SessionTrial
 ---
-psth_trial                      : longblob    # PSTH of a signle trial, aligned to go cue time
+psth_trial                      : longblob    # PSTH of a single trial, aligned to go cue time
 %}
 
 

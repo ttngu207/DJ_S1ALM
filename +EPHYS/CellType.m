@@ -12,6 +12,7 @@ classdef CellType < dj.Lookup
             'Pyr' 'putative pyramidal'
             'FS' 'fast spiking'
             'not classified' 'intermediate spike-width that falls between spike-width thresholds for FS or Putative pyramidal cells'
+            'all' 'all types'
             }
     end
 end

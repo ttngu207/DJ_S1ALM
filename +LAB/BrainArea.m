@@ -11,6 +11,7 @@ classdef BrainArea < dj.Lookup
         contents = {
             'ALM' 'anterior lateral motor cortex'
             'vS1' 'vibrissal primary somatosensory cortex ("barrel cortex")'
+            'all' 'all areas'
             }
     end
 end

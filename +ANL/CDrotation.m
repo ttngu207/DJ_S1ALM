@@ -42,7 +42,7 @@ classdef CDrotation < dj.Computed
             for it=1:1:numel(time_vector)
                 tint1 = [time_vector(it) time_vector(it)+mode_mat_sliding_wind];
                 tint2 = tint1;
-                mode_mat_t_weights(it,:) = shuffleASModeWeights(psth_t_u_tr,n_units, trials1, trials2, tint1, tint2, psth_t_vector, mintrials_modeweights, shuffle_num_for_modeweights, trialfraction_for_modeweights);
+                mode_mat_t_weights(it,:) = shuffleModeWeights(psth_t_u_tr,n_units, trials1, trials2, tint1, tint2, psth_t_vector, mintrials_modeweights, shuffle_num_for_modeweights, trialfraction_for_modeweights);
             end
             r = corr(mode_mat_t_weights','rows','Pairwise');
             
@@ -62,7 +62,7 @@ classdef CDrotation < dj.Computed
             for it=1:1:numel(time_vector)
                 tint1 = [time_vector(it) time_vector(it)+mode_mat_sliding_wind];
                 tint2 = tint1;
-                mode_mat_t_weights(it,:) = shuffleASModeWeights(psth_t_u_tr,n_units, trials1, trials2, tint1, tint2, psth_t_vector, mintrials_modeweights, shuffle_num_for_modeweights, trialfraction_for_modeweights);
+                mode_mat_t_weights(it,:) = shuffleModeWeights(psth_t_u_tr,n_units, trials1, trials2, tint1, tint2, psth_t_vector, mintrials_modeweights, shuffle_num_for_modeweights, trialfraction_for_modeweights);
             end
             
             r = corr(mode_mat_t_weights','rows','Pairwise');
