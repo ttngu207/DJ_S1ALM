@@ -33,6 +33,7 @@ classdef Parameters < dj.Lookup
             'psth_time_bin' 0.005 'time bin (second) used to compute PSTH, projections, etc'
             'psth_t_vector' [-6.4975:0.005:4] 'time vector (seconds) of bin centers used to compute the PSTH and the projection on modes, aligned to the go cue time'
             'smooth_time_cell_psth' 0.2 'smoothing time window (seconds)'
+            'smooth_time_cell_psth_for_clustering' 0.25 'smoothing time window (seconds) for hierarchical clustering'
 
             'trialfraction_for_modeweights' 0.5 'use only this fraction of the trial to compute modes'
             'shuffle_num_for_modeweights' 100 ''

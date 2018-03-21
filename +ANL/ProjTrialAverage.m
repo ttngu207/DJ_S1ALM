@@ -1,13 +1,13 @@
 %{
 # Projection of the neural acitivity on a mode (neuron weights vector)
 -> EXP.Session
--> LAB.Hemisphere
--> LAB.BrainArea
 -> EPHYS.CellType
 -> EPHYS.UnitQualityType
 -> EXP.Outcome
 -> ANL.ModeTypeName
 -> EXP.TrialNameType
+-> LAB.Hemisphere
+-> LAB.BrainArea
 
 ---
 num_trials_projected        : int            # number of projected trials in this trial-type/outcome

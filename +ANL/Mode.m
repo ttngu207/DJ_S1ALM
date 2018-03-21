@@ -2,15 +2,14 @@
 #  Modes in Activity Space
 -> EPHYS.Unit
 -> ANL.ModeTypeName                    
-mode_time_interval1_st             : double           #  time interval used to compute the mode (start interval, in seconds).
+mode_time1_st             : double           # beginning of the first time interval used to compute the mode (seconds, relative to go cue).
 ---
-mode_unit_weight  = null           : double           # contribution (weight) of each unit to this mode
-mode_time_interval1_end            : double           #  time interval used to compute the mode (end time, in seconds).
-mode_time_interval2_st  = null     : double           # optional, second time interval used to compute the mode(start interval, in seconds).
-mode_time_interval2_end = null     : double           # optional, second time interval used to compute the mode(end interval, in seconds).
-mode_uid                           : int              # unique id that could be used instead of specifying the mode_name
+mode_unit_weight  = null  : double           # contribution (weight) of each unit to this mode
+mode_time1_end            : double           # end of the first time interval used to compute the mode (seconds, relative to go cue).
+mode_time2_st  = null      : double           # beginning of the second time interval used to compute the mode (seconds, relative to go cue).
+mode_time2_end  = null     : double           # end of the second time interval used to compute the mode (seconds, relative to go cue).
+mode_uid                  : int              # unique id that could be used instead of specifying the mode_name
 %}
-
 
 classdef Mode < dj.Computed
     properties
