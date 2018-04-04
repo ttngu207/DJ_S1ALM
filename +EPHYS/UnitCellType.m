@@ -6,12 +6,12 @@
 %}
 
 
-classdef UnitCellType < dj.Imported
+classdef UnitCellType < dj.Computed
     methods(Access=protected)
         
         function makeTuples(self, key)
             
-            spk_width_ms = fetchn(EPHYS.Unit & key , 'spk_width_ms');
+            spk_width_ms = fetchn(EPHYS.UnitWaveform & key , 'spk_width_ms');
             
             if isempty(fetchn(MISC.UnitWaveformComment & key , 'unit_waveform_comment'))
                 if spk_width_ms >=0.6

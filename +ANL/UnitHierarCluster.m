@@ -16,8 +16,8 @@ heirar_cluster_id        : int            # cluster to which this cell belongs. 
 
 classdef UnitHierarCluster < dj.Computed
     properties
-        %         keySource = (EPHYS.CellType & 'cell_type="Pyr" or cell_type="FS" or cell_type="all"') * (EPHYS.UnitQualityType & 'unit_quality="all" or unit_quality="good" or unit_quality="ok or good"') * (LAB.BrainArea & 'brain_area="ALM"') * LAB.Hemisphere * EXP.TrainingType ;
-        keySource = (EPHYS.CellType & 'cell_type="Pyr" or cell_type="FS" or cell_type="all"') * (EPHYS.UnitQualityType & 'unit_quality="ok or good" or unit_quality="good" or unit_quality="all"') * (LAB.BrainArea & 'brain_area="ALM"') * LAB.Hemisphere * EXP.TrainingType ;
+%         keySource = (EPHYS.CellType & 'cell_type="FS"') * (EPHYS.UnitQualityType & 'unit_quality="all" or unit_quality="good" or unit_quality="ok or good"') * (LAB.BrainArea & 'brain_area="ALM"') * LAB.Hemisphere * EXP.TrainingType ;
+        keySource = (EPHYS.CellType & 'cell_type="Pyr" or cell_type="all"') * (EPHYS.UnitQualityType & 'unit_quality="ok or good" or unit_quality="good" or unit_quality="all"') * (LAB.BrainArea & 'brain_area="ALM"') * LAB.Hemisphere * EXP.TrainingType ;
         
     end
     methods(Access=protected)
@@ -70,7 +70,7 @@ classdef UnitHierarCluster < dj.Computed
             smooth_time = Param.parameter_value{(strcmp('smooth_time_cell_psth_for_clustering',Param.parameter_name))};
             smooth_bins=ceil(smooth_time/psth_time_bin);
             
-                      
+            
             % converting to table
             PSTH_L_mat=cell2mat({PSTH_L.psth_avg}');
             PSTH_R_mat=cell2mat({PSTH_R.psth_avg}');
@@ -102,12 +102,13 @@ classdef UnitHierarCluster < dj.Computed
             
             
             %Perform Hierarchical Clustering
-%             figure;
-%             set(gcf,'DefaultAxesFontName','helvetica');
-%             set(gcf,'PaperUnits','centimeters','PaperPosition',[0 0 20 30]);
-%             set(gcf,'PaperOrientation','portrait');
-%             set(gcf,'Units','centimeters','Position',get(gcf,'paperPosition')+[3 0 0 0]);
-            
+            if ~ishandle(1)
+                figure;
+                set(gcf,'DefaultAxesFontName','helvetica');
+                set(gcf,'PaperUnits','centimeters','PaperPosition',[0 0 20 30]);
+                set(gcf,'PaperOrientation','portrait');
+                set(gcf,'Units','centimeters','Position',get(gcf,'paperPosition')+[3 0 0 0]);
+            end
             [cl_id] = fn_ClusterCells(PTSH_RLconcat, [1:1:2*numel(time(t_idx))], key);
             
             % Insert

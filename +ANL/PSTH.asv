@@ -130,7 +130,7 @@ classdef PSTH < dj.Computed
             insert(ANL.PSTHAdaptiveAverage,k_PSTHAdaptiveAverage);
             
             
-            %% Populate  ANL.PSTHAverageLR
+            %% Populate  ANL.PSTHAverageALL
             % Average all L vs. all R trials, even those trials with photostimulations. This is to have more trials for error-trial analysis
             counter=0;
             for  i_LR = 1:1:2
@@ -139,12 +139,13 @@ classdef PSTH < dj.Computed
                     key_instruction.trial_instruction = 'left';
                 else
                     trial_type_name='r';
-                    key_instruction.trial_instruction = 'right';
+                                        key_instruction.trial_instruction = 'left';
+
                 end
                 for out_type =1:1:numel(outcome)
                     key_condition.outcome = outcome{out_type};
                     key_condition.early_lick = 'no early';
-                    trials_condition_type  = [fetchn(rel & key_condition & key_instruction, 'trial','ORDER BY trial')];
+                    trials_condition_type  = [fetchn(rel & key_condition & key_name, 'trial','ORDER BY trial')];
                     for iu =1:1:nunits
                         
                         unit_trials_conditon_type  = intersect(unit_trials{iu},trials_condition_type);
@@ -152,21 +153,21 @@ classdef PSTH < dj.Computed
                         counter=counter+1;
                         
                         
-                        k_PSTHAverageLR(counter).subject_id=key.subject_id;
-                        k_PSTHAverageLR(counter).session=key.session;
-                        k_PSTHAverageLR(counter).electrode_group = electrode_group(iu);
-                        k_PSTHAverageLR(counter).unit = iu;
-                        k_PSTHAverageLR(counter).task = task;
-                        k_PSTHAverageLR(counter).trial_type_name=trial_type_name;
-                        k_PSTHAverageLR(counter).outcome=key_condition.outcome;
-                        k_PSTHAverageLR(counter).num_trials_averaged =numel(unit_trials_conditon_type);
-                        k_PSTHAverageLR(counter).psth_avg=psth_avg+no_recording_times_mask;
-                        k_PSTHAverageLR(counter).psth_avg_id=counter;
+                        k_PSTHAverageALL(counter).subject_id=key.subject_id;
+                        k_PSTHAverageALL(counter).session=key.session;
+                        k_PSTHAverageALL(counter).electrode_group = electrode_group(iu);
+                        k_PSTHAverageALL(counter).unit = iu;
+                        k_PSTHAverageALL(counter).task = task;
+                        k_PSTHAverageALL(counter).trial_type_name=trial_type_name;
+                        k_PSTHAverageALL(counter).outcome=key_condition.outcome;
+                        k_PSTHAverageALL(counter).num_trials_averaged =numel(unit_trials_conditon_type);
+                        k_PSTHAverageALL(counter).psth_avg=psth_avg+no_recording_times_mask;
+                        k_PSTHAverageALL(counter).psth_avg_id=counter;
                         
                     end
                 end
             end
-            insert(ANL.PSTHAverageLR,k_PSTHAverageLR);
+            insert(ANL.PSTHAverageALL,k_PSTHAverageALL);
             
             toc
             

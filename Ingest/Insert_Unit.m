@@ -17,14 +17,19 @@ elseif quality ==2
 end
 
 key.unit_channel = unit_channel;
+self.insert(key);
 
+% Inserting UnitWaveform and UnitWaveformComment
+key_waveform=key_child;
 
 waveform = -1*mean(obj.eventSeriesHash.value{iUnits}.waveforms, 1);
 [wav,spk_width,~] =  fn_spike_width(waveform);
-key.waveform = wav;
-key.spk_width_ms = spk_width;
-key.sampling_fq = 25000;
-self.insert(key);
+key_waveform.waveform = wav-min(wav);
+key_waveform.spk_width_ms = spk_width;
+key_waveform.sampling_fq = 25000;
+key_waveform.waveform_amplitude = max(wav)-min(wav);
+
+insert(EPHYS.UnitWaveform,key_waveform);
 
 if numel(waveform)==123
     key_comments=key_child;

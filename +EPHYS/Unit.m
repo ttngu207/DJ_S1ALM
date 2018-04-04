@@ -5,10 +5,7 @@ unit  : smallint
 ---
 unit_uid                 : int          # unique across sessions/animals
 -> EPHYS.UnitQualityType
-unit_channel    = null      : float     # channel on the probe for each the unit has the largest amplitude (verify that its based on amplitude or other feature)
-waveform                    : blob      # unit average waveform, in samples
-spk_width_ms                : float     # unit average spike width, in ms
-sampling_fq                 :float      # Hz
+unit_channel    = null      : float     # channel on the electrode for which the unit has the largest amplitude
 %}
 
 
@@ -34,7 +31,6 @@ classdef Unit < dj.Imported
                 
             end
             fprintf('Populated %d units recorded from animal %d  on %s', counter, key.subject_id, fetch1(EXP.Session & key,'session_date'))
-            
         end
     end
 end
