@@ -17,7 +17,7 @@ DJconnect; %connect to the database using stored user credentials
 
 populate(ANL.TrialSpikesGoAligned);
 
-
+populate(EPHYS.UnitCellType);
 
 populate(ANL.PSTH);
 populate(ANL.PSTHMatrix);

@@ -5,7 +5,7 @@
 waveform                    : blob      # unit average waveform. time in samples, amplitude in microvolts.
 spk_width_ms                : float     # unit average spike width, in ms
 sampling_fq                 : float     # Hz
-waveform_amplitude          : float     # unit amplitude in microvolts
+waveform_amplitude          : float     # unit amplitude (peak) in microvolts
 %}
 
 

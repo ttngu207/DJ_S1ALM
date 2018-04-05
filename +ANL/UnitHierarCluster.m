@@ -16,8 +16,12 @@ heirar_cluster_id        : int            # cluster to which this cell belongs. 
 
 classdef UnitHierarCluster < dj.Computed
     properties
-%         keySource = (EPHYS.CellType & 'cell_type="FS"') * (EPHYS.UnitQualityType & 'unit_quality="all" or unit_quality="good" or unit_quality="ok or good"') * (LAB.BrainArea & 'brain_area="ALM"') * LAB.Hemisphere * EXP.TrainingType ;
-        keySource = (EPHYS.CellType & 'cell_type="Pyr" or cell_type="all"') * (EPHYS.UnitQualityType & 'unit_quality="ok or good" or unit_quality="good" or unit_quality="all"') * (LAB.BrainArea & 'brain_area="ALM"') * LAB.Hemisphere * EXP.TrainingType ;
+%                         keySource = (EPHYS.CellType & 'cell_type="Pyr" or cell_type="all"') * (EPHYS.UnitQualityType & 'unit_quality="ok or good" or unit_quality="good" or unit_quality="all"') * (LAB.BrainArea & 'brain_area="ALM"') * LAB.Hemisphere * EXP.TrainingType ;
+        keySource = (EPHYS.CellType & 'cell_type="FS"') * (EPHYS.UnitQualityType & 'unit_quality="all" or unit_quality="good" or unit_quality="ok or good"') * (LAB.BrainArea & 'brain_area="ALM"') * LAB.Hemisphere * EXP.TrainingType ;
+        
+        %         keySource = (EPHYS.CellType & 'cell_type="FS"') * (EPHYS.UnitQualityType & 'unit_quality="all" or unit_quality="good" or unit_quality="ok or good"') * (LAB.BrainArea & 'brain_area="vS1"') * (LAB.Hemisphere & 'hemisphere="left"') * EXP.TrainingType ;
+        %         keySource = (EPHYS.CellType & 'cell_type="Pyr" or cell_type="all"') * (EPHYS.UnitQualityType & 'unit_quality="ok or good" or unit_quality="good" or unit_quality="all"') * (LAB.BrainArea & 'brain_area="vS1"') * (LAB.Hemisphere & 'hemisphere="left"') * EXP.TrainingType ;
+        
         
     end
     methods(Access=protected)
@@ -51,16 +55,16 @@ classdef UnitHierarCluster < dj.Computed
                 k = rmfield(k,'unit_quality');
                 %fetching data
                 Units = fetch ((EPHYS.Unit * EPHYS.UnitPosition * EXP.SessionTraining * EPHYS.UnitCellType) & k & ANL.IncludeUnit & 'unit_quality!="multi"', 'ORDER BY unit_uid');
-                PSTH_L = struct2table( fetch((ANL.PSTHAdaptiveAverage * EPHYS.Unit * EPHYS.UnitPosition * EPHYS.UnitCellType * EXP.SessionTraining) & ANL.IncludeUnit &  k & 'unit_quality!="multi"' & 'outcome="hit"' & 'trial_type_name="l"', '*', 'ORDER BY unit_uid'));
-                PSTH_R = struct2table(fetch ((ANL.PSTHAdaptiveAverage * EPHYS.Unit * EPHYS.UnitPosition * EPHYS.UnitCellType * EXP.SessionTraining) & ANL.IncludeUnit &  k & 'unit_quality!="multi"' & 'outcome="hit"' & 'trial_type_name="r"', '*', 'ORDER BY unit_uid'));
+                PSTH_L = struct2table( fetch((ANL.PSTHAverageLR * EPHYS.Unit * EPHYS.UnitPosition * EPHYS.UnitCellType * EXP.SessionTraining) & ANL.IncludeUnit &  k & 'unit_quality!="multi"' & 'outcome="hit"' & 'trial_type_name="l"', '*', 'ORDER BY unit_uid'));
+                PSTH_R = struct2table(fetch ((ANL.PSTHAverageLR * EPHYS.Unit * EPHYS.UnitPosition * EPHYS.UnitCellType * EXP.SessionTraining) & ANL.IncludeUnit &  k & 'unit_quality!="multi"' & 'outcome="hit"' & 'trial_type_name="r"', '*', 'ORDER BY unit_uid'));
             else
                 if contains(k.unit_quality,'all')
                     k = rmfield(k,'unit_quality');
                 end
                 %fetching data
-                Units = fetch ((EPHYS.Unit * EPHYS.UnitPosition * EXP.SessionTraining * EPHYS.UnitCellType) & k & ANL.IncludeUnit & 'unit_quality!="multi"', 'ORDER BY unit_uid');
-                PSTH_L = struct2table( fetch((ANL.PSTHAdaptiveAverage * EPHYS.Unit * EPHYS.UnitPosition * EPHYS.UnitCellType * EXP.SessionTraining) & ANL.IncludeUnit &  k & 'outcome="hit"' & 'trial_type_name="l"', '*', 'ORDER BY unit_uid'));
-                PSTH_R = struct2table(fetch ((ANL.PSTHAdaptiveAverage * EPHYS.Unit * EPHYS.UnitPosition * EPHYS.UnitCellType * EXP.SessionTraining) & ANL.IncludeUnit &  k & 'outcome="hit"' & 'trial_type_name="r"', '*', 'ORDER BY unit_uid'));
+                Units = fetch ((EPHYS.Unit * EPHYS.UnitPosition * EXP.SessionTraining * EPHYS.UnitCellType) & k & ANL.IncludeUnit, 'ORDER BY unit_uid');
+                PSTH_L = struct2table( fetch((ANL.PSTHAverageLR * EPHYS.Unit * EPHYS.UnitPosition * EPHYS.UnitCellType * EXP.SessionTraining) & ANL.IncludeUnit &  k & 'outcome="hit"' & 'trial_type_name="l"', '*', 'ORDER BY unit_uid'));
+                PSTH_R = struct2table(fetch ((ANL.PSTHAverageLR * EPHYS.Unit * EPHYS.UnitPosition * EPHYS.UnitCellType * EXP.SessionTraining) & ANL.IncludeUnit &  k & 'outcome="hit"' & 'trial_type_name="r"', '*', 'ORDER BY unit_uid'));
             end
             
             % fetching params
@@ -103,6 +107,7 @@ classdef UnitHierarCluster < dj.Computed
             
             %Perform Hierarchical Clustering
             if ~ishandle(1)
+                close all;
                 figure;
                 set(gcf,'DefaultAxesFontName','helvetica');
                 set(gcf,'PaperUnits','centimeters','PaperPosition',[0 0 20 30]);

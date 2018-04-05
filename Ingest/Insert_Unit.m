@@ -21,13 +21,14 @@ self.insert(key);
 
 % Inserting UnitWaveform and UnitWaveformComment
 key_waveform=key_child;
-
+uVperBit =  0.3815;
 waveform = -1*mean(obj.eventSeriesHash.value{iUnits}.waveforms, 1);
 [wav,spk_width,~] =  fn_spike_width(waveform);
-key_waveform.waveform = wav-min(wav);
+waveform =  -(wav-wav(1))*uVperBit;
+key_waveform.waveform = waveform;
 key_waveform.spk_width_ms = spk_width;
 key_waveform.sampling_fq = 25000;
-key_waveform.waveform_amplitude = max(wav)-min(wav);
+key_waveform.waveform_amplitude = max(abs(waveform));
 
 insert(EPHYS.UnitWaveform,key_waveform);
 
