@@ -15,6 +15,8 @@ DJconnect; %connect to the database using stored user credentials
 % behv_sessions();
 % populate(ANL.SessionPosition);
 
+% populate(ANL.SessionGrouping);
+
 populate(ANL.TrialSpikesGoAligned);
 
 populate(EPHYS.UnitCellType);
