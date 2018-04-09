@@ -32,5 +32,8 @@ populate(ANL.UnitFiringRate);
 populate(ANL.UnitISI);
 populate(ANL.IncludeUnit);
 
-% populate(ANL.ProjTrialAverage);
+populate(ANL.ProjTrialAverage);
+populate(ANL.ProjTrialAdaptiveAverage);
+populate(ANL.ProjTrialAverageLR);
+
 populate(ANL.UnitHierarCluster);

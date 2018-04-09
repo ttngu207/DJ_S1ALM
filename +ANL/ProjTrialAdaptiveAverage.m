@@ -18,7 +18,7 @@ proj_average                : longblob       # projection of the neural acitivit
 %}
 
 
-classdef ProjTrialAverage < dj.Computed
+classdef ProjTrialAdaptiveAverage < dj.Computed
     properties
         keySource = (EXP.Session  & EPHYS.Unit) * (EPHYS.CellType & 'cell_type="Pyr" or cell_type="FS" or cell_type="all"') * (EPHYS.UnitQualityType & 'unit_quality="all" or unit_quality="good" or unit_quality="ok or good"') * EXP.Outcome;
     end
@@ -35,13 +35,13 @@ classdef ProjTrialAverage < dj.Computed
             if contains(k.unit_quality,'ok or good')
                 k = rmfield(k,'unit_quality');
                 Modes = fetch ((ANL.Mode * EXP.SessionID * EPHYS.Unit  * EPHYS.UnitCellType) & ANL.IncludeUnit & k & 'unit_quality="ok" or unit_quality="good"', '*');
-                PSTH = fetch ((EXP.SessionID * EPHYS.Unit * EPHYS.UnitCellType * EPHYS.UnitPosition * ANL.PSTHAverage) & ANL.IncludeUnit & k & 'unit_quality="ok" or unit_quality="good"', '*');
+                PSTH = fetch ((EXP.SessionID * EPHYS.Unit * EPHYS.UnitCellType * EPHYS.UnitPosition * ANL.PSTHAdaptiveAverage) & ANL.IncludeUnit & k & 'unit_quality="ok" or unit_quality="good"', '*');
             else
                 if contains(k.unit_quality,'all')
                     k = rmfield(k,'unit_quality');
                 end
                 Modes = fetch ((ANL.Mode * EXP.SessionID * EPHYS.Unit  * EPHYS.UnitCellType) & ANL.IncludeUnit & k, '*');
-                PSTH = fetch ((EXP.SessionID * EPHYS.Unit * EPHYS.UnitCellType * EPHYS.UnitPosition * ANL.PSTHAverage) & ANL.IncludeUnit & k, '*');
+                PSTH = fetch ((EXP.SessionID * EPHYS.Unit * EPHYS.UnitCellType * EPHYS.UnitPosition * ANL.PSTHAdaptiveAverage) & ANL.IncludeUnit & k, '*');
             end
             Param = struct2table(fetch (ANL.Parameters,'*'));
 
