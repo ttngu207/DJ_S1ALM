@@ -9,6 +9,7 @@
 -> ANL.ModeWeightsSign
 -> EXP.TrialNameType
 -> EXP.Outcome
+mode_time1_st             : double           # beginning of the first time interval used to compute the mode (seconds, relative to go cue).
 
 ---
 num_trials_projected        : int            # number of projected trials in this trial-type/outcome
@@ -19,18 +20,17 @@ proj_average                : longblob       # projection of the neural acitivit
 %}
 
 
-classdef ProjTrialAdaptiveAverage < dj.Computed
+classdef ProjTrialAdaptiveAverageTime < dj.Computed
     properties
-        %         keySource = (EXP.Session  & EPHYS.Unit) * (EPHYS.CellType & 'cell_type="Pyr" or cell_type="FS" or cell_type="all"') * (EPHYS.UnitQualityType & 'unit_quality="all" or unit_quality="good" or unit_quality="ok or good"') * EXP.Outcome * ANL.ModeWeightsSign;
         keySource = (EXP.Session  & EPHYS.Unit) * (EPHYS.CellType & 'cell_type="Pyr" or cell_type="FS" or cell_type="all"') * (EPHYS.UnitQualityType & 'unit_quality="all" or unit_quality="good" or unit_quality="ok or good"') * EXP.Outcome * ANL.ModeWeightsSign ;
-        
+
     end
     methods(Access=protected)
         function makeTuples(self, key)
             key.task = fetch1(EXP.SessionTask & key,'task');
             
             k=key;
-                        Modes = fetch (ANL.Mode  & k, '*');
+                        ModeTime = fetch (ANL.ModeTime  & k, '*');
 
             if contains(k.cell_type,'all')
                 k = rmfield(k,'cell_type');
@@ -56,11 +56,20 @@ classdef ProjTrialAdaptiveAverage < dj.Computed
             if numel(unique([PSTH.unit]))>1 %i.e. there are more than one cell
                 if ~isempty(PSTH)
                     PSTH = struct2table(PSTH);
-                    mode_names = unique({Modes.mode_type_name})';
+                    mode_times = unique([ModeTime.mode_time1_st])';
                     counter=1;
-                    for imod = 1:1:numel(mode_names)
-                        M = Modes(strcmp(mode_names{imod},{Modes.mode_type_name}'));
+                    key(1).mode_time1_st=[];
+                    for it = 1:1:numel(mode_times)
+                        M = ModeTime([ModeTime.mode_time1_st] == mode_times(it));
+                        key_idx = size(key,2);
+                        if key_idx==1
+                            key_idx=0;
+                        end
                         [key, counter] = fn_projectTrialAvg_populate(M, PSTH, key, counter,Param);
+                        
+                        for ic=(key_idx+1):1:(counter-1)
+                        key(ic).mode_time1_st=mode_times(it);
+                        end
                     end
                     insert(self,key);
                 end

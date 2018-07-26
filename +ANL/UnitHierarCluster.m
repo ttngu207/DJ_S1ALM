@@ -80,10 +80,10 @@ classdef UnitHierarCluster < dj.Computed
             PSTH_R_mat=cell2mat({PSTH_R.psth_avg}');
             
             %smoothing
-            PSTH_L_mat = movmean(PSTH_L_mat, [smooth_bins 0], 2, 'Endpoints','shrink');
-            PSTH_R_mat = movmean(PSTH_R_mat, [smooth_bins 0], 2, 'Endpoints','shrink');
-            % PSTH_L = movmean(PSTH_L, [smooth_bins +1], 2, 'Endpoints','shrink');
-            % PSTH_R = movmean(PSTH_R, [smooth_bins +1], 2, 'Endpoints','shrink');
+            PSTH_L_mat = movmean(PSTH_L_mat, [smooth_bins 0], 2, 'omitnan','Endpoints','shrink');
+            PSTH_R_mat = movmean(PSTH_R_mat, [smooth_bins 0], 2, 'omitnan','Endpoints','shrink');
+            % PSTH_L = movmean(PSTH_L, [smooth_bins +1], 2, 'omitnan','Endpoints','shrink');
+            % PSTH_R = movmean(PSTH_R, [smooth_bins +1], 2, 'omitnan','Endpoints','shrink');
             
             
             %taking only some time interval

@@ -19,7 +19,7 @@ proj_average                : longblob       # projection of the neural acitivit
 %}
 
 
-classdef ProjTrialAdaptiveAverage < dj.Computed
+classdef ProjTrialAdaptiveAverageBaseline < dj.Computed
     properties
         %         keySource = (EXP.Session  & EPHYS.Unit) * (EPHYS.CellType & 'cell_type="Pyr" or cell_type="FS" or cell_type="all"') * (EPHYS.UnitQualityType & 'unit_quality="all" or unit_quality="good" or unit_quality="ok or good"') * EXP.Outcome * ANL.ModeWeightsSign;
         keySource = (EXP.Session  & EPHYS.Unit) * (EPHYS.CellType & 'cell_type="Pyr" or cell_type="FS" or cell_type="all"') * (EPHYS.UnitQualityType & 'unit_quality="all" or unit_quality="good" or unit_quality="ok or good"') * EXP.Outcome * ANL.ModeWeightsSign ;
@@ -30,8 +30,8 @@ classdef ProjTrialAdaptiveAverage < dj.Computed
             key.task = fetch1(EXP.SessionTask & key,'task');
             
             k=key;
-                        Modes = fetch (ANL.Mode  & k, '*');
-
+            Modes = fetch (ANL.Mode  & k, '*');
+            
             if contains(k.cell_type,'all')
                 k = rmfield(k,'cell_type');
             end
@@ -49,21 +49,26 @@ classdef ProjTrialAdaptiveAverage < dj.Computed
             end
             
             
-            
-            
             Param = struct2table(fetch (ANL.Parameters,'*'));
+            time = Param.parameter_value{(strcmp('psth_t_vector',Param.parameter_name))};
+            mode_names = unique({Modes.mode_type_name})';
             
-            if numel(unique([PSTH.unit]))>1 %i.e. there are more than one cell
-                if ~isempty(PSTH)
-                    PSTH = struct2table(PSTH);
-                    mode_names = unique({Modes.mode_type_name})';
-                    counter=1;
-                    for imod = 1:1:numel(mode_names)
-                        M = Modes(strcmp(mode_names{imod},{Modes.mode_type_name}'));
-                        [key, counter] = fn_projectTrialAvg_populate(M, PSTH, key, counter,Param);
+            if ~isempty(mode_names)
+                for imod = 1:1:numel(mode_names)
+                    key.mode_type_name = mode_names{imod};
+                    Proj =  fetch(ANL.ProjTrialAdaptiveAverage & key,'*');
+                                       
+                    kkl.trial_type_name='l';
+                    l_proj = fetch1(ANL.ProjTrialAdaptiveAverage & key & kkl,'proj_average');
+                    baseline = mean(l_proj(time>=-4 & time<-3));
+                    for ii=1:1:size(Proj,1)
+                        Proj(ii).proj_average = (Proj(ii).proj_average -baseline);
+%                     hold on
+%                         plot(time,Proj(ii).proj_average)
                     end
-                    insert(self,key);
+                    insert(self,Proj);
                 end
+                
             end
         end
     end

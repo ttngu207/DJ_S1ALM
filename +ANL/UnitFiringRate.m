@@ -5,6 +5,9 @@ smoothing_time_peak_fr                      : double       # smoothing time wind
 ---
 unit_total_spikes                           : int       # total number of spikes emitted by the unit during the session
 mean_fr                                     : double    # mean firing rate (Hz) of the unit for the entire trial duration
+mean_fr_presample                           : double    # mean firing rate (Hz) of the unit in the second before the sample period
+mean_fr_sample                           : double    # mean firing rate (Hz) during the sample period
+mean_fr_delay                           : double    # mean firing rate (Hz) of the unit in the delay period
 mean_fr_sample_delay                        : double    # mean firing rate (Hz) of the unit during sample and delay periods
 mean_fr_response                            : double    # mean firing rate (Hz) of the unit during the response period
 
@@ -36,6 +39,7 @@ classdef UnitFiringRate < dj.Computed
             mintrials_psth_typeoutcome= Param.parameter_value{(strcmp('mintrials_psth_typeoutcome',Param.parameter_name))};
             t_go = Param.parameter_value{(strcmp('t_go',Param.parameter_name))};
             t_chirp1 = Param.parameter_value{(strcmp('t_chirp1',Param.parameter_name))};
+            t_chirp2 = Param.parameter_value{(strcmp('t_chirp2',Param.parameter_name))};
             trial_start = -4.2;
             trial_end = 3;
             psth_time_bin = Param.parameter_value{(strcmp('psth_time_bin',Param.parameter_name))};
@@ -68,6 +72,10 @@ classdef UnitFiringRate < dj.Computed
                 k(iu).unit_total_spikes = numel(spike_times_go);
                 
                 k(iu).mean_fr = sum(spike_times_go>=trial_start & trial_end>spike_times_go)/ ((trial_end-trial_start)*num_trials_in_unit);
+                k(iu).mean_fr_presample = sum(spike_times_go>=(t_chirp1-1) & spike_times_go<t_chirp1)/ ((1)*num_trials_in_unit);
+                k(iu).mean_fr_sample = sum(spike_times_go>=(t_chirp2-0.4) & spike_times_go<t_chirp2)/ ((0.4)*num_trials_in_unit);
+                k(iu).mean_fr_delay = sum(spike_times_go>=(t_go-2) & spike_times_go<t_go)/ ((2)*num_trials_in_unit);
+
                 k(iu).mean_fr_sample_delay = sum(spike_times_go>=t_chirp1 & t_go>spike_times_go)/ ((t_go-t_chirp1)*num_trials_in_unit);
                 k(iu).mean_fr_response = sum(spike_times_go>=t_go & trial_end>spike_times_go)/ ((trial_end-t_go)*num_trials_in_unit);
                 
@@ -84,7 +92,7 @@ classdef UnitFiringRate < dj.Computed
                     peak_fr_sample_delay(ipsth) = nanmax(psth_avg((psth_t_vector>=t_chirp1 & t_go>psth_t_vector)));
                     peak_fr_response(ipsth) = nanmax(psth_avg((psth_t_vector>=t_go & trial_end>psth_t_vector)));
                 end
-                ix_basic_trials_types=strcmp(PSTH_U.trial_type_name,'l') | strcmp(PSTH_U.trial_type_name,'r'); %trial types withot distractor
+                ix_basic_trials_types=strcmp(PSTH_U.trial_type_name,'l') | strcmp(PSTH_U.trial_type_name,'r'); %trial types without distractor
                 
                 k(iu).peak_fr = nanmax([0,peak_fr]);
                 k(iu).peak_fr_sample_delay = nanmax([0,peak_fr_sample_delay]);
