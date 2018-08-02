@@ -17,7 +17,7 @@ classdef SVMdecoderFindErrorTrials < dj.Computed
         function makeTuples(self, key)
             tic
             if  strcmp(key.trial_type_name,'l_-1.6Full') || strcmp(key.trial_type_name,'l_-1.6Mini') || strcmp(key.trial_type_name,'l') 
-                [decoded_as_error, test_trial_num] = fn_SVM_decoder_to_identify_error_trials(key);
+                [decoded_as_error, test_trial_num] = fn_SVM_decoder_to_identify_LEFTerror_trials(key);
                 if ~isempty(decoded_as_error)
                     for it=1:1:numel(test_trial_num)
                         key(it).subject_id = key(1).subject_id;

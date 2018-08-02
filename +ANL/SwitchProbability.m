@@ -20,7 +20,7 @@ normalized_proj_bins                 : blob                  # binned distance a
 
 classdef SwitchProbability < dj.Computed
     properties
-        keySource = (EXP.Session  & EPHYS.Unit) * (EPHYS.CellType & 'cell_type="Pyr" or cell_type="all"') * (EPHYS.UnitQualityType & 'unit_quality="all" or unit_quality="good" or unit_quality="ok or good"') * (ANL.ModeTypeName & "mode_type_name='LateDelay'") * (ANL.ModeWeightsSign & 'mode_weights_sign="all"') * (EXP.TrialNameType &  'trial_type_name="l" or trial_type_name="l_-1.6Full" or trial_type_name="l_-1.6Mini"');
+        keySource = (EXP.Session  & (EPHYS.Unit))*ANL.SessionPosition * (EPHYS.CellType & 'cell_type="Pyr" or cell_type="all"') * (EPHYS.UnitQualityType & 'unit_quality="all" or unit_quality="good" or unit_quality="ok or good"') * (ANL.ModeTypeName & "mode_type_name='LateDelay'") * (ANL.ModeWeightsSign & 'mode_weights_sign="all"') * (EXP.TrialNameType &  'trial_type_name="l" or trial_type_name="l_-1.6Full" or trial_type_name="l_-1.6Mini"');
         
         
     end
@@ -36,7 +36,6 @@ classdef SwitchProbability < dj.Computed
             psth_time_bin = Param.parameter_value{(strcmp('psth_time_bin',Param.parameter_name))};
             smooth_time = Param.parameter_value{(strcmp('smooth_time_proj',Param.parameter_name))};
             smooth_bins=ceil(smooth_time/psth_time_bin);
-            
             rel_Proj = ( ANL.ProjTrial * EXP.Session * EXP.SessionID  * ANL.SVMdecoderFindErrorTrials ) & key & 'outcome!="ignore"';
             trial_decoded_type = {'all','correct','error'};
             for i=1:1:numel(trial_decoded_type)
@@ -58,7 +57,6 @@ classdef SwitchProbability < dj.Computed
                 p = fn_compute_proj_binning (proj(i),proj(1), tidx);
                 key.switch_prob = p.bin_percent;
                 key.normalized_proj_bins = p.edges;
-                
                 insert(self,key)
                 
             end
