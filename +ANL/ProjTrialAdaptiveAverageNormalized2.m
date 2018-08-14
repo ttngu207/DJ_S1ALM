@@ -66,7 +66,7 @@ classdef ProjTrialAdaptiveAverageNormalized2 < dj.Computed
                     kkr.trial_type_name='r';
                     l_proj = fetch1(ANL.ProjTrialAdaptiveAverage & key & kkl,'proj_average');
                     r_proj = fetch1(ANL.ProjTrialAdaptiveAverage & key & kkr,'proj_average');
-                    %                     selectivity = r_proj-l_proj;
+                    % selectivity = r_proj-l_proj;
                     selectivity = r_proj;
                     selectivity = movmean(selectivity,[smooth_bins 0], 2, 'omitnan','Endpoints','shrink');
                     max_selectivity = nanmax(selectivity (time>=mode_time1_st & time<mode_time1_end));

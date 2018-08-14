@@ -62,7 +62,6 @@ classdef ProjTrialAdaptiveAverageNormalized3 < dj.Computed
                     Proj =  fetch(ANL.ProjTrialAdaptiveAverage & key,'*');
                     mode_time1_st =  unique(fetchn(ANL.Mode & key,'mode_time1_st'));
                     mode_time1_end =  unique(fetchn(ANL.Mode & key,'mode_time1_end'));
-                    
                     kkl.trial_type_name='l';
                     kkr.trial_type_name='r';
                     l_proj = fetch1(ANL.ProjTrialAdaptiveAverage & key & kkl,'proj_average');

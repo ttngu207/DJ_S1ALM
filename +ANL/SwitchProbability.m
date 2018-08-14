@@ -54,7 +54,7 @@ classdef SwitchProbability < dj.Computed
                 
                 tidx = time>=key.time_used_for_decoding_start & time<key.time_used_for_decoding_end;
                 
-                p = fn_compute_proj_binning (proj(i),proj(1), tidx);
+                p = fn_compute_proj_binning (proj(i),proj(1), tidx, time);
                 key.switch_prob = p.bin_percent;
                 key.normalized_proj_bins = p.edges;
                 insert(self,key)
