@@ -27,15 +27,17 @@ if numel(unit_num)<2
 end
 psth_t_u_tr = fetch1(ANL.PSTHMatrix * EXP.SessionID & key , 'psth_t_u_tr');
 
-if key.flag_include_distractor_trials ==1
-    analyzed_trials = fetchn(EXP.BehaviorTrial * EXP.SessionID * EXP.TrialName & key  & 'early_lick="no early"','trial','ORDER BY trial');
-elseif key.flag_include_distractor_trials ==0
-    if strcmp(key.trial_instruction,'left')
-        analyzed_trials = fetchn(EXP.BehaviorTrial * EXP.SessionID * EXP.TrialName & key & 'trial_type_name ="l"' & 'early_lick="no early"','trial','ORDER BY trial');
-    elseif strcmp(key.trial_instruction,'right')
-        analyzed_trials = fetchn(EXP.BehaviorTrial * EXP.SessionID * EXP.TrialName & key & 'trial_type_name ="r"' & 'early_lick="no early"','trial','ORDER BY trial');
+if strcmp(key.time_interval_correlation_description,'pre-sample')
+    key=rmfield(key,'trial_instruction');
+    analyzed_trials = fetchn(EXP.BehaviorTrial* ANL.TrialTypeGraphic * EXP.SessionID * EXP.TrialName & key & 'trialtype_no_presample =1' & 'early_lick="no early"','trial','ORDER BY trial');
+else
+    if key.flag_include_distractor_trials ==1
+        analyzed_trials = fetchn(EXP.BehaviorTrial * EXP.SessionID * EXP.TrialName & key  & 'early_lick="no early"','trial','ORDER BY trial');
+    elseif key.flag_include_distractor_trials ==0
+        analyzed_trials = fetchn(EXP.BehaviorTrial* ANL.TrialTypeGraphic * EXP.SessionID * EXP.TrialName & key & 'trialtype_left_and_right_no_distractors =1' & 'early_lick="no early"','trial','ORDER BY trial');
     end
 end
+
 
 if numel(analyzed_trials)<10
     return
@@ -52,7 +54,7 @@ for i_u=1:1:size(psth_t_u_tr,2)
         ju=squeeze(psth_t_u_tr(:,j_u,:));
         r=corr(iu(:),ju(:),'type','Pearson','rows','pairwise');
         corr_mat(i_u,j_u)=r;
-%         corr_mat(i_u,j_u)=nanmean(diag(r));
+        %         corr_mat(i_u,j_u)=nanmean(diag(r));
         c=cov(iu,ju,'omitrows');
         cov_mat(i_u,j_u)=c(1,2);
     end

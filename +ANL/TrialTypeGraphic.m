@@ -23,6 +23,7 @@ trialtype_flag_left_stim_mini_and_control_right =0          : smallint          
 trialtype_flag_left_stim_mini_nopresample_and_control_right =0 : smallint          # trials with mini stimuli (on left trials) and also right basic trial; does not include presample trials
 trialtype_flag_left_full_only_presample_and_control_right=0 : smallint          # flag include full distractors presample trial , and basic left and right trial
 trialtype_left_and_right_no_distractors=0                   : smallint          # only pure left and right trials (without any distractors)
+trialtype_no_presample=0                   : smallint          #all trial-types withpout pre-sample stimulation
 
 %}
 
@@ -58,6 +59,7 @@ classdef TrialTypeGraphic < dj.Computed
                         key.trialtype_flag_right_full_only_presample_and_control_left=1;
                         key.trialtype_flag_left_full_only_presample_and_control_right=1;
                         key.trialtype_left_and_right_no_distractors=1;
+                        key.trialtype_no_presample=1;
                     case 'l_-0.8Full'
                         key.trialtype_rgb = [0.9 0.8 0];    % dark-yellow
                         key.trialtype_plot_order = 3;
@@ -69,6 +71,7 @@ classdef TrialTypeGraphic < dj.Computed
                         key.trialtype_flag_left_stim_full =1;
                         key.trialtype_flag_left_stim_full_nopresample =1;
                         key.trialtype_flag_left_full_nopresample=1;
+                                                key.trialtype_no_presample=1;
                     case 'l_-0.8Mini'
                         %                         key.trialtype_rgb = [1 1 0];        % yellow
                         key.trialtype_rgb = [0.9 0.8 0];    % dark-yellow
@@ -81,6 +84,7 @@ classdef TrialTypeGraphic < dj.Computed
                         key.trialtype_flag_left_stim_mini_nopresample=1;
                         key.trialtype_flag_left_stim_mini_and_control_right =1;
                         key.trialtype_flag_left_stim_mini_nopresample_and_control_right=1;
+                                                key.trialtype_no_presample=1;
                     case 'l_-1.6Full'
                         key.trialtype_rgb = [1 0.5 0.3];    % orange
                         key.trialtype_plot_order = 5;
@@ -91,12 +95,14 @@ classdef TrialTypeGraphic < dj.Computed
                         key.trialtype_flag_left_stim_full =1;
                         key.trialtype_flag_left_stim_full_nopresample =1;
                         key.trialtype_flag_left_full_nopresample=1;
+                                                key.trialtype_no_presample=1;
                     case 'l_-1.6Full_-0.8Full'
                         key.trialtype_rgb = [1 0.5 0.3];    % orange
                         key.trialtype_plot_order = 6;
                         key.trialtype_flag_standard = 0;
                         key.trialtype_flag_left_and_control_right = 1;
                         key.trialtype_flag_left_and_control_right_nopresample=1;
+                                                key.trialtype_no_presample=1;
                     case 'l_-1.6Mini'
                         key.trialtype_rgb = [1 0.5 0.3];    % orange
                         key.trialtype_plot_order = 7;
@@ -108,6 +114,7 @@ classdef TrialTypeGraphic < dj.Computed
                         key.trialtype_flag_left_stim_mini_nopresample=1;
                         key.trialtype_flag_left_stim_mini_and_control_right =1;
                         key.trialtype_flag_left_stim_mini_nopresample_and_control_right=1;
+                                                key.trialtype_no_presample=1;
                     case 'l_-2.5Mini'
                         key.trialtype_rgb = [1 0 1];        % magenta
                         key.trialtype_plot_order = 8;
@@ -119,18 +126,21 @@ classdef TrialTypeGraphic < dj.Computed
                         key.trialtype_flag_left_stim_mini_nopresample=1;
                         key.trialtype_flag_left_stim_mini_and_control_right =1;
                         key.trialtype_flag_left_stim_mini_nopresample_and_control_right=1;
+                                                key.trialtype_no_presample=1;
                     case 'l_-2.5Mini(FullX0.5)'
                         key.trialtype_rgb = [0 1 0];        % green
                         key.trialtype_plot_order = 9;
                         key.trialtype_flag_standard = 0;
                         key.trialtype_flag_left_and_control_right = 1;
                         key.trialtype_flag_left_and_control_right_nopresample=1;
+                                                key.trialtype_no_presample=1;
                     case 'l_-2.5Mini(FullX0.75)'
                         key.trialtype_rgb = [0.25 1 0.25];  % light-green
                         key.trialtype_plot_order = 10;
                         key.trialtype_flag_standard = 0;
                         key.trialtype_flag_left_and_control_right = 1;
                         key.trialtype_flag_left_and_control_right_nopresample=1;
+                                                key.trialtype_no_presample=1;
                     case 'l_-3.8Full'
                         key.trialtype_rgb = [0.7 0.2 0.1];  % brown
                         key.trialtype_plot_order = 11;
@@ -177,6 +187,7 @@ classdef TrialTypeGraphic < dj.Computed
                         key.trialtype_flag_right_full_only_presample_and_control_left=1;
                         key.trialtype_flag_left_full_only_presample_and_control_right=1;
                                                 key.trialtype_left_and_right_no_distractors=1;
+                                                                        key.trialtype_no_presample=1;
                     case 'r_-0.8Full'
                         key.trialtype_rgb = [0 0.9 1];      % dark-cyan
                         key.trialtype_plot_order = 15;
@@ -185,12 +196,14 @@ classdef TrialTypeGraphic < dj.Computed
                         key.trialtype_flag_full_late = 1;
                         key.trialtype_flag_right_and_control_left = 1;
                         key.trialtype_flag_right_full_nopresample_and_control_left=1;
+                                                key.trialtype_no_presample=1;
                     case 'r_-0.8Mini'
                         key.trialtype_rgb = [0 1 1];        % cyan
                         key.trialtype_plot_order = 16;
                         key.trialtype_flag_standard = 1;
                         key.trialtype_flag_mini = 1;
                         key.trialtype_flag_right_and_control_left = 1;
+                                                key.trialtype_no_presample=1;
                     case 'r_-1.6Full'
                         key.trialtype_rgb = [0.55 0.55 1];  % light-blue
                         key.trialtype_plot_order = 17;
@@ -198,6 +211,7 @@ classdef TrialTypeGraphic < dj.Computed
                         key.trialtype_flag_full=1;
                         key.trialtype_flag_right_and_control_left = 1;
                         key.trialtype_flag_right_full_nopresample_and_control_left=1;
+                                                key.trialtype_no_presample=1;
                         
                     case 'r_-1.6Mini'
                         key.trialtype_rgb = [0.55 0.55 1];  % light-blue
@@ -205,23 +219,28 @@ classdef TrialTypeGraphic < dj.Computed
                         key.trialtype_flag_standard = 1;
                         key.trialtype_flag_mini = 1;
                         key.trialtype_flag_right_and_control_left = 1;
+                                                key.trialtype_no_presample=1;
                     case 'r_-2.5FullX0.5'
                         key.trialtype_rgb = [0.5 0.5 0.5];  % gray
                         key.trialtype_plot_order = 19;
                         key.trialtype_flag_standard = 0;
+                                                key.trialtype_no_presample=1;
                     case 'r_-2.5FullX2'
                         key.trialtype_rgb = [0 0 0];        % black
                         key.trialtype_plot_order = 20;
                         key.trialtype_flag_standard = 0;
                         key.trialtype_flag_double_sample_amplitude=1;
+                                                key.trialtype_no_presample=1;
                     case 'r_-2.5Mini(FullX0.5)'
                         key.trialtype_rgb = [0 1 0];        % green
                         key.trialtype_plot_order = 21;
                         key.trialtype_flag_standard = 0;
+                                                key.trialtype_no_presample=1;
                     case 'r_-2.5Mini(FullX0.75)'
                         key.trialtype_rgb = [0.25 1 0.25];  % light-green
                         key.trialtype_plot_order = 22;
                         key.trialtype_flag_standard = 0;
+                                                key.trialtype_no_presample=1;
                     case 'r_-3.8Full'
                         key.trialtype_rgb = [0 0.2 0.4];    %  dark-blue
                         key.trialtype_plot_order = 23;
@@ -239,6 +258,7 @@ classdef TrialTypeGraphic < dj.Computed
                         key.trialtype_rgb = [0 0 0];        %  black
                         key.trialtype_plot_order = 25;
                         key.trialtype_flag_standard = 0;
+                                                key.trialtype_no_presample=1;
                 end
                 
             end

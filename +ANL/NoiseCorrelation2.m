@@ -19,8 +19,8 @@ unit_num_noise_correlation            : longblob           # unit num in the noi
 
 classdef NoiseCorrelation2 < dj.Computed
     properties
-%         keySource = (EXP.Session & EPHYS.TrialSpikes) * (EXP.Outcome & 'outcome="hit"') * EXP.TrialInstruction * (EPHYS.CellType & 'cell_type="Pyr"') * (EPHYS.UnitQualityType & 'unit_quality="ok or good"')
-            keySource = (EXP.Session & EPHYS.TrialSpikes) * (EXP.Outcome & 'outcome="hit"') * EXP.TrialInstruction * (EPHYS.CellType & 'cell_type="FS"') * (EPHYS.UnitQualityType & 'unit_quality="ok or good"')
+        keySource = (EXP.Session & EPHYS.TrialSpikes) * (EXP.Outcome) * EXP.TrialInstruction * (EPHYS.CellType & 'cell_type="Pyr" or cell_type="FS"') * (EPHYS.UnitQualityType & 'unit_quality="ok or good"')
+%             keySource = (EXP.Session & EPHYS.TrialSpikes) * (EXP.Outcome & 'outcome="miss"') * EXP.TrialInstruction * (EPHYS.CellType & 'cell_type="FS"') * (EPHYS.UnitQualityType & 'unit_quality="ok or good"')
 
     end
     methods(Access=protected)
@@ -42,14 +42,14 @@ classdef NoiseCorrelation2 < dj.Computed
                 key.time_interval_correlation_end = time_interval(i).it(2);
                 key.time_interval_correlation_description = time_interval(i).label;
                 
-%                 key.flag_include_distractor_trials =0;
-%                 [corr_mat, cov_mat, unit_num] = fn_compute_noise_corr(key);
-%                 if ~isempty(corr_mat)
-%                     key.cov_matrix = cov_mat;
-%                     key.corr_matrix = corr_mat;
-%                     key.unit_num_noise_correlation = unit_num;
-%                     insert(self,key)
-%                 end
+                key.flag_include_distractor_trials =0;
+                [corr_mat, cov_mat, unit_num] = fn_compute_noise_corr(key);
+                if ~isempty(corr_mat)
+                    key.cov_matrix = cov_mat;
+                    key.corr_matrix = corr_mat;
+                    key.unit_num_noise_correlation = unit_num;
+                    insert(self,key)
+                end
                 
                 key.flag_include_distractor_trials =1;
                 [corr_mat, cov_mat, unit_num] = fn_compute_noise_corr(key);
