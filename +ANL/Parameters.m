@@ -41,7 +41,7 @@ classdef Parameters < dj.Lookup
             'smooth_time_cell_psth' 0.2 'smoothing time window (seconds)'
             'smooth_time_cell_psth_stimulus' 0.1 'smoothing time window (seconds)'
             'smooth_time_cell_psth_for_clustering' 0.1 'smoothing time window (seconds) for hierarchical clustering'
-            'smooth_time_proj' 0.1 'smoothing time window (seconds) for projections'
+            'smooth_time_proj' 0.2 'smoothing time window (seconds) for projections'
             'smooth_time_proj2D' 0.4 'smoothing time window (seconds) for projections'
 
             'trialfraction_for_modeweights' 1 'use only this fraction of the trial to compute modes'

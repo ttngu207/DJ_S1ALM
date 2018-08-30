@@ -18,11 +18,11 @@ proj_trial                : longblob       # projection of the neural acitivity 
 %}
 
 
-classdef ProjTrial < dj.Computed
+classdef ProjTrial2 < dj.Computed
     properties
         
-        keySource = (EXP.Session  & EPHYS.Unit) * (EPHYS.CellType & 'cell_type="Pyr" or cell_type="FS" or cell_type="all"') * (EPHYS.UnitQualityType & 'unit_quality="all" or unit_quality="good" or unit_quality="ok or good"') * EXP.Outcome * (ANL.ModeWeightsSign);
-%                     keySource = (EXP.Session  & EPHYS.Unit) * (EPHYS.CellType & 'cell_type="Pyr"') * (EPHYS.UnitQualityType & 'unit_quality="ok or good"') * EXP.Outcome * ANL.ModeWeightsSign;
+%         keySource = (EXP.Session  & EPHYS.Unit) * (EPHYS.CellType & 'cell_type="Pyr" or cell_type="FS" or cell_type="all"') * (EPHYS.UnitQualityType & 'unit_quality="all" or unit_quality="good" or unit_quality="ok or good"') * EXP.Outcome * (ANL.ModeWeightsSign);
+                    keySource = (EXP.Session  & EPHYS.Unit) * (EPHYS.CellType & 'cell_type="Pyr"') * (EPHYS.UnitQualityType & 'unit_quality="ok or good"') * EXP.Outcome * (ANL.ModeWeightsSign & 'mode_weights_sign="all"')
 %                             keySource = (EXP.Session  & EPHYS.Unit) * (EPHYS.CellType & 'cell_type="Pyr" or cell_type="FS" or cell_type="all"') * (EPHYS.UnitQualityType & 'unit_quality="all" or unit_quality="ok or good"') * EXP.Outcome * (ANL.ModeWeightsSign);
 
     end
@@ -55,7 +55,7 @@ classdef ProjTrial < dj.Computed
                     counter=1;
                     for imod = 1:1:numel(mode_names)
                         M = Modes(strcmp(mode_names{imod},{Modes.mode_type_name}'));
-                        [key, counter] = fn_projectSingleTrial_populate(M, PSTH, key, counter,Param);
+                        [key, counter] = fn_projectSingleTrial_populateNormalized(M, PSTH, key, counter,Param);
                     end
                     insert(self,key);
                 end

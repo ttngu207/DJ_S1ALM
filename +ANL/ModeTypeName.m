@@ -20,17 +20,9 @@ classdef ModeTypeName < dj.Lookup
             'LateDelay Orthog.'                            'orthogonal (Gram–Schmidt process)'
             'Ramping Orthog.'                               'orthogonal (Gram–Schmidt process)'
             'Movement Orthog.'                             'orthogonal (Gram–Schmidt process)'
-            'Stimulus orthogonal to LateDelay'      'orthogonal'
-            'EarlyDelay orthogonal to LateDelay'    'orthogonal'
-            'Ramping orthogonal to LateDelay'       'orthogonal'
-            'LateDelay orthogonal to EarlyDelay'    'orthogonal'
-            'LateDelay orthogonal to Movement'    'orthogonal'
-            'Movement orthogonal to LateDelay'    'orthogonal'
-            'MiddleDelay orthogonal to LateDelay'    'orthogonal'
-            'Stimulus orthogonal to EarlyDelay'    'orthogonal'
             'Left vs. baseline'    'Mode that differentiate left trajectry in the end of the delay vs. presample period'
             'Right vs. baseline'    'Mode that differentiate right trajectry in the end of the delay vs. presample period'
-
+            
             }
     end
 end

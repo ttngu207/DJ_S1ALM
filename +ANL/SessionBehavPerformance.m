@@ -98,7 +98,7 @@ classdef SessionBehavPerformance < dj.Computed
                         RT_hit{ityp}(it) = NaN;
                     end
                 end
-                RT_hit_mean (ityp) = mean(RT_hit{ityp});
+                RT_hit_median (ityp) = median(RT_hit{ityp});
                 RT_hit_stem (ityp) = std(RT_hit{ityp})./sqrt(numel(RT_hit{ityp}));
                 
                 %reaction time miss
@@ -115,7 +115,7 @@ classdef SessionBehavPerformance < dj.Computed
                         RT_miss{ityp}(it) = NaN;
                     end
                 end
-                RT_miss_mean (ityp) = mean(RT_miss{ityp});
+                RT_miss_median (ityp) = median(RT_miss{ityp});
                 RT_miss_stem (ityp) = mean(RT_miss{ityp})./sqrt(numel(RT_miss{ityp}));
                 
                 
@@ -145,9 +145,9 @@ classdef SessionBehavPerformance < dj.Computed
                 k(ityp).prcnt_hit_outof_noignore_noearly = prcnt_hit_outof_noignore_noearly  (ityp);
                 k(ityp).total_noignore_noearly = total_noignore_noearly  (ityp);
                 k(ityp).total_ignore_noearly_after_quitting  = total_ignore_noearly_after_quitting  (ityp);
-                k(ityp).mean_reaction_time_hit  = RT_hit_mean (ityp);
+                k(ityp).mean_reaction_time_hit  = RT_hit_median (ityp);
                 k(ityp).stem_reaction_time_hit = RT_hit_stem (ityp);
-                k(ityp).mean_reaction_time_miss  = RT_miss_mean (ityp);
+                k(ityp).mean_reaction_time_miss  = RT_miss_median (ityp);
                 k(ityp).stem_reaction_time_miss  = RT_miss_stem (ityp);
             end
             %Populating ANL.SessionBehavPerformance
