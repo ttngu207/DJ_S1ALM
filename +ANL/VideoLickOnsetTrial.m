@@ -9,10 +9,10 @@ first_lick_yaw_peak          : double
 first_lick_yaw_protrusion=null    : double
 first_lick_amplitude         : double
 
-lick_horizdist_peak         : double                  
-lick_yaw_peak_relative          : double                      
-lick_yaw_protrusion_relative=null    : double                      
-lick_horizdist_peak_relative        : longblob                      
+first_lick_horizdist_peak         : double                  
+first_lick_yaw_peak_relative          : double                      
+first_lick_yaw_protrusion_relative=null    : double                      
+first_lick_horizdist_peak_relative        : longblob                      
 
 first_lick_rt_video_onset    : double
 first_lick_rt_video_peak     : double
@@ -21,7 +21,7 @@ first_lick_rt_electric=null  : double
 %}
 
 
-classdef VideoLickOnsetTrial < dj.Imported
+classdef VideoLickOnsetTrial < dj.Computed
     properties
         keySource = ANL.VideoTongueTrial;
     end
@@ -43,10 +43,10 @@ classdef VideoLickOnsetTrial < dj.Imported
             key.first_lick_rt_video_onset = T.lick_rt_video_onset(1);
             key.first_lick_rt_video_peak = T.lick_rt_video_peak(1);
             
-            key.lick_horizdist_peak  = T.lick_horizdist_peak(1);
-            key.lick_yaw_peak_relative = T.lick_yaw_peak_relative(1);
-            key.lick_yaw_protrusion_relative = T.lick_yaw_protrusion_relative(1);
-            key.lick_horizdist_peak_relative    = T.lick_horizdist_peak_relative(1);
+            key.first_lick_horizdist_peak  = T.lick_horizdist_peak(1);
+            key.first_lick_yaw_peak_relative = T.lick_yaw_peak_relative(1);
+            key.first_lick_yaw_protrusion_relative = T.lick_yaw_protrusion_relative(1);
+            key.first_lick_horizdist_peak_relative    = T.lick_horizdist_peak_relative(1);
             
             
             if ~isempty(T.lick_rt_electric)

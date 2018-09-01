@@ -14,7 +14,7 @@ fiduical_y_position_median=null     : double
 
 classdef VideoFiducialsTrial < dj.Imported
     properties
-        keySource = (EXP.Session  & EXP.TrackingTrial) * EXP.VideoFiducialsType;
+        keySource = (EXP.Session  & EXP.TrackingTrial) * EXP.VideoFiducialsType & 'video_fiducial_name="tongue_right"';
     end
     methods(Access=protected)
         

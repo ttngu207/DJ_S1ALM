@@ -53,7 +53,7 @@ classdef VideoTongueTrial < dj.Computed
             
             close all;
             
-            flag_plot=0;
+            flag_plot=1;
             
             if flag_plot==1
                 figure1=figure;
@@ -160,7 +160,7 @@ classdef VideoTongueTrial < dj.Computed
             
             
             counter=0;
-            for ii =1:1:numTrials
+            for ii =544:1:numTrials
                 ii
                 
                 if strcmp(key.tongue_estimation_type,'tip')
@@ -265,7 +265,7 @@ classdef VideoTongueTrial < dj.Computed
                 a=pks_idx(2:end)- pks_idx(1:end-1);
                 b=pks_idx(2:end)- trough_idx(2:end);
                 pks_idx=[pks_idx(1), pks_idx(find((a-b)>0)+1)];
-                trough_idx=[trough_idx(1), trough_idx(find((a-b)>0)+1)]+1;
+                trough_idx=[trough_idx(1), trough_idx(find((a-b)>0)+1)]+2;
                 
                 add_idx=[];
                 for ip=1:1:numel(trough_idx)
@@ -273,36 +273,17 @@ classdef VideoTongueTrial < dj.Computed
                 end
                 trough_idx=trough_idx+add_idx;
                 
-%                 %%%for debug
-%                                 hold on
-%                                 plot(t_all,X_all,'.-')
-%                                 plot(t_all(trough_idx),X_all(trough_idx),'xk')
-%                                                 plot(t_all(pks_idx),X_all(pks_idx),'xr')
-%                 
+                %%%for debug
+                                hold on
+                                plot(t_all,X_all,'.-')
+                                plot(t_all(trough_idx),X_all(trough_idx),'xk')
+                                                plot(t_all(pks_idx),X_all(pks_idx),'xr')
+                
+                
                 pks_idx= find(ismember(t,t_all(pks_idx)));
                 trough_idx= find(ismember(t,t_all(trough_idx)));
                 
-                bad=(pks_idx==trough_idx);
-                pks_idx(bad)=[];
-                trough_idx(bad)=[];
-
-                if isempty(pks_idx)
-                    insert_key(counter).tongue_estimation_type = key.tongue_estimation_type;
-                    
-                    insert_key(counter).subject_id = key.subject_id;
-                    insert_key(counter).session = key.session;
-                    insert_key(counter).trial = trials(ii);
-                    insert_key(counter).tongue_x = X';
-                    insert_key(counter).tongue_y = Y';
-                    insert_key(counter).tongue_yaw = tongue_yaw';
-                    insert_key(counter).tongue_amplitude = tongue_amplitude';
-                    insert_key(counter).tongue_vel_linear = tongue_vel_linear';
-                    insert_key(counter).tongue_vel_angular = tongue_vel_angular'*(-1);
-                    insert_key(counter).tongue_time = t;
-                    
-                    continue
-                end
-                
+                if pks_idx=
                 
                 % defining peak as 75% from trough to peak
                 
@@ -312,7 +293,7 @@ classdef VideoTongueTrial < dj.Computed
                 for i_p=1:1:numel(pks_idx)
                     current_idx=trough_idx(i_p):pks_idx(i_p);
                     [~,temp_idx]= min(abs(tongue_amplitude(current_idx) - peak_at_75(i_p)));
-                    pks75_idx (i_p) = trough_idx(i_p) + (temp_idx-1);
+                    pks75_idx (i_p) = trough_idx(i_p) + temp_idx;
                 end
                 
                 pks_idx=pks75_idx;

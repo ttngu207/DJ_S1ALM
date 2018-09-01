@@ -9,10 +9,10 @@ first_lick_yaw_peak          : double
 first_lick_yaw_protrusion=null    : double
 first_lick_amplitude         : double
 
-lick_horizdist_peak         : double
-lick_yaw_peak_relative          : double
-lick_yaw_protrusion_relative=null    : double
-lick_horizdist_peak_relative        : longblob
+first_lick_horizdist_peak         : double
+first_lick_yaw_peak_relative          : double
+first_lick_yaw_protrusion_relative=null    : double
+first_lick_horizdist_peak_relative        : longblob
 
 first_lick_rt_video_onset     : double
 first_lick_rt_video_peak     : double
@@ -21,7 +21,7 @@ first_lick_rt_electric=null  : double
 %}
 
 
-classdef VideoLickOnsetTrialNormalized < dj.Imported
+classdef VideoLickOnsetTrialNormalized < dj.Computed
     properties
         keySource = ANL.VideoLickOnsetTrial;
     end
@@ -56,21 +56,21 @@ classdef VideoLickOnsetTrialNormalized < dj.Imported
             idx_outlier = isoutlier(x,'quartiles'); x=x(~idx_outlier);
             key.first_lick_amplitude = (T.first_lick_amplitude - nanmin(x))/(nanmax(x)-nanmin(x));
             
-            x=[T_all.lick_horizdist_peak];
+            x=[T_all.first_lick_horizdist_peak];
             idx_outlier = isoutlier(x,'quartiles'); x=x(~idx_outlier);
-            key.lick_horizdist_peak = (T.lick_horizdist_peak - nanmin(x))/(nanmax(x)-nanmin(x));
+            key.first_lick_horizdist_peak = (T.first_lick_horizdist_peak - nanmin(x))/(nanmax(x)-nanmin(x));
             
-            x=[T_all.lick_yaw_peak_relative];
+            x=[T_all.first_lick_yaw_peak_relative];
             idx_outlier = isoutlier(x,'quartiles'); x=x(~idx_outlier);
-            key.lick_yaw_peak_relative = (T.lick_yaw_peak_relative - nanmin(x))/(nanmax(x)-nanmin(x));
+            key.first_lick_yaw_peak_relative = (T.first_lick_yaw_peak_relative - nanmin(x))/(nanmax(x)-nanmin(x));
             
-            x=[T_all.lick_yaw_protrusion_relative];
+            x=[T_all.first_lick_yaw_protrusion_relative];
             idx_outlier = isoutlier(x,'quartiles'); x=x(~idx_outlier);
-            key.lick_yaw_protrusion_relative = (T.lick_yaw_protrusion_relative - nanmin(x))/(nanmax(x)-nanmin(x));
+            key.first_lick_yaw_protrusion_relative = (T.first_lick_yaw_protrusion_relative - nanmin(x))/(nanmax(x)-nanmin(x));
             
-            x=[T_all.lick_horizdist_peak_relative];
+            x=[T_all.first_lick_horizdist_peak_relative];
             idx_outlier = isoutlier(x,'quartiles'); x=x(~idx_outlier);
-            key.lick_horizdist_peak_relative = (T.lick_horizdist_peak_relative - nanmin(x))/(nanmax(x)-nanmin(x));
+            key.first_lick_horizdist_peak_relative = (T.first_lick_horizdist_peak_relative - nanmin(x))/(nanmax(x)-nanmin(x));
             
             x=[T_all.first_lick_rt_video_onset];
             idx_outlier = isoutlier(x,'quartiles'); x=x(~idx_outlier);
