@@ -50,6 +50,9 @@ classdef Parameters < dj.Lookup
 
             'minimal_num_units_sessions' 5 'Minimal number of ok or good units per session, to include this session'
             'minimal_num_hit_trials_sessions'     50 'Minimal number of hit trials  per session, to include this session'
+            
+            'minimal_num_units_proj_trial' 10 'Minimal number of units, per projected trial to include it in video analysis'
+
 
             }
     end

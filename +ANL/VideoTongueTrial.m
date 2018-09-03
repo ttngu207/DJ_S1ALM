@@ -3,14 +3,6 @@
 -> EXP.BehaviorTrial
 -> ANL.TongueEstimationType
 ---
-tongue_x                    : longblob                      # tongue x coordinate
-tongue_y                    : longblob                      # tongue x coordinate - note that it is reversed here compared to the real data - left appears as right
-tongue_yaw                  : longblob                      # yaw angle - turning towards the real left lick-port is negative
-tongue_amplitude            : longblob                      # tongue displacement in x,y
-tongue_vel_linear           : longblob                      # linear velocity
-tongue_vel_angular          : longblob                      # angular velocity - turning towards the real left lick-port is negative
-tongue_time                 : longblob                      # fiducial time, relative to Go cue
-
 
 lick_peak_x=null            : longblob                      # tongue x coordinate at the peak of the lick. peak is defined at 75% from trough
 lick_peak_y=null            : longblob                      # tongue y coordinate at the peak of the lick. peak is defined at 75% from trough
@@ -33,7 +25,14 @@ lick_rt_video_peak=null      : longblob                      # rt based on video
 
 
 
-
+% tongue_x       =null              : longblob                      # tongue x coordinate
+% tongue_y       =null              : longblob                      # tongue x coordinate - note that it is reversed here compared to the real data - left appears as right
+% tongue_yaw       =null            : longblob                      # yaw angle - turning towards the real left lick-port is negative
+% tongue_amplitude   =null          : longblob                      # tongue displacement in x,y
+% tongue_vel_linear   =null         : longblob                      # linear velocity
+% tongue_vel_angular =null          : longblob                      # angular velocity - turning towards the real left lick-port is negative
+% tongue_time =null                 : longblob                      # fiducial time, relative to Go cue
+% 
 
 
 
@@ -53,7 +52,7 @@ classdef VideoTongueTrial < dj.Computed
             
             close all;
             
-            flag_plot=0;
+            flag_plot=1;
             
             if flag_plot==1
                 figure1=figure;
@@ -98,7 +97,7 @@ classdef VideoTongueTrial < dj.Computed
             x_origin=(fS(2).x -fS(1).x)*0.5;
             fS(2).x=fS(2).x- x_origin;
             
-            
+
             % Trials
             num=1;
             k.video_fiducial_name='tongue_tip';
@@ -225,20 +224,13 @@ classdef VideoTongueTrial < dj.Computed
                 % Finding peaks and troughs
                 [~,pks_idx] = findpeaks(X_all, 'MinPeakDistance',MinPeakDistance,'MinPeakProminence',MinPeakProminence);
                 
-                if isempty(pks_idx)
+                if isempty(pks_idx) ||  numel(X)>1000
                     insert_key(counter).tongue_estimation_type = key.tongue_estimation_type;
                     
                     insert_key(counter).subject_id = key.subject_id;
                     insert_key(counter).session = key.session;
                     insert_key(counter).trial = trials(ii);
-                    insert_key(counter).tongue_x = X';
-                    insert_key(counter).tongue_y = Y';
-                    insert_key(counter).tongue_yaw = tongue_yaw';
-                    insert_key(counter).tongue_amplitude = tongue_amplitude';
-                    insert_key(counter).tongue_vel_linear = tongue_vel_linear';
-                    insert_key(counter).tongue_vel_angular = tongue_vel_angular'*(-1);
-                    insert_key(counter).tongue_time = t;
-                    
+                   
                     continue;
                 end
                 
@@ -292,13 +284,7 @@ classdef VideoTongueTrial < dj.Computed
                     insert_key(counter).subject_id = key.subject_id;
                     insert_key(counter).session = key.session;
                     insert_key(counter).trial = trials(ii);
-                    insert_key(counter).tongue_x = X';
-                    insert_key(counter).tongue_y = Y';
-                    insert_key(counter).tongue_yaw = tongue_yaw';
-                    insert_key(counter).tongue_amplitude = tongue_amplitude';
-                    insert_key(counter).tongue_vel_linear = tongue_vel_linear';
-                    insert_key(counter).tongue_vel_angular = tongue_vel_angular'*(-1);
-                    insert_key(counter).tongue_time = t;
+                
                     
                     continue
                 end
@@ -315,9 +301,19 @@ classdef VideoTongueTrial < dj.Computed
                     pks75_idx (i_p) = trough_idx(i_p) + (temp_idx-1);
                 end
                 
-                pks_idx=pks75_idx;
+                % ensuring the trough is belonging to the same lick as the peak
+                for i_p=1:1:numel(pks_idx)
+                    current_idx=trough_idx(i_p):pks_idx(i_p);
+                    lickbout_start_idx=find(diff(diff(t(current_idx)))>-(1/400),1);
+                    if isempty(lickbout_start_idx)
+                        lickbout_start_idx=1;
+                    end
+                    trough_idx(i_p) = current_idx(1)+lickbout_start_idx -1;
+                end
                 
                 
+            
+
                 
                 
                 %% angle, amplitude and reaction times
@@ -375,13 +371,13 @@ classdef VideoTongueTrial < dj.Computed
                 insert_key(counter).subject_id = key.subject_id;
                 insert_key(counter).session = key.session;
                 insert_key(counter).trial = trials(ii);
-                insert_key(counter).tongue_x = X';
-                insert_key(counter).tongue_y = Y';
-                insert_key(counter).tongue_yaw = tongue_yaw';
-                insert_key(counter).tongue_amplitude = tongue_amplitude';
-                insert_key(counter).tongue_vel_linear = tongue_vel_linear';
-                insert_key(counter).tongue_vel_angular = tongue_vel_angular' *(-1);
-                insert_key(counter).tongue_time = t;
+%                 insert_key(counter).tongue_x = X';
+%                 insert_key(counter).tongue_y = Y';
+%                 insert_key(counter).tongue_yaw = tongue_yaw';
+%                 insert_key(counter).tongue_amplitude = tongue_amplitude';
+%                 insert_key(counter).tongue_vel_linear = tongue_vel_linear';
+%                 insert_key(counter).tongue_vel_angular = tongue_vel_angular' *(-1);
+%                 insert_key(counter).tongue_time = t;
                 
                 %parsed by licks
                 insert_key(counter).lick_peak_x = X(pks_idx(idx_noearly_licks))';
@@ -424,7 +420,7 @@ classdef VideoTongueTrial < dj.Computed
                     end
                     xlabel('Time(s)');
                     ylabel('A-P axis (pixels)');
-                    title(sprintf('v%d %s %s     lick:%s',tracking_datafile_num(ii),trial_instruction,trial_outcome,early_lick))
+                    title(sprintf('DJtrial %d video%d %s %s     lick:%s',trials(ii), tracking_datafile_num(ii),trial_instruction,trial_outcome,early_lick))
                     
                     %M-L axis
                     axes('position',[position_x1(1), position_y1(2), panel_width1*2, panel_height1]);
