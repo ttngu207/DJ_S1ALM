@@ -13,7 +13,7 @@ classdef ExcludeSession < dj.Computed
         function makeTuples(self, key)
 %             bad_sessions = [1,17, 46,61];
 %                         bad_sessions = [16,77,9];
-                        bad_sessions = [16,77,9,2,3,42];
+                        bad_sessions = [16,77,9,2,3,42,98,91, 46,44,63,61,22, 17,23];
 
             session_uid = fetch1(EXP.SessionID & key,'session_uid');
             
