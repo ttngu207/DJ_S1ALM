@@ -10,10 +10,10 @@ classdef TongueTuningYType < dj.Lookup
     properties
         
         contents = {
-                        'lick_peak_x'           ''
-%             'lick_vel_linear'       ''
-%             'lick_amplitude'        ''
-%             'lick_rt_video_onset'       ''
+            'lick_peak_x'           ''
+            'lick_vel_linear'       ''
+            'lick_amplitude'        ''
+            'lick_rt_video_onset'       ''
             };
         
     end

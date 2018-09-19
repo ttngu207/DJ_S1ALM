@@ -13,7 +13,7 @@ tongue_ml_error_right                           : blob                      #
 
 classdef UnitTongue1DTuningML < dj.Computed
     properties
-        keySource = ((EPHYS.Unit & 'unit_quality!="multi"' & (EPHYS.UnitCellType & 'cell_type="PYR" or cell_type="FS"')) & ANL.Video1stLickTrialNormalized) *  (ANL.TongueTuningSmoothFlag & 'smooth_flag=0') * (ANL.OutcomeType & 'outcome="hit" or outcome="all"') * ANL.FlagBasicTrials  * (ANL.TongueTuning1DType & 'tuning_param_name="lick_horizoffset_relative"');
+        keySource = ((EPHYS.Unit & 'unit_quality!="multi"' & (EPHYS.UnitCellType & 'cell_type="PYR" or cell_type="FS"')) & ANL.Video1stLickTrialNormalized) *  (ANL.TongueTuningSmoothFlag & 'smooth_flag=0') * (ANL.OutcomeType & 'outcome_grouping="all"') * (ANL.FlagBasicTrials & 'flag_use_basic_trials=0')  * (ANL.TongueTuning1DType &  'tuning_param_name="lick_horizoffset_relative"');
     end
     methods(Access=protected)
         function makeTuples(self, key)
@@ -23,8 +23,8 @@ classdef UnitTongue1DTuningML < dj.Computed
             kk=key;
             smooth_flag=key.smooth_flag;
             
-            if strcmp(key.outcome,'all')
-                kk=rmfield(kk,'outcome');
+            if strcmp(key.outcome_grouping,'all')
+                kk=rmfield(kk,'outcome_grouping');
             end
             
             hist_bins=linspace(0,1,7);
@@ -62,24 +62,29 @@ classdef UnitTongue1DTuningML < dj.Computed
             
             labels=VariableNames{idx_v_name};
             
-            kk.outcome=key.outcome;
+            kk.outcome_grouping=key.outcome_grouping;
 
             Y=TONGUE.lick_horizoffset_relative;
 %             histogram(Y)
             left_trials=Y<0.5;
             right_trials=Y>=0.5;
             
-            % We set a different range for decoding left or right trials. This is to ensure that we don't decode the binary identity of the trial-type (i.e. trial went left, vs trial went right) but the actual offset value on each side
-            x_est_range_trials=zeros(size(Y,1),2);
-            x_est_range_trials(left_trials,1)=0;
-            x_est_range_trials(left_trials,2)=0.5;
-            
-            x_est_range_trials(right_trials,1)=0.5;
-            x_est_range_trials(right_trials,2)=1;
-            
+            if strcmp(kk.tuning_param_name,'lick_horizoffset_relative')
+                % We set a different range for decoding left or right trials. This is to ensure that we don't decode the binary identity of the trial-type (i.e. trial went left, vs trial went right) but the actual offset value on each side
+                x_est_range_trials=zeros(size(Y,1),2);
+                x_est_range_trials(left_trials,1)=0;
+                x_est_range_trials(left_trials,2)=0.5;
+                
+                x_est_range_trials(right_trials,1)=0.5;
+                x_est_range_trials(right_trials,2)=1;
+            else
+                x_est_range_trials=zeros(size(Y,1),2);
+                x_est_range_trials(:,1)=0;
+                x_est_range_trials(:,2)=1;
+            end
 
-            t_vec=-2.8:0.2:1;
-            t_wind=0.25;
+            t_vec=-3:0.2:2;
+            t_wind=0.5;
             for it=1:1:numel(t_vec)
                 t_wnd{it}=[t_vec(it), t_vec(it)+t_wind];
                 %             t_wnd{end+1}=[0.4,  0.6];

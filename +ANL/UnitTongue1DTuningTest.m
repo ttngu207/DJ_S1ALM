@@ -7,26 +7,34 @@ time_window_start                               : decimal(8,4)              #
 -> ANL.TongueTuningSmoothFlag
 -> ANL.FlagBasicTrials
 ---
-tongue_ml_error_left                            : blob                      #
-tongue_ml_error_right                           : blob                      #
+number_of_trials                                : int
+time_window_end                                 : decimal(8,4)              #
+mean_fr_window                                  : decimal(8,4)              #  mean fr at this time window
+total_number_of_spikes_window                   : int                       # sum over trials inn this time window
+tongue_tuning_1d_peak_fr=null                   : decimal(8,4)              #
+tongue_tuning_1d_min_fr=null                    : decimal(8,4)              #
+tongue_tuning_1d_peak_fr_bin=null               : decimal(8,4)              #
+tongue_tuning_1d_si=null                        : decimal(8,4)              # spatial information
+tongue_tuning_1d                                : blob                      #
+tongue_tuning_1d_odd                            : blob                      #
+tongue_tuning_1d_even                           : blob                      #
+hist_bins_centers                               : blob                      #
+stability_odd_even_corr_r=null                  : decimal(8,4)              # Pearson correlation r, between tuning curves computed using odd vs even trials
 %}
 
-classdef UnitTongue1DTuningML < dj.Computed
+classdef UnitTongue1DTuningTest < dj.Computed
     properties
-        keySource = ((EPHYS.Unit & 'unit_quality!="multi"' & (EPHYS.UnitCellType & 'cell_type="PYR" or cell_type="FS"')) & ANL.Video1stLickTrialNormalized) *  (ANL.TongueTuningSmoothFlag & 'smooth_flag=0') * (ANL.OutcomeType & 'outcome="hit" or outcome="all"') * ANL.FlagBasicTrials  * (ANL.TongueTuning1DType & 'tuning_param_name="lick_horizoffset_relative"');
+        keySource = ((EPHYS.Unit & 'unit_quality!="multi"' & (EPHYS.UnitCellType & 'cell_type="PYR" or cell_type="FS"')) & ANL.Video1stLickTrialNormalized) *  (ANL.TongueTuningSmoothFlag & 'smooth_flag=0') * (ANL.OutcomeType & 'outcome="hit" or outcome="all"') * ANL.FlagBasicTrials  * (ANL.TongueTuning1DType);
     end
     methods(Access=protected)
         function makeTuples(self, key)
-            plot_flag=0;
-            tol=0.05;
-
+            
             kk=key;
             smooth_flag=key.smooth_flag;
             
             if strcmp(key.outcome,'all')
                 kk=rmfield(kk,'outcome');
             end
-            
             hist_bins=linspace(0,1,7);
             smooth_bins=3;
             Param = struct2table(fetch (ANL.Parameters,'*'));
@@ -52,7 +60,10 @@ classdef UnitTongue1DTuningML < dj.Computed
             if number_of_trials<10
                 return
             end
-                        
+            
+            kk.number_of_trials=number_of_trials;
+            
+            kk.tuning_param_name
             VariableNames=TONGUE.Properties.VariableNames';
             var_table_offset=5;
             VariableNames=VariableNames(var_table_offset:18);
@@ -60,11 +71,14 @@ classdef UnitTongue1DTuningML < dj.Computed
             idx_v_name=find(strcmp(VariableNames,kk.tuning_param_name));
             X=TONGUE{:,idx_v_name+var_table_offset-1};
             
+            
             labels=VariableNames{idx_v_name};
             
             kk.outcome=key.outcome;
 
+            
             Y=TONGUE.lick_horizoffset_relative;
+
 %             histogram(Y)
             left_trials=Y<0.5;
             right_trials=Y>=0.5;
@@ -77,35 +91,37 @@ classdef UnitTongue1DTuningML < dj.Computed
             x_est_range_trials(right_trials,1)=0.5;
             x_est_range_trials(right_trials,2)=1;
             
-
-            t_vec=-2.8:0.2:1;
+            
+            t_vec=-1:0.2:-0.8;
             t_wind=0.25;
             for it=1:1:numel(t_vec)
                 t_wnd{it}=[t_vec(it), t_vec(it)+t_wind];
                 %             t_wnd{end+1}=[0.4,  0.6];
             end
-            
             for i_twnd=1:numel(t_wnd)
+                plot_flag=0;
                 
                 %% computing tuning curve and SI
-                [tongue_tuning_1d, hist_bins_centers, ~, ~, ~, ~, ~, FR_TRIAL]= ...
+                [kk.tongue_tuning_1d, kk.hist_bins_centers, kk.total_number_of_spikes_window, kk.tongue_tuning_1d_peak_fr, kk.tongue_tuning_1d_min_fr, kk.tongue_tuning_1d_peak_fr_bin, kk.tongue_tuning_1d_si, FR_TRIAL]= ...
                     fn_tongue_tuning1D (X, SPIKES, t_wnd{i_twnd}, hist_bins, min_trials_1D_bin, smooth_bins, labels,smooth_flag, plot_flag);
                 kk.time_window_start=t_wnd{i_twnd}(1);
-                % MLE decoder
-                xest=[];
-                fns_tuning=@(x)  interp1(hist_bins_centers,tongue_tuning_1d,x,'linear','extrap');
-                for i_tr=1:1:numel(FR_TRIAL)
-                    fr_tr = FR_TRIAL(i_tr);
-%                     mle =@(x) -(fr_tr*log(fns_tuning(x))-fns_tuning(x)); % we add a minus sign because we want to find the minumum of this function
-                    mle =@(x) real(-(fr_tr*log(fns_tuning(x))-fns_tuning(x))); % we add a minus sign because we want to find the minumum of this function
-                    %debug why sometimes (very rarely the outp
-%                     mle_real=@(x) real(mle(x)); %debug why this is needed
-                    xest(i_tr) = fminbnd(mle_real,x_est_range_trials(i_tr,1),x_est_range_trials(i_tr,2),optimset('TolX',tol)) ;
-%                     xest(i_tr) = fminbnd(mle,0,1,optimset('TolX',tol)) ;
-                end
-                kk.tongue_ml_error_left=nanmean(abs(X(left_trials)-xest(left_trials)'));
-                kk.tongue_ml_error_right=nanmean(abs(X(right_trials)-xest(right_trials)'));
-                insert(self,kk);
+                kk.time_window_end=t_wnd{i_twnd}(2);
+                
+                kk.mean_fr_window=kk.total_number_of_spikes_window/diff(t_wnd{i_twnd})/numel(SPIKES);
+                
+                % computing stability between odd vs even trials
+                odd_trials=1:2:number_of_trials;
+                [kk.tongue_tuning_1d_odd]= ...
+                    fn_tongue_tuning1D (X(odd_trials), SPIKES(odd_trials), t_wnd{i_twnd}, hist_bins, min_trials_1D_bin, smooth_bins, labels,smooth_flag, plot_flag);
+              
+                even_trials=2:2:number_of_trials;
+                [kk.tongue_tuning_1d_even]= ...
+                    fn_tongue_tuning1D (X(even_trials), SPIKES(even_trials), t_wnd{i_twnd}, hist_bins, min_trials_1D_bin, smooth_bins, labels,smooth_flag, plot_flag);
+                
+                r =corr([kk.tongue_tuning_1d_odd',kk.tongue_tuning_1d_even'],'type','Pearson','rows','pairwise');
+                kk.stability_odd_even_corr_r=r(2);
+                
+                insert(self,kk)
             end
             
             

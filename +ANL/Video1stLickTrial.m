@@ -9,6 +9,7 @@ lick_peak_y              : double                      # tongue y coordinate at 
 lick_amplitude           : double                      # tongue displacement in x,y    at the peak of the lick, peak is defined at 75% from trough
 lick_vel_linear          : double                      # median tongue linear velocity during the lick duration, from peak to trough
 lick_vel_angular         : double                      # median tongue angular velocity during the lick duration, from peak to trough
+lick_vel_angular_absolute         : double                      # median absolute tongue angular velocity during the lick duration, from peak to trough
 
 lick_yaw                 : double                      #  tongue yaw at the peak of the lick
 lick_yaw_relative        : double                      #  tongue yaw at the peak of the lick, relative to the left lick port
@@ -45,7 +46,8 @@ classdef Video1stLickTrial < dj.Computed
             key.lick_amplitude  = T.lick_amplitude(1);
             key.lick_vel_linear  = T.lick_vel_linear(1);
             key.lick_vel_angular  = T.lick_vel_angular(1);
-            
+            key.lick_vel_angular_absolute  = abs(T.lick_vel_angular(1));
+
             key.lick_yaw  = T.lick_yaw(1);
             key.lick_yaw_relative  = T.lick_yaw_relative(1);
             

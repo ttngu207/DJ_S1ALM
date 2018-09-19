@@ -22,9 +22,9 @@ hist_bins_centers_y                             : blob                      #
 stability_odd_even_corr_r=null                  : decimal(8,4)              # Pearson correlation r, between tuning curves computed using odd vs even trials
 %}
 
-classdef UnitTongue2DTuning < dj.Computed
+classdef UnitTongue2DTuningNonEqualBins < dj.Computed
     properties
-        keySource = ((EPHYS.Unit & 'unit_quality!="multi"' & (EPHYS.UnitCellType & 'cell_type="PYR" or cell_type="FS"')) & ANL.Video1stLickTrialNormalized) * (ANL.TongueTuningXType) * (ANL.TongueTuningYType) * (ANL.OutcomeType & 'outcome_grouping="all"') * (ANL.TongueTuningSmoothFlag & 'smooth_flag=0');
+        keySource = ((EPHYS.Unit & 'unit_quality!="multi"' & (EPHYS.UnitCellType & 'cell_type="PYR" or cell_type="FS"')) & ANL.Video1stLickTrialNormalized) * (ANL.TongueTuningXType) * (ANL.TongueTuningYType) * (ANL.OutcomeType & 'outcome="all"') * (ANL.TongueTuningSmoothFlag & 'smooth_flag=0');
     end
     methods(Access=protected)
         function makeTuples(self, key)
@@ -33,8 +33,8 @@ classdef UnitTongue2DTuning < dj.Computed
             
             
             kk=key;
-            if strcmp(key.outcome_grouping,'all')
-                kk=rmfield(kk,'outcome_grouping');
+            if strcmp(key.outcome,'all')
+                kk=rmfield(kk,'outcome');
             end
             
             plot_flag=0;
@@ -71,11 +71,11 @@ classdef UnitTongue2DTuning < dj.Computed
             Y=TONGUE{:,idx_v_name+var_table_offset-1};
             
             
-%             hist_bins_X=prctile(X,linspace(0,100,6)); %equally occupued bins
-%             hist_bins_Y=prctile(Y,linspace(0,100,6));
+            hist_bins_X=prctile(X,linspace(0,100,6)); %equally occupued bins
+            hist_bins_Y=prctile(Y,linspace(0,100,6));
             
-            hist_bins_X=linspace(0,1,6);
-            hist_bins_Y=linspace(0,1,6);
+%             hist_bins_X=linspace(0,1,6);
+%             hist_bins_Y=linspace(0,1,6);
 
             
             
@@ -105,7 +105,7 @@ classdef UnitTongue2DTuning < dj.Computed
                 kk.stability_odd_even_corr_r=r(2);
                 
                 
-                kk.outcome_grouping=key.outcome_grouping;
+                kk.outcome=key.outcome;
                 insert(self,kk)
             end
             

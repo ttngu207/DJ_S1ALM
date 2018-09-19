@@ -13,7 +13,7 @@ tongue_tuning_1d_si_relative_to_shuffle=null                     : decimal(8,4)
 
 classdef UnitTongue1DTuningSignificance < dj.Computed
     properties
-        keySource = ANL.UnitTongue1DTuningShuffling & 'tuning_param_name="lick_rt_video_onset"';
+        keySource = ANL.UnitTongue1DTuningShuffling;
     end
     methods(Access=protected)
         function makeTuples(self, key)
@@ -24,10 +24,10 @@ classdef UnitTongue1DTuningSignificance < dj.Computed
 
             if isnan(tongue_tuning_1d_si)
                 key.pvalue_si_1d=NaN;
-                tongue_tuning_1d_si_relative_to_shuffle=NaN;
+                key.tongue_tuning_1d_si_relative_to_shuffle=NaN;
             else
                 key.pvalue_si_1d= sum(tongue_tuning_1d_si<=tongue_tuning_1d_si_shuffled)/numel(tongue_tuning_1d_si_shuffled);
-                tongue_tuning_1d_si_relative_to_shuffle=tongue_tuning_1d_si-tongue_tuning_1d_si_shuffled_mean;
+                key.tongue_tuning_1d_si_relative_to_shuffle=tongue_tuning_1d_si-tongue_tuning_1d_si_shuffled_mean;
             end
             
             insert(self,key);

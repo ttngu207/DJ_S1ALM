@@ -1,6 +1,6 @@
 %{
 # 
-outcome                     : varchar(32)                    # 
+outcome_grouping                     : varchar(32)                    # 
 %}
 
 
