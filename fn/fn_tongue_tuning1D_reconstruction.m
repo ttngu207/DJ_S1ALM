@@ -1,13 +1,13 @@
-function [tuningX_reconstructed, hist_bins_centers, SI_X_reconstr_by_Y, r_X_reconstr_by_Y, err_X_reconstr_by_Y] = fn_tongue_tuning1D_reconstruction (X_behav,Y_behav, TUNING_X, TUNING_Y, t_wnd, hist_bins, min_trials_1D_bin, smooth_bins, smooth_flag)
+function [tuningX_reconstructed, hist_bins_centers, SI_X_reconstr_by_Y, r_X_reconstr_by_Y, err_X_reconstr_by_Y] = fn_tongue_tuning1D_reconstruction (X_behav,Y_behav, TUNING_X, TUNING_Y, t_wnd, hist_bins_x,hist_bins_y, min_trials_1D_bin, smooth_bins, smooth_flag)
 
-[N,~,bin] =histcounts(X_behav,hist_bins);
-hist_bins_centers=hist_bins(1:end-1)+mean(diff(hist_bins))/2;
+[N,~,bin] =histcounts(X_behav,hist_bins_x);
+hist_bins_centers=hist_bins_x(1:end-1)+diff(hist_bins_x)/2;
 
 time_binned=N*diff(t_wnd);
 remove_unoccupied_bins=N*0;
 remove_unoccupied_bins(N<min_trials_1D_bin)=NaN;
 
-[~,~,bin_reconstructed] =histcounts(Y_behav,hist_bins);
+[~,~,bin_reconstructed] =histcounts(Y_behav,hist_bins_y);
 bin_reconstructed(bin_reconstructed==0)=max(bin_reconstructed); %puts the value beyond the range into the last bin
 for i_tr=1:1:numel(Y_behav)
     spk(i_tr)=TUNING_Y(bin_reconstructed(i_tr))*diff(t_wnd); %convert firing rate into spikes
@@ -38,4 +38,6 @@ err_X_reconstr_by_Y = fn_compute_deviation_error (TUNING_X, tuningX_reconstructe
 if err_X_reconstr_by_Y==Inf
     err_X_reconstr_by_Y=NaN;
 end
-    
+if err_X_reconstr_by_Y>1000
+    err_X_reconstr_by_Y=NaN;
+end    

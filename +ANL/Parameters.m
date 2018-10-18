@@ -57,6 +57,7 @@ classdef Parameters < dj.Lookup
             'tongue_tuning_min_trials_2D_bin' 3 ''
             
             'tongue_tuning_number_of_shuffles' 1000 ''
+            'camera_bottomview_pixels_to_mm'  4/83.07 'pixels to mm conversion factor'
 
             }
     end

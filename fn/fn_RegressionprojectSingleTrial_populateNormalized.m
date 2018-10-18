@@ -2,7 +2,7 @@ function  [key] = fn_RegressionprojectSingleTrial_populateNormalized(M, PSTH, ke
 
 Param = struct2table(fetch (ANL.Parameters,'*'));
 psth_time_bin = Param.parameter_value{(strcmp('psth_time_bin',Param.parameter_name))};
-smooth_time =0.4; %Param.parameter_value{(strcmp('smooth_time_proj',Param.parameter_name))};
+smooth_time =0.2; %Param.parameter_value{(strcmp('smooth_time_proj',Param.parameter_name))};
 smooth_bins=ceil(smooth_time/psth_time_bin);
 
 
@@ -28,6 +28,7 @@ for itr= 1:1:numel(trials)
     key(itr).brain_area = PSTH.brain_area{1}; % assumes the recording in this session where done in one brain area only
     
     Mtrial=M(ismember([M.unit],[P.unit]),:);
+    P=P(ismember([P.unit],[M.unit]),:);
     weights = [Mtrial.regression_coeff_b2]';
     
     
@@ -40,7 +41,7 @@ for itr= 1:1:numel(trials)
     weights = weights./sqrt(nansum(weights.^2)); %normalize the weights vector by its norm, so that is magntiude won't depend on how many neurons are used
     w_mat = repmat(weights,1,size(P.psth_trial,2));
     
-    if size(P,1)>1 %if there are enough units in this trial
+    if size(Mtrial,1)>1 %if there are enough units in this trial
         p_tr = nansum( (P.psth_trial.*w_mat));
         p_tr_smooth = movmean(p_tr ,[smooth_bins 0], 2,'omitnan', 'Endpoints','shrink');
         proj_trial(itr,:) = p_tr_smooth;

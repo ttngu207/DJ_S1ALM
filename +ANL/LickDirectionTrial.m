@@ -8,19 +8,25 @@
 
 classdef LickDirectionTrial < dj.Computed
     properties
-        keySource = ANL.Video1stLickTrial;
+        keySource = EXP.BehaviorTrial& ANL.Video1stLickTrial;
     end
     methods(Access=protected)
         function makeTuples(self, key)
-            key=rmfield(key,'tongue_estimation_type');
-            rel=(ANL.Video1stLickTrialNormalized & key & 'lick_horizoffset_relative<0.5');
-%             fetchn(ANL.Video1stLickTrialNormalized & key ,'lick_horizoffset_relative')
+            
+            key.lick_direction='all';
+                insert (self,key);
+            
+            rel=(ANL.Video1stLickTrial & key & 'lick_horizoffset<0');
+            %             fetchn(ANL.Video1stLickTrialNormalized & key ,'lick_horizoffset_relative')
             if rel.count  >0
                 key.lick_direction = 'left';
             else
                 key.lick_direction = 'right';
             end
             insert (self,key);
+            
+            
+            
         end
     end
 end

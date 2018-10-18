@@ -1,8 +1,8 @@
 function [tuning_2D, X_centers, Y_centers, number_of_spikes, peak_FR, min_FR, peak_FR_bin, SI] = fn_tongue_tuning2D(X,Y, SPIKES, t_wnd, labels, min_trials_2D_bin, ax, hist_bins_X ,hist_bins_Y ,smooth_flag, plot_flag)
 
 [N,Xedges,Yedges,binX,binY] = histcounts2(X, Y,hist_bins_X, hist_bins_Y);
-X_centers=Xedges(1:end-1)+mean(diff(Xedges))/2;
-Y_centers=Yedges(1:end-1)+mean(diff(Yedges))/2;
+X_centers=Xedges(1:end-1)+(diff(Xedges))/2;
+Y_centers=Yedges(1:end-1)+(diff(Yedges))/2;
 minimal_occupancy = min_trials_2D_bin;
 remove_unoccupied_bins=N*0;
 remove_unoccupied_bins(find(N(:)<minimal_occupancy))=NaN;

@@ -4,8 +4,9 @@
 -> ANL.TongueTuningXType
 -> ANL.TongueTuningYType
 -> ANL.OutcomeType
+-> ANL.TongueTuningSmoothFlag
+-> ANL.LickDirectionType
 time_window_start                               : decimal(8,4)              #
-->ANL.TongueTuningSmoothFlag
 ---
 number_of_trials                                : int
 time_window_end                                 : decimal(8,4)              #
@@ -19,12 +20,14 @@ tongue_tuning_2d_odd                            : blob                      #
 tongue_tuning_2d_even                           : blob                      #
 hist_bins_centers_x                             : blob                      #
 hist_bins_centers_y                             : blob                      #
+hist_bins_x                             : blob                      #
+hist_bins_y                             : blob                      #
 stability_odd_even_corr_r=null                  : decimal(8,4)              # Pearson correlation r, between tuning curves computed using odd vs even trials
 %}
 
 classdef UnitTongue2DTuning < dj.Computed
     properties
-        keySource = ((EPHYS.Unit & 'unit_quality!="multi"' & (EPHYS.UnitCellType & 'cell_type="PYR" or cell_type="FS"')) & ANL.Video1stLickTrialNormalized) * (ANL.TongueTuningXType) * (ANL.TongueTuningYType) * (ANL.OutcomeType & 'outcome_grouping="all"') * (ANL.TongueTuningSmoothFlag & 'smooth_flag=0');
+        keySource = ((EPHYS.Unit & 'unit_quality!="multi"' & (EPHYS.UnitCellType & 'cell_type="PYR" or cell_type="FS"')) & ANL.Video1stLickTrial) * (ANL.TongueTuningXType) * (ANL.TongueTuningYType) * (ANL.OutcomeType & 'outcome_grouping="all"') * (ANL.TongueTuningSmoothFlag & 'smooth_flag=0') * (ANL.LickDirectionType);
     end
     methods(Access=protected)
         function makeTuples(self, key)
@@ -43,48 +46,46 @@ classdef UnitTongue2DTuning < dj.Computed
             min_trials_2D_bin = Param.parameter_value{(strcmp('tongue_tuning_min_trials_2D_bin',Param.parameter_name))};
             
             
-            rel_spikes=(ANL.TrialSpikesGoAligned*EPHYS.Unit*EXP.SessionTraining*EPHYS.UnitPosition*EPHYS.UnitCellType*EXP.BehaviorTrial & ANL.Video1stLickTrialNormalized & kk  &  'early_lick="no early"');
-            SPIKES=fetch(rel_spikes,'*','ORDER BY trial');
+           key_lick_direction=EXP.TrialID & (ANL.LickDirectionTrial & key) & ANL.VideoTongueValidRTTrial;
+
+            rel_spikes=(ANL.TrialSpikesGoAligned*EPHYS.Unit*EXP.SessionTraining*EPHYS.UnitPosition*EPHYS.UnitCellType*EXP.BehaviorTrial & ANL.Video1stLickTrial & kk  &  'early_lick="no early"');
+            SPIKES=fetch(rel_spikes &  key_lick_direction,'*','ORDER BY trial');
             
             if isempty(SPIKES)
                 return
             end
             
-            rel_video=(ANL.Video1stLickTrialNormalized & kk & rel_spikes);
-            TONGUE=struct2table(fetch(rel_video,'*','ORDER BY trial'));
-            number_of_trials=size(TONGUE,1);
-            
-            if number_of_trials<10
+            rel_video=(ANL.Video1stLickTrial & kk & rel_spikes) &  key_lick_direction;
+            if rel_video.count<10
                 return
             end
+           
+            TONGUE=struct2table(fetch(rel_video,'*','ORDER BY trial'));
+            
             
             VariableNames=TONGUE.Properties.VariableNames';
-            var_table_offset=5;
-            VariableNames=VariableNames(var_table_offset:18);
-            
-            kk.number_of_trials=number_of_trials;
-            
             idx_v_name=find(strcmp(VariableNames,kk.tuning_param_name_x));
-            X=TONGUE{:,idx_v_name+var_table_offset-1};
-            
+            X=TONGUE{:,idx_v_name};
             idx_v_name=find(strcmp(VariableNames,kk.tuning_param_name_y));
-            Y=TONGUE{:,idx_v_name+var_table_offset-1};
+            Y=TONGUE{:,idx_v_name};
             
-            
-%             hist_bins_X=prctile(X,linspace(0,100,6)); %equally occupued bins
-%             hist_bins_Y=prctile(Y,linspace(0,100,6));
-            
-            hist_bins_X=linspace(0,1,6);
-            hist_bins_Y=linspace(0,1,6);
+            %remove outliers
+            idx_outlier1=isoutlier(X);
+            idx_outlier2=isoutlier(Y);
 
+            idx_outlier=idx_outlier1|idx_outlier2;
+            X(idx_outlier)=[];
+            Y(idx_outlier)=[];
+          
+            hist_bins_X=prctile(X,linspace(0,100,5)); %equally occupued bins
+            hist_bins_Y=prctile(Y,linspace(0,100,5));
             
-            
-            labels=VariableNames{idx_v_name};
-            
+            number_of_trials=numel(X);
+            kk.number_of_trials=number_of_trials;
+
             t_wnd{1}=[-0.2, 0];
             t_wnd{2}=[0, 0.2];
             for i_twnd=1:numel(t_wnd)
-                
                 
                 [kk.tongue_tuning_2d, kk.hist_bins_centers_x, kk.hist_bins_centers_y, kk.number_of_spikes_window, kk.tongue_tuning_2d_peak_fr, kk.tongue_tuning_2d_min_fr, kk.tongue_tuning_2d_peak_fr_bin, kk.tongue_tuning_2d_si] = fn_tongue_tuning2D(X,Y, SPIKES, t_wnd{i_twnd}, [], min_trials_2D_bin, [],hist_bins_X, hist_bins_Y ,smooth_flag, plot_flag);
                 kk.time_window_start=t_wnd{i_twnd}(1);
@@ -106,6 +107,9 @@ classdef UnitTongue2DTuning < dj.Computed
                 
                 
                 kk.outcome_grouping=key.outcome_grouping;
+                
+                kk.hist_bins_x=hist_bins_X;
+                kk.hist_bins_y=hist_bins_Y;
                 insert(self,kk)
             end
             

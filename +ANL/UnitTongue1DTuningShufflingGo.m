@@ -3,22 +3,24 @@
 -> EPHYS.Unit
 -> ANL.TongueTuning1DType
 -> ANL.OutcomeType
-time_window_start                               : decimal(8,4)              #
 -> ANL.TongueTuningSmoothFlag
 -> ANL.FlagBasicTrials
 -> ANL.LickDirectionType
+time_window_start                               : decimal(8,4)              #
 time_window_duration                            : decimal(8,4)              #
 ---
 tongue_tuning_1d_si_shuffled                    : longblob              # spatial information, shuffled values
 tongue_tuning_1d_si_shuffled_mean=null               : decimal(8,4)          # spatial information, mean shuffled values
 %}
 
-classdef UnitTongue1DTuningLRseparateShuffling < dj.Computed
+classdef UnitTongue1DTuningShufflingGo < dj.Computed
     properties
-        keySource = ((EPHYS.Unit & 'unit_quality!="multi"' & (EPHYS.UnitCellType & 'cell_type="PYR" or cell_type="FS"')) & ANL.Video1stLickTrialNormalized) *  (ANL.TongueTuningSmoothFlag & 'smooth_flag=0') * (ANL.OutcomeType & 'outcome_grouping="all"') * (ANL.FlagBasicTrials & 'flag_use_basic_trials=0')  * (ANL.TongueTuning1DType & 'tuning_param_name="lick_horizoffset_relative" or tuning_param_name="lick_rt_video_onset" or tuning_param_name="lick_peak_x"') *ANL.LickDirectionType;
+        keySource = ((EPHYS.Unit & 'unit_quality!="multi"' & (EPHYS.UnitCellType & 'cell_type="PYR" or cell_type="FS"')) & ANL.Video1stLickTrial) *  (ANL.TongueTuningSmoothFlag & 'smooth_flag=0') * (ANL.OutcomeType & 'outcome_grouping="all"') * (ANL.FlagBasicTrials & 'flag_use_basic_trials=0')  * (ANL.TongueTuning1DType & 'tuning_param_name="lick_horizoffset" or tuning_param_name="lick_rt_video_onset" or tuning_param_name="lick_peak_x"') *ANL.LickDirectionType;
     end
     methods(Access=protected)
         function makeTuples(self, key)
+            t_vec=-0.2:0.2:0;
+            time_window_duration=0.2;
             
             % params
             Param = struct2table(fetch (ANL.Parameters,'*'));
@@ -26,10 +28,7 @@ classdef UnitTongue1DTuningLRseparateShuffling < dj.Computed
             number_of_shuffles = Param.parameter_value{(strcmp('tongue_tuning_number_of_shuffles',Param.parameter_name))};
 
             plot_flag=0;
-            
-            time_window_duration=0.5;
-            t_vec=-3:0.2:2;
-            
+                        
             smooth_flag=key.smooth_flag;
             smooth_bins=3;
             
@@ -41,48 +40,42 @@ classdef UnitTongue1DTuningLRseparateShuffling < dj.Computed
                 kk=rmfield(kk,'outcome_grouping');
             end
                         
-            if strcmp(key.lick_direction,'left')
-                key_lick_direction=EXP.TrialID & (ANL.Video1stLickTrialNormalized & 'lick_horizoffset_relative <0.5');
-%                 hist_bins=linspace(0,0.4,5);
-            elseif strcmp(key.lick_direction,'right')
-                key_lick_direction=EXP.TrialID & (ANL.Video1stLickTrialNormalized & 'lick_horizoffset_relative >=0.5');
-%                 hist_bins=linspace(0.6,1,5);
-              else
-                return;
-            end
-            
+           key_lick_direction=EXP.TrialID & (ANL.LickDirectionTrial & key) & ANL.VideoTongueValidRTTrial;
             
             if kk.flag_use_basic_trials==1
-                rel_spikes=(ANL.TrialSpikesGoAligned*EPHYS.Unit*EXP.SessionTraining*EPHYS.UnitPosition*EPHYS.UnitCellType*EXP.BehaviorTrial *   (EXP.TrialName & (ANL.TrialTypeGraphic & 'trialtype_left_and_right_no_distractors=1')) & ANL.Video1stLickTrialNormalized & kk  &  'early_lick="no early"');
+                rel_spikes=(ANL.TrialSpikesGoAligned*EPHYS.Unit*EXP.SessionTraining*EPHYS.UnitPosition*EPHYS.UnitCellType*EXP.BehaviorTrial *   (EXP.TrialName & (ANL.TrialTypeGraphic & 'trialtype_left_and_right_no_distractors=1')) & ANL.Video1stLickTrial & kk  &  'early_lick="no early"');
             else
-                rel_spikes=(ANL.TrialSpikesGoAligned*EPHYS.Unit*EXP.SessionTraining*EPHYS.UnitPosition*EPHYS.UnitCellType*EXP.BehaviorTrial & ANL.Video1stLickTrialNormalized & kk  &  'early_lick="no early"');
+                rel_spikes=(ANL.TrialSpikesGoAligned*EPHYS.Unit*EXP.SessionTraining*EPHYS.UnitPosition*EPHYS.UnitCellType*EXP.BehaviorTrial & ANL.Video1stLickTrial & kk  &  'early_lick="no early"');
             end
             
-            SPIKES=fetchn(rel_spikes & key_lick_direction,'spike_times_go','ORDER BY trial');
+            SPIKES=fetchn(rel_spikes,'spike_times_go','ORDER BY trial');
             
             if isempty(SPIKES)
                 return
             end
             
-            rel_video=(ANL.Video1stLickTrialNormalized & kk & rel_spikes ) & key_lick_direction;
-            TONGUE=struct2table(fetch(rel_video,'*','ORDER BY trial'));
-            number_of_trials=size(TONGUE,1);
-            
-            if number_of_trials<10
+            rel_video=(ANL.Video1stLickTrial & kk & rel_spikes ) & key_lick_direction;
+            if rel_video.count<10
                 return
             end
+            TONGUE=struct2table(fetch(rel_video,'*','ORDER BY trial'));
             
             
             % extracting param variable
             VariableNames=TONGUE.Properties.VariableNames';
-            var_table_offset=5;
-            VariableNames=VariableNames(var_table_offset:18);
             idx_v_name=find(strcmp(VariableNames,kk.tuning_param_name));
             labels=VariableNames{idx_v_name};
 
-            X=TONGUE{:,idx_v_name+var_table_offset-1};
+            X=TONGUE{:,idx_v_name};
+
+            %remove video outliers
+            idx_outlier=isoutlier(X);
+            X(idx_outlier)=[];
+            SPIKES(idx_outlier)=[];
+
+            number_of_trials=numel(X);
             
-            hist_bins=prctile(X,linspace(0,100,5)); %equally occupued bins
+            hist_bins=prctile(X,linspace(0,100,5)); %equally occupied bins
 
             kk.outcome_grouping=key.outcome_grouping;
             kk.time_window_duration=time_window_duration;
@@ -93,7 +86,7 @@ classdef UnitTongue1DTuningLRseparateShuffling < dj.Computed
                 t_wnd{it}=[t_vec(it), t_vec(it)+time_window_duration];
             end
             
-            trials_vec=1:1:size(TONGUE,1);
+            trials_vec=1:1:number_of_trials;
 
             for i_twnd=1:numel(t_wnd)
                 kk.time_window_start=t_wnd{i_twnd}(1);

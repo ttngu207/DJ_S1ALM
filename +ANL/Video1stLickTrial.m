@@ -1,5 +1,5 @@
 %{
-#
+# units are cm, deg, and seconds
 -> EXP.BehaviorTrial
 -> ANL.TongueEstimationType
 ---
@@ -16,8 +16,8 @@ lick_yaw_relative        : double                      #  tongue yaw at the peak
 lick_yaw_avg             : double                      #  median tongue yaw  during the lick duration, from peak to trough
 lick_yaw_avg_relative    : double                      #  median tongue yaw  during the lick duration, from peak to trough, relative to the left lick port
 
-lick_horizoffset         : double                   # tongue horizontal displacement at the peak of the lick
-lick_horizoffset_relative : double                   # tongue horizontal displacement at the peak of the lick, relative to the left lick port
+lick_horizoffset         : double                   # tongue horizontal displacement at the peak of the lick, relative to the midline
+lick_horizoffset_relative : double                   # tongue horizontal displacement at the peak of the lick, relative to the middle of the lick port
 
 lick_rt_electric=null    : double                      # rt based on electric lick port
 lick_rt_video_onset      : double                        # rt based on video trough

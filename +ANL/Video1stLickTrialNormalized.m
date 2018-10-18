@@ -1,6 +1,8 @@
 %{
 #
+
 -> EXP.BehaviorTrial
+-> ANL.LickDirectionType
 -> ANL.TongueEstimationType
 ---
 lick_peak_x              : double                      # tongue x coordinate at the peak of the lick. peak is defined at 75% from trough
@@ -28,83 +30,19 @@ lick_rt_video_peak       : double                      # rt based on video peak
 
 classdef Video1stLickTrialNormalized < dj.Computed
     properties
-        keySource = ANL.Video1stLickTrial;
+        keySource = (EXP.Session & ANL.Video1stLickTrial) *  ANL.LickDirectionType;
     end
     methods(Access=protected)
         
         function makeTuples(self, key)
-            
-            
-            
-            k=key;
-            k=rmfield(k,'trial');
-            T_all_trias=fetch(ANL.Video1stLickTrial & k,'*');
-            T=fetch(ANL.Video1stLickTrial & key,'*');
-            
-            x=[T_all_trias.lick_peak_x];
-            idx_outlier = isoutlier(x,'median'); x=x(~idx_outlier);
-            key.lick_peak_x = (T.lick_peak_x - nanmin(x))/(nanmax(x)-nanmin(x));
-            
-            x=[T_all_trias.lick_peak_y];
-            idx_outlier = isoutlier(x,'quartiles'); x=x(~idx_outlier);
-            key.lick_peak_y = (T.lick_peak_y - nanmin(x))/(nanmax(x)-nanmin(x));
-            
-            x=[T_all_trias.lick_amplitude];
-            idx_outlier = isoutlier(x,'median'); x=x(~idx_outlier);
-            key.lick_amplitude = (T.lick_amplitude - nanmin(x))/(nanmax(x)-nanmin(x));
-            
-            x=[T_all_trias.lick_vel_linear];
-            idx_outlier = isoutlier(x,'median'); x=x(~idx_outlier);
-            key.lick_vel_linear = (T.lick_vel_linear - nanmin(x))/(nanmax(x)-nanmin(x));
-            
-            x=[T_all_trias.lick_vel_angular]; 
-            idx_outlier = isoutlier(x,'median'); x=x(~idx_outlier);
-            key.lick_vel_angular = (T.lick_vel_angular - nanmin(x))/(nanmax(x)-nanmin(x));
-
-            x=[T_all_trias.lick_vel_angular_absolute]; 
-            idx_outlier = isoutlier(x,'quartiles'); x=x(~idx_outlier);
-            key.lick_vel_angular_absolute = (T.lick_vel_angular_absolute - nanmin(x))/(nanmax(x)-nanmin(x));
- 
-            x=[T_all_trias.lick_yaw];
-            idx_outlier = isoutlier(x,'quartiles'); x=x(~idx_outlier);
-            key.lick_yaw = (T.lick_yaw - nanmin(x))/(nanmax(x)-nanmin(x));
-            
-            x=[T_all_trias.lick_yaw_relative];
-            idx_outlier = isoutlier(x,'quartiles'); x=x(~idx_outlier);
-            key.lick_yaw_relative = (T.lick_yaw_relative - nanmin(x))/(nanmax(x)-nanmin(x));
-            
-            x=[T_all_trias.lick_yaw_avg];
-            idx_outlier = isoutlier(x,'quartiles'); x=x(~idx_outlier);
-            key.lick_yaw_avg = (T.lick_yaw_avg - nanmin(x))/(nanmax(x)-nanmin(x));
-            
-            x=[T_all_trias.lick_yaw_avg_relative];
-            idx_outlier = isoutlier(x,'quartiles'); x=x(~idx_outlier);
-            key.lick_yaw_avg_relative = (T.lick_yaw_avg_relative - nanmin(x))/(nanmax(x)-nanmin(x));
-            
-            
-            
-            x=[T_all_trias.lick_horizoffset];
-            idx_outlier = isoutlier(x,'quartiles'); x=x(~idx_outlier);
-            key.lick_horizoffset = (T.lick_horizoffset - nanmin(x))/(nanmax(x)-nanmin(x));
-            
-            x=[T_all_trias.lick_horizoffset_relative];
-            idx_outlier = isoutlier(x,'quartiles'); x=x(~idx_outlier);
-            key.lick_horizoffset_relative = (T.lick_horizoffset_relative - nanmin(x))/(nanmax(x)-nanmin(x));
-            
-            
-            
-            x=[T_all_trias.lick_rt_electric];
-            idx_outlier = isoutlier(x,'median'); x=x(~idx_outlier);
-            key.lick_rt_electric = (T.lick_rt_electric - nanmin(x))/(nanmax(x)-nanmin(x));
-            
-            x=[T_all_trias.lick_rt_video_onset];
-            idx_outlier = isoutlier(x,'median'); x=x(~idx_outlier);
-            key.lick_rt_video_onset = (T.lick_rt_video_onset - nanmin(x))/(nanmax(x)-nanmin(x));
-            
-            x=[T_all_trias.lick_rt_video_peak];
-            idx_outlier = isoutlier(x,'median'); x=x(~idx_outlier);
-            key.lick_rt_video_peak = (T.lick_rt_video_peak - nanmin(x))/(nanmax(x)-nanmin(x));
-            
+                  
+            T_all_trias=fetch(ANL.Video1stLickTrial*ANL.LickDirectionTrial & key & ANL.VideoTongueValidRTTrial ,'*','ORDER BY trial');
+            fields = fieldnames(T_all_trias);
+            T=struct2table(T_all_trias);
+            for i=6:1:numel(fields)
+                T{:,i}=rescale(T{:,i});
+            end
+            key=table2struct(T);
             
             insert(self,key)
         end

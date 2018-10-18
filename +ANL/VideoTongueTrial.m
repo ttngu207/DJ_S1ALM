@@ -1,11 +1,11 @@
 %{
-#
+# units are mm, deg, and seconds
 -> EXP.BehaviorTrial
 -> ANL.TongueEstimationType
 ---
 
 lick_peak_x=null            : longblob                      # tongue x coordinate at the peak of the lick. peak is defined at 75% from trough
-lick_peak_y=null            : longblob                      # tongue y coordinate at the peak of the lick. peak is defined at 75% from trough
+lick_peak_y=null            : longblob                      # tongue y coordinate at the peak of the lick, relative to midline. peak is defined at 75% from trough
 lick_amplitude =null        : longblob                      # tongue displacement in x,y    at the peak of the lick, peak is defined at 75% from trough
 lick_vel_linear =null       : longblob                      # median tongue linear velocity during the lick duration, from peak to trough
 lick_vel_angular =null      : longblob                      # median tongue angular velocity during the lick duration, from peak to trough
@@ -15,11 +15,11 @@ lick_yaw_relative=null      : longblob                      #  tongue yaw at the
 lick_yaw_avg=null           : longblob                      #  median tongue yaw  during the lick duration, from peak to trough
 lick_yaw_avg_relative=null  : longblob                      #  median tongue yaw  during the lick duration, from peak to trough, relative to the left lick port
 
-lick_horizoffset=null          : longblob                   # tongue horizontal displacement at the peak of the lick
+lick_horizoffset=null          : longblob                   # tongue horizontal displacement at the peak of the lick, relative to midline. Positive values - right port, negative values - left port. Normalized to the distance between ports.
 lick_horizoffset_relative=null : longblob                   # tongue horizontal displacement at the peak of the lick, relative to the left lick port
 
 lick_rt_electric=null        : longblob                      # rt based on electric lick port
-lick_rt_video_onset=null     : longblob                        # rt based on video trough
+lick_rt_video_onset=null     : longblob                      # rt based on video trough
 lick_rt_video_peak=null      : longblob                      # rt based on video peak
 %}
 
@@ -153,7 +153,10 @@ classdef VideoTongueTrial < dj.Computed
             tracking_datafile_num =tracking_datafile_num(ismember(tracking_datafile_trials,trials));
             
             
-            
+            Param = struct2table(fetch (ANL.Parameters,'*'));
+            camera_bottomview_pixels_to_mm = Param.parameter_value{(strcmp('camera_bottomview_pixels_to_mm',Param.parameter_name))};
+
+
             p_threshold =0.99;
             
             
@@ -317,7 +320,7 @@ classdef VideoTongueTrial < dj.Computed
                 
                 
                 %% angle, amplitude and reaction times
-                offset=Ports.Left.Y;
+                offset=(Ports.Left.Y+Ports.Right.Y)/2; %relative to the mid-distance between the lickports
                 
                 %find lick angle at peak
                 %----------------------------------------------------------
@@ -350,12 +353,22 @@ classdef VideoTongueTrial < dj.Computed
                     yaw_avg_relative(ll)=nanmedian(rad2deg(temp_theta_lick));
                 end
                 
-                % horizontam displacement
+                % horizontal displacement
                 %----------------------------------------------------------
-                lick_horizoffset=Y(pks_idx);
+                % relative to ML midline
+%                 plot([0, fS(2).x],[0, fS(2).y],'-k','LineWidth',2); %nose tip
+%                 midline_slope = fS(2).y/fS(2).x;
+%                 eq_midline = @(b, x) (b*x); %Logistic function
+                lick_horizoffset=Y(pks_idx);%-eq_midline(midline_slope, X(pks_idx)));
+
+                
+                % relative to the middle of the lickports
                 lick_horizoffset_relative=Y(pks_idx)- offset;
                 
+%                                
                 
+                
+
                 idx_noearly_licks= find(t(trough_idx)>0);
                 
                 
@@ -380,10 +393,10 @@ classdef VideoTongueTrial < dj.Computed
 %                 insert_key(counter).tongue_time = t;
                 
                 %parsed by licks
-                insert_key(counter).lick_peak_x = X(pks_idx(idx_noearly_licks))';
-                insert_key(counter).lick_peak_y = Y(pks_idx(idx_noearly_licks))';
-                insert_key(counter).lick_amplitude = lick_amplitude(idx_noearly_licks)';
-                insert_key(counter).lick_vel_linear = lick_vel_linear(idx_noearly_licks)';
+                insert_key(counter).lick_peak_x = X(pks_idx(idx_noearly_licks))'*camera_bottomview_pixels_to_mm;
+                insert_key(counter).lick_peak_y = Y(pks_idx(idx_noearly_licks))'*camera_bottomview_pixels_to_mm;
+                insert_key(counter).lick_amplitude = lick_amplitude(idx_noearly_licks)'*camera_bottomview_pixels_to_mm;
+                insert_key(counter).lick_vel_linear = lick_vel_linear(idx_noearly_licks)'*camera_bottomview_pixels_to_mm;
                 insert_key(counter).lick_vel_angular = lick_vel_angular(idx_noearly_licks)' *(-1);
                 
                 insert_key(counter).lick_yaw = lick_yaw(idx_noearly_licks)' *(-1);
@@ -392,8 +405,8 @@ classdef VideoTongueTrial < dj.Computed
                 insert_key(counter).lick_yaw_avg = yaw_avg(idx_noearly_licks)' *(-1);
                 insert_key(counter).lick_yaw_avg_relative = yaw_avg_relative(idx_noearly_licks)' *(-1);
                 
-                insert_key(counter).lick_horizoffset = lick_horizoffset(idx_noearly_licks)' *(-1);
-                insert_key(counter).lick_horizoffset_relative = lick_horizoffset_relative(idx_noearly_licks)' *(-1);
+                insert_key(counter).lick_horizoffset = lick_horizoffset(idx_noearly_licks)' *(-1)*camera_bottomview_pixels_to_mm;
+                insert_key(counter).lick_horizoffset_relative = lick_horizoffset_relative(idx_noearly_licks)' *(-1)*camera_bottomview_pixels_to_mm;
                 
                 insert_key(counter).lick_rt_video_onset = RT_VideoOnset;
                 insert_key(counter).lick_rt_electric = RT_Electric;
@@ -542,7 +555,7 @@ classdef VideoTongueTrial < dj.Computed
                     ylabel('M-L axis (pixels)');
                     set(gca,'Ydir','reverse')
                     if ~isempty(idx_noearly_licks)
-                        title(sprintf('yaw = %.1f ; rel yaw = %.1f ; \n horzoffset = %.1f ;  rel horzoffset = %.1f', lick_yaw(idx_noearly_licks(1)), lick_yaw_relative(idx_noearly_licks(1)), lick_horizoffset(idx_noearly_licks(1)), lick_horizoffset_relative(idx_noearly_licks(1))),'Color',[1 0 1]);
+                        title(sprintf('yaw = %.1f ; rel yaw = %.1f ; \n horzoffset = %.1f ;  rel horzoffset = %.1f\n', lick_yaw(idx_noearly_licks(1)), lick_yaw_relative(idx_noearly_licks(1)), lick_horizoffset(idx_noearly_licks(1)), lick_horizoffset_relative(idx_noearly_licks(1))),'Color',[1 0 1]);
                     end
                     
                     %X-Y licks

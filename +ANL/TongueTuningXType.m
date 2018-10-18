@@ -15,6 +15,7 @@ classdef TongueTuningXType < dj.Lookup
             'lick_yaw_relative'     ''
             'lick_yaw_avg'          ''
             'lick_horizoffset_relative' ''
+            'lick_horizoffset' ''
             'lick_rt_video_onset' ''
             };
         

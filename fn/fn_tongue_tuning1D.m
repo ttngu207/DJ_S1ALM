@@ -1,7 +1,7 @@
 function [tuning1D, hist_bins_centers, number_of_spikes, peak_FR, min_FR, peak_FR_bin, SI, FR_TRIAL] = fn_tongue_tuning1D(X_behav, SPIKES,t_wnd, hist_bins, min_trials_1D_bin, smooth_bins, label,smooth_flag, plot_flag)
 
 [N,~,bin] =histcounts(X_behav,hist_bins);
-hist_bins_centers=hist_bins(1:end-1)+mean(diff(hist_bins))/2;
+hist_bins_centers=hist_bins(1:end-1)+diff(hist_bins)/2;
 
 time_binned=N*diff(t_wnd);
 remove_unoccupied_bins=N*0;
