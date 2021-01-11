@@ -23,7 +23,7 @@ regress_mat_timebin_vector                     : longblob                  # tim
 
 classdef RegressionRotation < dj.Computed
     properties
-        keySource = (EXP.Session & ANL.RegressionTongueSingleUnit) * (EPHYS.CellType & 'cell_type="PYR" or cell_type="FS" or cell_type="all"')   * (ANL.OutcomeType & 'outcome_grouping="all"') * (ANL.FlagBasicTrials & 'flag_use_basic_trials=0')  * (ANL.TongueTuning1DType & 'tuning_param_name="lick_horizoffset_relative" or tuning_param_name="lick_rt_video_onset" or tuning_param_name="lick_peak_x"') * (ANL.LickDirectionType);
+        keySource = (EXP.Session & ANL.RegressionTongueSingleUnit) * (EPHYS.CellType & 'cell_type="PYR" or cell_type="FS" or cell_type="all"')   * (ANL.OutcomeType & 'outcome_grouping="all"') * (ANL.FlagBasicTrials & 'flag_use_basic_trials=0')  * (ANL.TongueTuning1DType & 'tuning_param_name="lick_horizoffset" or tuning_param_name="lick_rt_video_onset" or tuning_param_name="lick_peak_x"') * (ANL.LickDirectionType);
     end
     methods(Access=protected)
         

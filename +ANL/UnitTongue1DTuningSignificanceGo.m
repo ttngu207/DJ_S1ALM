@@ -9,7 +9,6 @@
 time_window_start                               : decimal(8,4)              #
 ---
 time_window_duration                           : decimal(8,4)              #
-
 pvalue_si_1d=null                       : decimal(8,4)              #p-value of spatial information, computed using shuffled distribution
 tongue_tuning_1d_si_relative_to_shuffle=null                     : decimal(8,4)
 %}

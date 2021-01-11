@@ -5,11 +5,11 @@
 -> EPHYS.UnitQualityType
 -> ANL.ModeWeightsSign
 -> EXP.Outcome
+-> ANL.ModeTypeName
+-> EXP.TrialNameType
 -> EXP.SessionTrial
 -> LAB.Hemisphere
 -> LAB.BrainArea
--> ANL.ModeTypeName
--> EXP.TrialNameType
 
 ---
 num_units_projected       : int          # number of units projected in this trial
@@ -21,7 +21,7 @@ proj_trial                : longblob       # projection of the neural acitivity 
 classdef ProjTrial < dj.Computed
     properties
         
-        keySource = (EXP.Session  & EPHYS.Unit) * (EPHYS.CellType & 'cell_type="Pyr" or cell_type="FS" or cell_type="all"') * (EPHYS.UnitQualityType & 'unit_quality="all" or unit_quality="good" or unit_quality="ok or good"') * EXP.Outcome * (ANL.ModeWeightsSign);
+        keySource = (EXP.Session  & EPHYS.Unit) * (EPHYS.CellType & 'cell_type="Pyr" or cell_type="FS" or cell_type="all"') * (EPHYS.UnitQualityType & 'unit_quality="all" or unit_quality="ok or good"') * EXP.Outcome * (ANL.ModeWeightsSign) * ANL.ModeTypeName;
 %                     keySource = (EXP.Session  & EPHYS.Unit) * (EPHYS.CellType & 'cell_type="Pyr"') * (EPHYS.UnitQualityType & 'unit_quality="ok or good"') * EXP.Outcome * ANL.ModeWeightsSign;
 %                             keySource = (EXP.Session  & EPHYS.Unit) * (EPHYS.CellType & 'cell_type="Pyr" or cell_type="FS" or cell_type="all"') * (EPHYS.UnitQualityType & 'unit_quality="all" or unit_quality="ok or good"') * EXP.Outcome * (ANL.ModeWeightsSign);
 
@@ -29,23 +29,23 @@ classdef ProjTrial < dj.Computed
     methods(Access=protected)
         function makeTuples(self, key)
             key.task = fetch1(EXP.SessionTask & key,'task');
-            
             k=key;
-            Modes = fetch (ANL.Mode  & k, '*');
-            
             if contains(k.cell_type,'all')
                 k = rmfield(k,'cell_type');
             end
             
             if contains(k.unit_quality,'ok or good')
                 k = rmfield(k,'unit_quality');
-                PSTH = fetch ((EXP.SessionID * EPHYS.Unit * EPHYS.UnitCellType * EPHYS.UnitPosition * ANL.PSTHTrial * EXP.BehaviorTrial) & ANL.IncludeUnit & k & 'unit_quality="ok" or unit_quality="good"' & 'early_lick="no early"', '*');
+                Modes = fetch ( (ANL.Mode * EPHYS.Unit * EPHYS.UnitCellType * EPHYS.UnitPosition)  & ANL.IncludeUnit & k & 'unit_quality="ok" or unit_quality="good"', '*');
+                PSTH = fetch ((EXP.SessionID * EPHYS.Unit * EPHYS.UnitCellType * EPHYS.UnitPosition *  ANL.PSTHTrial * EXP.BehaviorTrial) & ANL.IncludeUnit & k & 'unit_quality="ok" or unit_quality="good"', '*');
             else
                 if contains(k.unit_quality,'all')
                     k = rmfield(k,'unit_quality');
                 end
-                PSTH = fetch ((EXP.SessionID * EPHYS.Unit * EPHYS.UnitCellType * EPHYS.UnitPosition * ANL.PSTHTrial * EXP.BehaviorTrial) & ANL.IncludeUnit & k & 'early_lick="no early"', '*');
+                Modes = fetch (ANL.Mode*EPHYS.UnitCellType * EPHYS.UnitPosition & ANL.IncludeUnit & k, '*');
+                PSTH = fetch ((EXP.SessionID * EPHYS.Unit * EPHYS.UnitCellType * EPHYS.UnitPosition *  ANL.PSTHTrial * EXP.BehaviorTrial) & ANL.IncludeUnit & k, '*');
             end
+            
             Param = struct2table(fetch (ANL.Parameters,'*'));
             
             if numel(unique([PSTH.unit]))>1 %i.e. there are more than one cell

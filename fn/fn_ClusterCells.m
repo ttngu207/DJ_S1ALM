@@ -9,7 +9,7 @@ dir_save_figure = [dir_root 'Results\Clustering\metrics\'];
 if (contains(key.brain_area,'vS1') || contains(key.cell_type,'FS'))
     n_clust =10; %15 %20 for FS %50 for PYR; for vS1 20 for both cell types
 else
-    n_clust =50; %50 %20 for FS %50 for PYR; for vS1 20 for both cell types
+    n_clust =100; %50 %20 for FS %50 for PYR; for vS1 20 for both cell types
 end
 
 agregate_clusters_flag = 0; %itiratively agregate clusters smaller than min_cluster_percent by merging them to clusters with higest correlation to them

@@ -2,10 +2,10 @@ function fn_regression_decoding_lick_number (key,self, rel_Nth_lick)
 
 Param = struct2table(fetch (ANL.Parameters,'*'));
 time = Param.parameter_value{(strcmp('psth_t_vector',Param.parameter_name))};
-minimal_num_units_proj_trial = 10; %Param.parameter_value{(strcmp('minimal_num_units_proj_trial',Param.parameter_name))};
+minimal_num_units_proj_trial = 3; %Param.parameter_value{(strcmp('minimal_num_units_proj_trial',Param.parameter_name))};
 
 k_proj=key;
-k_proj.regression_time_start=0; %key.regression_time_start;
+k_proj.regression_time_start=key.regression_time_start;
 
 rel_Proj = ((ANL.RegressionProjTrialGo	 & rel_Nth_lick) &k_proj  )*EXP.TrialID*EXP.TrialName*EXP.BehaviorTrial;
 
@@ -13,7 +13,7 @@ if rel_Proj.count<=10
     return
 end
 
-rel_TONGUE= ((ANL.VideoLickNumberTrial & rel_Nth_lick & key )*EXP.TrialID) & rel_Proj.proj;
+rel_TONGUE= ((ANL.VideoNthLickTrial & rel_Nth_lick & key )*EXP.TrialID) & rel_Proj.proj;
 TONGUE = struct2table(fetch(rel_TONGUE,'*' , 'ORDER BY trial_uid'));
 
 idx_v=~isoutlier(table2array(TONGUE(:,key.tuning_param_name)));
@@ -36,8 +36,8 @@ TONGUE=TONGUE(include_proj_idx,:);
 proj_trial= proj_trial(include_proj_idx,:);
 
 
-t=-0.5:0.1:0.5;
-time_window=0.2;
+t=-1:0.1:1;
+time_window=0.1;
 for i_t=1:1:numel(t)
     
     for i_trial=1:1:size(TONGUE,1)
@@ -65,4 +65,5 @@ end
 
 key.rsq_linear_regression_t=R2_LinearRegression;
 key.t_for_decoding=t;
+key.number_of_trials=size(TONGUE,1);
 insert(self,key);

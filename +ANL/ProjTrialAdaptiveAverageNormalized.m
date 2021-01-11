@@ -22,7 +22,7 @@ proj_average                : longblob       # projection of the neural acitivit
 classdef ProjTrialAdaptiveAverageNormalized < dj.Computed
     properties
         %         keySource = (EXP.Session  & EPHYS.Unit) * (EPHYS.CellType & 'cell_type="Pyr" or cell_type="FS" or cell_type="all"') * (EPHYS.UnitQualityType & 'unit_quality="all" or unit_quality="good" or unit_quality="ok or good"') * EXP.Outcome * ANL.ModeWeightsSign;
-        keySource = (EXP.Session  & EPHYS.Unit) * (EPHYS.CellType & 'cell_type="Pyr" or cell_type="FS" or cell_type="all"') * (EPHYS.UnitQualityType & 'unit_quality="all" or unit_quality="good" or unit_quality="ok or good"') * EXP.Outcome * ANL.ModeWeightsSign ;
+        keySource = (EXP.Session  & EPHYS.Unit) * (EPHYS.CellType & 'cell_type="Pyr"') * (EPHYS.UnitQualityType & 'unit_quality="ok or good"') * EXP.Outcome * (ANL.ModeWeightsSign & 'mode_weights_sign="all"') * (ANL.ModeTypeName & 'mode_type_name="LateDelay"');
         
     end
     methods(Access=protected)
@@ -65,8 +65,13 @@ classdef ProjTrialAdaptiveAverageNormalized < dj.Computed
                     
                     kkl.trial_type_name='l';
                     kkr.trial_type_name='r';
-                    l_proj = fetch1(ANL.ProjTrialAdaptiveAverage & key & kkl,'proj_average');
-                    r_proj = fetch1(ANL.ProjTrialAdaptiveAverage & key & kkr,'proj_average');
+
+                    rel =ANL.ProjTrialAdaptiveAverage & key;
+                    if rel.count==0
+                        return
+                    end
+                    l_proj = fetch1(rel & kkl,'proj_average');
+                    r_proj = fetch1(rel & kkr,'proj_average');
                     selectivity = r_proj-l_proj;
                     selectivity = movmean(selectivity,[smooth_bins 0], 2, 'omitnan','Endpoints','shrink');
                     max_selectivity = nanmax(selectivity (time>=mode_time1_st & time<mode_time1_end));

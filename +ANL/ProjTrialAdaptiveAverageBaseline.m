@@ -1,15 +1,14 @@
 %{
 # Projection of the neural acitivity on a mode (neuron weights vector)
 -> EXP.Session
--> LAB.Hemisphere
--> LAB.BrainArea
 -> EPHYS.CellType
 -> EPHYS.UnitQualityType
 -> ANL.ModeTypeName
 -> ANL.ModeWeightsSign
--> EXP.TrialNameType
 -> EXP.Outcome
-
+-> LAB.Hemisphere
+-> LAB.BrainArea
+-> EXP.TrialNameType
 ---
 num_trials_projected        : int            # number of projected trials in this trial-type/outcome
 num_units_projected         : int            # number of units projected in this trial-type/outcome
@@ -22,29 +21,27 @@ proj_average                : longblob       # projection of the neural acitivit
 classdef ProjTrialAdaptiveAverageBaseline < dj.Computed
     properties
         %         keySource = (EXP.Session  & EPHYS.Unit) * (EPHYS.CellType & 'cell_type="Pyr" or cell_type="FS" or cell_type="all"') * (EPHYS.UnitQualityType & 'unit_quality="all" or unit_quality="good" or unit_quality="ok or good"') * EXP.Outcome * ANL.ModeWeightsSign;
-        keySource = (EXP.Session  & EPHYS.Unit) * (EPHYS.CellType & 'cell_type="Pyr" or cell_type="FS" or cell_type="all"') * (EPHYS.UnitQualityType & 'unit_quality="all" or unit_quality="good" or unit_quality="ok or good"') * EXP.Outcome * ANL.ModeWeightsSign ;
-        
+%         keySource = (EXP.Session  & EPHYS.Unit) * (EPHYS.CellType & 'cell_type="Pyr" or cell_type="FS" or cell_type="all"') * (EPHYS.UnitQualityType & 'unit_quality="all" or unit_quality="ok or good"') * EXP.Outcome * ANL.ModeWeightsSign * ANL.ModeTypeName;
+                keySource = (EXP.Session  & EPHYS.Unit) * (EPHYS.CellType & 'cell_type="Pyr"') * (EPHYS.UnitQualityType & 'unit_quality="ok or good" or unit_quality="all"') * EXP.Outcome * (ANL.ModeWeightsSign & 'mode_weights_sign="all"') * (ANL.ModeTypeName & 'mode_type_name="LateDelay"');
+
     end
     methods(Access=protected)
         function makeTuples(self, key)
-            key.task = fetch1(EXP.SessionTask & key,'task');
-            
+             key.task = fetch1(EXP.SessionTask & key,'task');
             k=key;
-            Modes = fetch (ANL.Mode  & k, '*');
-            
             if contains(k.cell_type,'all')
                 k = rmfield(k,'cell_type');
             end
             
             if contains(k.unit_quality,'ok or good')
                 k = rmfield(k,'unit_quality');
-                %                 Modes = fetch ((ANL.Mode * EXP.SessionID * EPHYS.Unit  * EPHYS.UnitCellType) & ANL.IncludeUnit & k & 'unit_quality="ok" or unit_quality="good"', '*');
+                Modes = fetch ( (ANL.Mode * EPHYS.Unit * EPHYS.UnitCellType * EPHYS.UnitPosition)  & ANL.IncludeUnit & k & 'unit_quality="ok" or unit_quality="good"', '*');
                 PSTH = fetch ((EXP.SessionID * EPHYS.Unit * EPHYS.UnitCellType * EPHYS.UnitPosition * ANL.PSTHAdaptiveAverage) & ANL.IncludeUnit & k & 'unit_quality="ok" or unit_quality="good"', '*');
             else
                 if contains(k.unit_quality,'all')
                     k = rmfield(k,'unit_quality');
                 end
-                %                 Modes = fetch ((ANL.Mode * EXP.SessionID * EPHYS.Unit  * EPHYS.UnitCellType) & ANL.IncludeUnit & k, '*');
+                Modes = fetch (ANL.Mode*EPHYS.UnitCellType * EPHYS.UnitPosition & ANL.IncludeUnit & k, '*');
                 PSTH = fetch ((EXP.SessionID * EPHYS.Unit * EPHYS.UnitCellType * EPHYS.UnitPosition * ANL.PSTHAdaptiveAverage) & ANL.IncludeUnit & k, '*');
             end
             
@@ -57,7 +54,11 @@ classdef ProjTrialAdaptiveAverageBaseline < dj.Computed
                 for imod = 1:1:numel(mode_names)
                     key.mode_type_name = mode_names{imod};
                     Proj =  fetch(ANL.ProjTrialAdaptiveAverage & key,'*');
-                                       
+                     if numel(Proj)==0
+                         return
+                     end
+                     % for baseline we take correct left trials
+                    key.outcome='hit';
                     kkl.trial_type_name='l';
                     l_proj = fetch1(ANL.ProjTrialAdaptiveAverage & key & kkl,'proj_average');
                     baseline = mean(l_proj(time>=-4 & time<-3));

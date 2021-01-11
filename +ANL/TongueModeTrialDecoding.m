@@ -18,7 +18,7 @@ t_for_decoding                                  : blob       #
 
 classdef TongueModeTrialDecoding < dj.Computed
     properties
-        keySource = (EXP.Session & EPHYS.Unit & ANL.Video1stLickTrialZscore) * (EPHYS.CellType & 'cell_type="Pyr"') * (EPHYS.UnitQualityType & 'unit_quality="ok or good"') * (ANL.TongueTuning1DType & 'tuning_param_name="lick_horizoffset_relative" or tuning_param_name="lick_rt_video_onset" or tuning_param_name="lick_peak_x"') * ANL.LickDirectionType * ANL.OutcomeTypeDecoding * ANL.FlagBasicTrialsDecoding * ANL.ModeWeightsSign * ANL.ModeTypeName2 & (ANL.IncludeSession -ANL.ExcludeSession);
+        keySource = (EXP.Session & EPHYS.Unit & ANL.Video1stLickTrial) * (EPHYS.CellType & 'cell_type="Pyr"') * (EPHYS.UnitQualityType & 'unit_quality="ok or good"') * (ANL.TongueTuning1DType & 'tuning_param_name="lick_horizoffset" or tuning_param_name="lick_rt_video_onset" or tuning_param_name="lick_peak_x"') * ANL.LickDirectionType * ANL.OutcomeTypeDecoding * ANL.FlagBasicTrialsDecoding * ANL.ModeWeightsSign * ANL.ModeTypeName2 & (ANL.IncludeSession -ANL.ExcludeSession);
     end
     methods(Access=protected)
         function makeTuples(self, key)
@@ -48,15 +48,15 @@ classdef TongueModeTrialDecoding < dj.Computed
             
             time = Param.parameter_value{(strcmp('psth_t_vector',Param.parameter_name))};
             
-            rel_behav= EXP.TrialID & ((EXP.BehaviorTrial * EXP.TrialName  * ANL.TrialTypeGraphic* ANL.Video1stLickTrialZscoreAllLR )   & k  & 'early_lick="no early"')& ANL.ProjTrialNormalized;
+            rel_behav= EXP.TrialID & ((EXP.BehaviorTrial * EXP.TrialName  * ANL.TrialTypeGraphic* ANL.Video1stLickTrial *ANL.LickDirectionTrial )   & k  & 'early_lick="no early"')& ANL.ProjTrialNormalized & ANL.VideoTongueValidRTTrial;
             if rel_behav.count==0
                 return
             end
-            TONGUE = struct2table(fetch((ANL.Video1stLickTrialZscoreAllLR & rel_behav &k )*EXP.TrialID,'*' , 'ORDER BY trial_uid'));
+            TONGUE = struct2table(fetch((ANL.Video1stLickTrial & rel_behav &k )*EXP.TrialID,'*' , 'ORDER BY trial_uid'));
             
-            idx_v1=~isoutlier(TONGUE.lick_rt_video_onset);
-            idx_v2=~isoutlier(table2array(TONGUE(:,key.tuning_param_name)));
-            idx_v = idx_v1 | idx_v2;
+%             idx_v1=~isoutlier(TONGUE.lick_rt_video_onset);
+            idx_v=~isoutlier(table2array(TONGUE(:,key.tuning_param_name)));
+%             idx_v = idx_v1 | idx_v2;
 
             TONGUE=TONGUE(idx_v,:);
                         
@@ -90,32 +90,16 @@ classdef TongueModeTrialDecoding < dj.Computed
                 
                 Y=table2array(TONGUE_current(:,key.tuning_param_name));
                 
-                Y= rescale(Y);
-                X=rescale(P.endpoint,-1,1);
+                X=P.endpoint;
+                [X,Y,Linear, Logistic] = fn_compute_linear_and_logistic_regression (X,Y);
                 
-                %% Linear regression
-                Predictor = [ones(size(X,1),1) X];
-                [beta,~,~,~,stats]= regress(Y,Predictor);
-                Rsq(i_t) = stats(1);  %stats [Rsq, F-statistic, p-value, and an estimate of the error variance.]
-                % regression_p=stats(3);
-                YRegLinear =  beta(1) + beta(2)*X;
-                
-                
-                %% Logistic regression (fitting a logistic function)
-                % sigfunc = @(A, x)(A(1) ./ (1 + exp(-A(2)*x)))
-                logisticfunc = @(A, x) ( (A(1) ./ (1 + exp(-10*x))) +A(2)); %Logistic function
-                
-                % Initial values fed into the iterative algorithm
-                A0(1) = 1; % Stretch in Y
-                A0(2)=0; % Y baseline
-                
-                A_fit = nlinfit(X, Y, logisticfunc, A0);
-                YLogisticRegFit= logisticfunc(A_fit,X);
                 
                 
                 %% Computing R2 of both types of fits (linear and logistic)
-                R2_LinearRegression(i_t)=fn_rsquare (Y,YRegLinear);
-                R2_LogisticRegression(i_t)=fn_rsquare (Y,YLogisticRegFit);
+                R2_LinearRegression(i_t)=Linear.R2;
+                R2_LogisticRegression(i_t)=Logistic.R2;
+                
+
             end
             
             key.rsq_linear_regression_t=R2_LinearRegression;

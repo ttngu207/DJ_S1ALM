@@ -16,8 +16,8 @@ idx_time_to_normalize = time>=mode_time1_st & time<mode_time1_end;
 % proj_max = max(nanmean(proj_avg(:,idx_time_to_normalize),2));
 
 trials = unique(PSTH.trial);
-    trials_direction = fetchn(ANL.LickDirectionTrial & key,'trial','ORDER BY trial');
-    trials=trials(ismember(trials,trials_direction));
+trials_direction = fetchn(ANL.LickDirectionTrial & key,'trial','ORDER BY trial');
+trials=trials(ismember(trials,trials_direction));
 
 
 for itr= 1:1:numel(trials)
@@ -29,27 +29,27 @@ for itr= 1:1:numel(trials)
     Mtrial=M(ismember([M.unit],[P.unit]),:);
     P=P(ismember([P.unit],[M.unit]),:);
     weights = ([Mtrial.regression_coeff_b2].*[Mtrial.regression_rsq])'; %weights are regression coefficients * regression R^2
-
-%     subplot(2,2,1)
-%     plot([Mtrial.regression_coeff_b2_normalized], [Mtrial.regression_rsq],'.')
-%     xlabel('beta normalized');
-%     ylabel('R^2');
-%     
-%     subplot(2,2,2)
-%     plot([Mtrial.regression_coeff_b2], [Mtrial.regression_rsq],'.')
-%     xlabel('beta ');
-%     ylabel('R^2');
-%     
-%     subplot(2,2,3)
-%     plot([Mtrial.regression_coeff_b2], [Mtrial.regression_coeff_b2_normalized],'.')
-%     xlabel('beta ');
-%     ylabel('beta normalized');
-%     
-%     subplot(2,2,4)
-%     plot([weights], [Mtrial.regression_rsq],'.')
-%     xlabel('weights ');
-%     ylabel('R^2');
-%     
+    
+    %     subplot(2,2,1)
+    %     plot([Mtrial.regression_coeff_b2_normalized], [Mtrial.regression_rsq],'.')
+    %     xlabel('beta normalized');
+    %     ylabel('R^2');
+    %
+    %     subplot(2,2,2)
+    %     plot([Mtrial.regression_coeff_b2], [Mtrial.regression_rsq],'.')
+    %     xlabel('beta ');
+    %     ylabel('R^2');
+    %
+    %     subplot(2,2,3)
+    %     plot([Mtrial.regression_coeff_b2], [Mtrial.regression_coeff_b2_normalized],'.')
+    %     xlabel('beta ');
+    %     ylabel('beta normalized');
+    %
+    %     subplot(2,2,4)
+    %     plot([weights], [Mtrial.regression_rsq],'.')
+    %     xlabel('weights ');
+    %     ylabel('R^2');
+    %
     if strcmp(key(1).mode_weights_sign,'positive')
         weights(weights<0)= NaN;
     elseif strcmp(key(1).mode_weights_sign,'negative')
@@ -87,8 +87,8 @@ for itr= 1:1:numel(trials)
     key(itr).tuning_param_name =  key(1).tuning_param_name;
     key(itr).outcome_grouping =  key(1).outcome_grouping;
     key(itr).flag_use_basic_trials = key(1).flag_use_basic_trials;
-        key(itr).lick_direction = key(1).lick_direction;
-
+    key(itr).lick_direction = key(1).lick_direction;
+    
 end
 
 proj_max = max(proj_max_tr(~isoutlier(proj_max_tr)));

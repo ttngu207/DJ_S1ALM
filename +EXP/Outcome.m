@@ -10,6 +10,7 @@ classdef Outcome < dj.Lookup
             'hit'
             'miss'
             'ignore'
+            'response'
             }
     end
 end

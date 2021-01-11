@@ -31,7 +31,6 @@ classdef RegressionTongueSingleUnitGo < dj.Computed
             fraction_train=0.50; % i.e. - compute regression on that fraction of trials, repeat num_repeat, and then average the regression coefficients
             time_window_duration=0.2;
             t_vec=fetch1(ANL.RegressionTime4 & key,'regression_time_start');
-            time_window_start=t_vec;
             
             % fetching spikes and video
             
@@ -56,106 +55,17 @@ classdef RegressionTongueSingleUnitGo < dj.Computed
             end
             
             rel_video=(ANL.Video1stLickTrial & kk & rel_spikes ) &  key_lick_direction;
-            if rel_video.count<10
+            if rel_video.count<4
                 return
             end
             TONGUE=struct2table(fetch(rel_video,'*','ORDER BY trial'));
-            number_of_trials=size(TONGUE,1);
             
             % extracting param variable
             VariableNames=TONGUE.Properties.VariableNames';
             idx_v_name=find(strcmp(VariableNames,kk.tuning_param_name));
             Y=TONGUE{:,idx_v_name};
             
-            %removing video outliers
-            idx_outlier=isoutlier(Y);
-            Y(idx_outlier)=[];
-            Y=zscore(Y);
-            kk.number_of_trials=numel(Y);
-    
-            kk.outcome_grouping=key.outcome_grouping;
-            kk.time_window_duration=time_window_duration;
-            
-            
-            % computing tuning for various time windows
-            for it=1:1:numel(t_vec)
-                t_wnd{it}=[t_vec(it), t_vec(it)+time_window_duration];
-            end
-            
-            for i_twnd=1:numel(t_wnd)
-                current_twnd= t_wnd{i_twnd};
-                kk.time_window_start=current_twnd(1);
-                
-                for i_tr=1:1:numel(SPIKES)
-                    spk_t=SPIKES(i_tr).spike_times_go;
-                    spk(i_tr)=sum(spk_t>current_twnd(1) & spk_t<current_twnd(2));%/diff(t_wnd);
-                end
-                FR_TRIAL=spk/time_window_duration;
-                
-                number_of_spikes = sum(spk);
-                kk.mean_fr_window=(number_of_spikes/time_window_duration)/numel(SPIKES);
-                
-                
-                %remove video outliers
-                FR_TRIAL(idx_outlier)=[];
-                Predictor = [ones(size(FR_TRIAL,2),1) FR_TRIAL'];
-                Predictor_normalized = [ones(size(FR_TRIAL,2),1) zscore(FR_TRIAL)'];
-                
-                num_trials=numel(FR_TRIAL);
-                for i_repeat=1:1:num_repeat
-                    train_set=randsample(num_trials,round(num_trials*fraction_train));
-                    train_Y=Y(train_set);
-                    
-                    train_Predictor=Predictor(train_set,:);
-                    %                     [beta(:,i_repeat),stats]= robustfit(train_Predictor,train_Y);
-                    [beta(:,i_repeat),~,~,~,stats]= regress(train_Y,train_Predictor);
-                    Rsq(i_repeat) = stats(1);  %stats [Rsq, F-statistic, p-value, and an estimate of the error variance.]
-                    regression_p(i_repeat)=stats(3);
-                    
-                    train_Predictor_normalized=Predictor_normalized(train_set,:);
-                    [beta_normalized(:,i_repeat),~,~,~,~]= regress(train_Y,train_Predictor_normalized);
-                    
-                    %                     [beta_normalized(:,i_repeat)]= robustfit(train_Predictor_normalized,train_Y);
-                    
-                    %                     yCalc1 =  beta(1,i_repeat) + beta(2,i_repeat)*train_Predictor;
-                    %                     Rsq= 1 - sum((train_Y - yCalc1).^2)/sum((train_Y - mean(train_Y)).^2); %coefficient of determination
-                end
-                
-                kk.regression_coeff_b1=nanmean(beta(1,:));
-                kk.regression_coeff_b2=nanmean(beta(2,:));
-                kk.regression_rsq=nanmean(Rsq);
-                p= nanmean(regression_p);
-                if isnan(p)
-                    kk.regression_p=1;
-                else
-                    kk.regression_p=p;
-                end
-                kk.regression_coeff_b2_normalized=nanmean(beta_normalized(2,:));
-                
-                
-                
-                %                 if isnan(stats(3))
-                %                     kk.regression_pvalue=1;
-                %                 else
-                %                     kk.regression_pvalue=stats(3);
-                %                 end
-                
-                %                 kk.regression_coeff=beta;
-                %                                        yCalc1 =  beta(1) + beta(2)*FR_TRIAL';
-                %
-                %                 b1 = FR_TRIAL'\Y;
-                %
-                %                yCalc1 = b1*FR_TRIAL';
-%                 scatter(FR_TRIAL',Y)
-                % hold on
-                % plot(FR_TRIAL',yCalc1)
-                % xlabel('Population of state')
-                % ylabel('Fatal traffic accidents per state')
-                % title('Linear Regression Relation Between Accidents & Population')
-                % grid on
-                
-                insert(self,kk)
-            end
+            fn_regression_tongue_singleunit  (Y, SPIKES, key,kk, time_window_duration, t_vec, num_repeat, fraction_train, self);
             
             
             

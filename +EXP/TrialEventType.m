@@ -14,6 +14,9 @@ classdef TrialEventType < dj.Lookup
             'sample-start chirp'
             'sample-end chirp'
             'send scheduled wave'
+            'trigger imaging'
+            'sound sample start'
+            'sound sample end'
             }
     end
 end

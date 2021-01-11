@@ -1,8 +1,9 @@
 function  [key, counter] = fn_projectTrialAvg_populate(M, PSTH, key, counter, Param)
 
 
+mintrials_psth_typeoutcome = Param.parameter_value{(strcmp('mintrials_psth_typeoutcome',Param.parameter_name))};
 
-mintrials_psth_typeoutcome = 2; %Param.parameter_value{(strcmp('mintrials_psth_typeoutcome',Param.parameter_name))};
+% mintrials_psth_typeoutcome = 2; %Param.parameter_value{(strcmp('mintrials_psth_typeoutcome',Param.parameter_name))};
 
 trial_types = unique(PSTH.trial_type_name);
 for itype= 1:1:numel(trial_types)
@@ -20,6 +21,7 @@ for itype= 1:1:numel(trial_types)
         weights(weights<0)= NaN;
     elseif strcmp(key(1).mode_weights_sign,'negative')
             weights(weights>=0)= NaN;
+            weights=-weights; %inverting the sign
     end
     
     weights = weights./sqrt(nansum(weights.^2)); %normalize the weights vector by its norm, so that is magntiude won't depend on how many neurons are used

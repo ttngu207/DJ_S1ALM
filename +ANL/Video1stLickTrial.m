@@ -9,7 +9,7 @@ lick_peak_y              : double                      # tongue y coordinate at 
 lick_amplitude           : double                      # tongue displacement in x,y    at the peak of the lick, peak is defined at 75% from trough
 lick_vel_linear          : double                      # median tongue linear velocity during the lick duration, from peak to trough
 lick_vel_angular         : double                      # median tongue angular velocity during the lick duration, from peak to trough
-lick_vel_angular_absolute         : double                      # median absolute tongue angular velocity during the lick duration, from peak to trough
+lick_vel_angular_absolute         : double             # median absolute tongue angular velocity during the lick duration, from peak to trough
 
 lick_yaw                 : double                      #  tongue yaw at the peak of the lick
 lick_yaw_relative        : double                      #  tongue yaw at the peak of the lick, relative to the left lick port

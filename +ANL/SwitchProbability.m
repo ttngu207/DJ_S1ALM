@@ -20,7 +20,7 @@ normalized_proj_bins                 : blob                  # binned distance a
 
 classdef SwitchProbability < dj.Computed
     properties
-        keySource = (EXP.Session  & (EPHYS.Unit))*ANL.SessionPosition * (EPHYS.CellType & 'cell_type="Pyr" or cell_type="all"') * (EPHYS.UnitQualityType & 'unit_quality="all" or unit_quality="good" or unit_quality="ok or good"') * (ANL.ModeTypeName & "mode_type_name='LateDelay'") * (ANL.ModeWeightsSign & 'mode_weights_sign="all"') * (EXP.TrialNameType &  'trial_type_name="l" or trial_type_name="l_-1.6Full" or trial_type_name="l_-1.6Mini"');
+        keySource = (EXP.Session  & (EPHYS.Unit))*ANL.SessionPosition * (EPHYS.CellType & 'cell_type="Pyr" or cell_type="all"') * (EPHYS.UnitQualityType & 'unit_quality="all" or unit_quality="good" or unit_quality="ok or good"') * (ANL.ModeTypeName) * (ANL.ModeWeightsSign) * (EXP.TrialNameType &  'trial_type_name="l" or trial_type_name="l_-1.6Full" or trial_type_name="l_-1.6Mini"');
         
         
     end

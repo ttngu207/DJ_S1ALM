@@ -17,6 +17,7 @@ classdef TaskProtocol < dj.Lookup
             's1 stim' 7 'mini-distractors and full distractors (only at late delay)'
             's1 stim' 8 'mini-distractors and full distractors (only at late delay), with different levels of the mini-stim and the full-stim during sample period'
             's1 stim' 9 'mini-distractors and full distractors (only at late delay), with different levels of the mini-stim and the full-stim during sample period'
+            'sound' 1 '3 Khz - lick right; 12kHz - lick left'
             }
     end
 end
