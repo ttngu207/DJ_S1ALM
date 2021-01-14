@@ -1,7 +1,8 @@
 function obj = getSchema
 persistent schemaObject
 if isempty(schemaObject)
-    schemaObject = dj.Schema(dj.conn, 'EPHYS', 'arseny_s1alm_ephys');
+    cfg = dj.config; 
+    schemaObject = dj.Schema(dj.conn, 'EPHYS', [cfg.custom.databasePrefix, 'ephys']);
 end
 obj = schemaObject;
 end
