@@ -107,6 +107,9 @@ ENV/
 # datajoint config file
 dj_local*json
 
+# MATLAB
+*.asv
+
 # emacs
 **/*~
 **/#*#
