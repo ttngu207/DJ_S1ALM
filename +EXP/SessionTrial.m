@@ -4,7 +4,7 @@
 trial                       : smallint                      # 
 ---
 trial_uid                   : int                           # unique across sessions/animals
-start_time                  : decimal(8,4)                  # (s) % relative to session beginning
+start_time                  : decimal(8,4)                  # (s) relative to session beginning
 %}
 
 

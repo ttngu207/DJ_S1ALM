@@ -5,8 +5,8 @@ dj.config();
 dj.config.load('dj_local_conf.json')
 cfg = dj.config;
 
-package_names = {'CF', 'LAB','EXP', 'EPHYS', 'MISC', 'ANL'};
-schema_names = {'cf', 'lab','experiment', 'ephys', 'misc', 'analysis'};
+package_names = {'CF', 'LAB','EXP', 'EPHYS', 'MISC'};
+schema_names = {'cf', 'lab','experiment', 'ephys', 'misc'};
 
 % Create schemas 
 for s_idx = 1 : numel(schema_names)
@@ -23,9 +23,11 @@ for s_idx = 1 : numel(schema_names)
        if strcmp(fname, 'getSchema')
           continue 
        end
-       disp([package_names{s_idx}, '.', fname])
+       fprintf('---- %s ----\n', [package_names{s_idx}, '.', fname])
        try
-           tmp = eval([package_names{s_idx}, '.', fname, '();']);
+           eval([package_names{s_idx}, '.', fname, '()'])
+       catch e
+           disp(e)
        end
    end
 end

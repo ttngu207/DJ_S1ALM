@@ -1,0 +1,3 @@
+pynwb==1.4.0
+datajoint
+ndx-events
