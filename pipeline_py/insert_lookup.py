@@ -29,12 +29,12 @@ def insert_lookup():
                                      skip_duplicates=True)
 
 
-    trialnametype_meta_fp = pathlib.Path(__file__).parent / 'trialnametype_meta.pickle'
+    trialnametype_meta_fp = next(pathlib.Path('./').absolute().rglob('trialnametype_meta.pickle'))
     with open(trialnametype_meta_fp, 'rb') as f:
         trialnametypes = pickle.load(f)
     experiment.TrialNameType.insert(trialnametypes, skip_duplicates=True, allow_direct_insert=True)
 
-    photostim_meta_fp = pathlib.Path(__file__).parent / 'photostim_meta.pickle'
+    photostim_meta_fp = next(pathlib.Path('./').absolute().rglob('photostim_meta.pickle'))
     with open(photostim_meta_fp, 'rb') as f:
         photostims = pickle.load(f)
     experiment.Photostim.insert(photostims, skip_duplicates=True, allow_direct_insert=True)

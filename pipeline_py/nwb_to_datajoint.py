@@ -20,6 +20,7 @@ fiducials_type_dict = {(p['tracking_device_id'], p['video_fiducial_name']): p
 
 
 def ingest_to_pipeline(nwb_filepath):
+    print(f'Ingesting from: {nwb_filepath.name} ...')
     io = NWBHDF5IO(pathlib.Path(nwb_filepath).as_posix(), mode='r', load_namespaces=True)
     nwbfile = io.read()
     subject_key = {'subject_id': nwbfile.subject.subject_id}
@@ -42,6 +43,9 @@ def ingest_to_pipeline(nwb_filepath):
 
     # =============================== SESSION ===========================
     session_key = {**subject_key, 'session': int(nwbfile.identifier.split('_')[-1])}
+    if session_key in experiment.Session.proj():
+        return
+
     experiment.Session.insert1({**session_key, 'session_date': nwbfile.session_start_time.date(),
                                 'username': nwbfile.experimenter[0], 'rig': 'ephys'})
     experiment.SessionComment.insert1({**session_key, 'session_comment': nwbfile.data_collection})
@@ -128,6 +132,8 @@ def ingest_to_pipeline(nwb_filepath):
             start_times = nwbfile.acquisition['LabeledEvents'].timestamps[event_ind == event_start_idx]
             valid_trial_ind = np.where(np.logical_and(start_times >= trial.start_time,
                                                       start_times < trial.stop_time))[0]
+            if len(valid_trial_ind) == 0:
+                continue
             durations = nwbfile.acquisition['LabeledEvents'].timestamps[event_ind == event_stop_idx][valid_trial_ind] - start_times[valid_trial_ind]
 
             behavior_event_list.extend([{**trial_key, 'trial_event_type': event_type,
@@ -168,18 +174,13 @@ def ingest_to_pipeline(nwb_filepath):
 
     io.close()
 
-# ============================== INGEST ALL NWB FILES ==========================================
 
-
-if __name__ == '__main__':
-    if len(sys.argv) > 1:
-        nwb_dir = pathlib.Path(sys.argv[1])
-    else:
+def main(nwb_dir=None):
+    if nwb_dir is None:
         if 'NWB_DIRECTORY' in os.environ:
-            nwb_dir = os.environ['NWB_DIRECTORY']
+            nwb_dir = pathlib.Path(os.environ['NWB_DIRECTORY'])
         else:
-            print('Usage error, please specify the directory to the NWB files')
-            sys.exit(0)
+            raise ValueError('Usage error, please specify the directory to the NWB files')
 
     if not nwb_dir.exists():
         raise FileNotFoundError(f'NWB data directory not found: {nwb_dir}')
@@ -187,4 +188,18 @@ if __name__ == '__main__':
     insert_lookup()
 
     for nwb_fp in tqdm(nwb_dir.glob('*.nwb')):
-        ingest_to_pipeline(nwb_fp)
+        try:
+            ingest_to_pipeline(nwb_fp)
+        except Exception as e:
+            print(str(e))
+            pass
+
+# ============================== INGEST ALL NWB FILES ==========================================
+
+
+if __name__ == '__main__':
+    nwb_dir = None
+    if len(sys.argv) > 1:
+        nwb_dir = pathlib.Path(sys.argv[1])
+
+    main(nwb_dir)

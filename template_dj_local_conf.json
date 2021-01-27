@@ -12,6 +12,6 @@
   "display.width": 30,
   "display.show_tuple_count": true,
   "custom": {
-      "database.prefix": "s1_alm_"
+      "database.prefix": "s1alm_"
     }
 }
