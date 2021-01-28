@@ -55,6 +55,14 @@ Download data in NWB format, and place those NWB files in the created ***nwb_dat
 
 ## Step 4: Launch MATLAB and run `init.m`
 
+Ensure ***DJ_S1ALM*** is your "Current Folder"
+
+On the Command Window, run
+
+
+    init
+
+
 ## Step 5: Run `docker-compose up`
 Build the Docker images (one time)
 
@@ -79,6 +87,7 @@ Create any new notebooks in the ***dja*** folder
 
 To connect to the pipeline, see the sample code below
     
+    
     import os
     os.chdir('/main')
     
@@ -87,3 +96,9 @@ To connect to the pipeline, see the sample code below
     experiment.Session()
     
 ## Step 6: Go to MATLAB and explore the data
+
+Ensure ***DJ_S1ALM*** is your "Current Folder", and you are ready to connect to the pipeline.
+For example, to inspect the Session table, try:
+
+    
+    EXP.Session()
