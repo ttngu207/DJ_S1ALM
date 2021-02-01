@@ -1,0 +1,45 @@
+version: "2.4"
+services:
+  db:
+    image: datajoint/mysql:5.7
+    environment:
+      - MYSQL_ROOT_PASSWORD=simple
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysql", "--protocol", "TCP", "-uroot", "-psimple", "-e", "show databases;"]
+      timeout: 5s
+      retries: 60
+      interval: 10s
+    networks:
+      - main
+  pipeline:
+    build:
+      context: .
+      dockerfile: ./pipeline_py/Dockerfile
+    image: s1alm:v0.0.0
+    environment:
+      - DJ_HOST=db
+      - DJ_USER=root
+      - DJ_PASS=simple
+      - Djlab_JupyterNotebook_Password=datajoint
+      - NWB_DIRECTORY=./nwb_data
+    ports:
+      - "8888:8888"
+    command:
+      - bash
+      - -c
+      - |
+        s1alm_ingest &
+        jupyter lab
+    volumes:
+      - ./nwb_data:/main/nwb_data
+    networks:
+      - main
+    depends_on:
+      db:
+        condition: service_healthy
+networks:
+  main:

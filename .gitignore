@@ -114,7 +114,6 @@ dj_local*json
 **/*~
 **/#*#
 **/.#*
-docker-compose.yml
 Diagram.ipynb
 
 # users' data
