@@ -2,6 +2,7 @@ import datajoint as dj
 import time
 
 db_prefix = dj.config['custom']['database.prefix']
+print(f'Database prefix is: {db_prefix}')
 
 is_initialized = False
 

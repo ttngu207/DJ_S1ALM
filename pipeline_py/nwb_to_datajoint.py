@@ -174,6 +174,7 @@ def ingest_to_pipeline(nwb_filepath):
     ephys.TrialSpikes.insert(trialspikes_list, allow_direct_insert=True)
 
     io.close()
+    print(f'\tIngestion for {session_key} completed!')
 
 
 def main(nwb_dir=None):
