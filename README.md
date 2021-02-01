@@ -53,17 +53,8 @@ Create a new folder named ***nwb_data*** in this ***DJ_S1ALM*** working director
 
 Download data in NWB format, and place those NWB files in the created ***nwb_data*** folder
 
-## Step 4: Launch MATLAB and run `init.m`
 
-Ensure ***DJ_S1ALM*** is your "Current Folder"
-
-On the Command Window, run
-
-
-    init
-
-
-## Step 5: Run `docker-compose up`
+## Step 4: Run `docker-compose up`
 Build the Docker images (one time)
 
     docker-compose build
@@ -79,6 +70,16 @@ When finished, you can stop the containers:
 Note: a new ***db_data*** folder will be created, and the data for MySQL database is stored in this ***db_data*** folder, this folder is persistent.
 To resume working with this pipeline, you will only need to `docker-compose up` again
 
+
+## Step 5: Launch MATLAB and run `init.m`
+
+Ensure ***DJ_S1ALM*** is your "Current Folder"
+
+On the Command Window, run
+
+
+    init
+    
     
 ## Step 6: Go to Jupyter notebook and explore the data
 The password to connect is ***datajoint***

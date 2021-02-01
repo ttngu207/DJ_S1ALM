@@ -17,5 +17,5 @@ while not is_initialized:
         is_initialized = True
     except dj.DataJointError as e:
         print('The schemas/tables have not yet been created - awaiting MATLAB "init.m"')
-        time.sleep(300)  # sleep for 5 minutes
+        time.sleep(120)  # sleep for 2 minutes
         pass
