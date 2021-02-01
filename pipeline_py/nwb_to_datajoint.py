@@ -44,6 +44,7 @@ def ingest_to_pipeline(nwb_filepath):
     # =============================== SESSION ===========================
     session_key = {**subject_key, 'session': int(nwbfile.identifier.split('_')[-1])}
     if session_key in experiment.Session.proj():
+        print(f'\tSession {session_key} exists, skipping...')
         return
 
     experiment.Session.insert1({**session_key, 'session_date': nwbfile.session_start_time.date(),
