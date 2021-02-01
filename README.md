@@ -29,10 +29,10 @@ Follow the instruction here to:
 
 
 ## Step 1: Clone the repository
-Navigate to a new folder directory for this project. Then clone this repository:
+Navigate to a new folder directory for this project. Then clone this repository (`publication_ready` branch):
     
     
-    git clone https://github.com/arsenyf/DJ_S1ALM
+    git clone --single-branch -b publication_ready https://github.com/arsenyf/DJ_S1ALM
     
 
 Change your working directory to the `DJ_S1ALM` folder
@@ -91,7 +91,8 @@ To connect to the pipeline, see the sample code below
     import os
     os.chdir('/main')
     
-    from pipeline_py.nwb_to_datajoint import *
+    from:;w:wq!
+     :::pipeline_py.nwb_to_datajoint import *
     
     experiment.Session()
     
