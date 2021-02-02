@@ -32,7 +32,7 @@ Follow the instruction here to:
 Navigate to a new folder directory for this project. Then clone this repository (`publication_ready` branch):
     
     
-    git clone --single-branch -b publication_ready https://github.com/arsenyf/DJ_S1ALM
+    git clone --single-branch -b publication_ready https://github.com/ttngu207/DJ_S1ALM
     
 
 Change your working directory to the `DJ_S1ALM` folder
